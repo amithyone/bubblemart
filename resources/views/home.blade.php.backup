@@ -1,0 +1,324 @@
+@extends('layouts.template')
+
+@section('content')
+
+<style>
+/* Remove card borders and add shadows */
+.adminuiux-card {
+    border: none !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
+    transition: all 0.3s ease;
+}
+
+.adminuiux-card:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4) !important;
+    transform: translateY(-2px);
+}
+
+/* Ensure all cards on home page have no borders */
+.card {
+    border: none !important;
+}
+
+/* Product cards specific styling */
+.home-product-card {
+    border: none !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.home-product-card:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4) !important;
+    transform: translateY(-2px);
+}
+
+.home-product-card:hover .position-absolute[style*="background: linear-gradient"] {
+    background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.8) 100%) !important;
+}
+
+/* Override template background for product cards */
+.product-card {
+    background: none !important;
+}
+
+/* Category slider cards styling */
+.swipernav .card {
+    border: none !important;
+    box-shadow: 0 2px 8px rgba(10, 9, 9, 0.54) !important;
+    transition: all 0.3s ease;
+    min-width: 120px;
+    background: linear-gradient(135deg,rgb(19, 16, 16) 0%,rgb(0, 0, 0) 100%) !important;
+}
+
+.swipernav .card:hover {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
+    transform: translateY(-2px);
+}
+
+.swipernav .card-body {
+    padding: 0.75rem 0.5rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 50px;
+}
+
+.swipernav .avatar {
+    margin: 0.75rem 0.5rem;
+}
+
+.swipernav .avatar {
+    margin: 0.5rem;
+}
+
+/* Font sizes and weights matching wallet page */
+.welcome-label, .welcome-label * {
+    font-size: 0.85rem !important;
+    color: rgba(255,255,255,0.8) !important;
+    font-weight: normal !important;
+}
+
+.welcome-username, .welcome-username * {
+    font-size: 0.95rem !important;
+    font-weight: 600 !important;
+    color: #ffffff !important;
+}
+
+/* Banner text styling */
+.banner-title, h5.banner-title, h6.banner-title {
+    font-size: 0.95rem !important;
+    font-weight: 600 !important;
+    color: #ffffff !important;
+}
+
+.banner-subtitle, p.banner-subtitle {
+    font-size: 0.75rem !important;
+    color: rgba(255,255,255,0.6) !important;
+    font-weight: normal !important;
+}
+
+.banner-btn, .btn.banner-btn {
+    font-size: 0.85rem !important;
+    font-weight: 500 !important;
+}
+
+/* Category text styling */
+.category-name, p.category-name {
+    font-size: 0.75rem !important;
+    color: rgba(255,255,255,0.7) !important;
+    font-weight: normal !important;
+}
+
+/* Product text styling */
+.product-name, h6.product-name {
+    font-size: 0.85rem !important;
+    font-weight: 500 !important;
+    color: #ffffff !important;
+}
+
+.product-rating, span.product-rating {
+    font-size: 0.75rem !important;
+    color: rgba(255,255,255,0.8) !important;
+    font-weight: normal !important;
+}
+
+.product-price, span.product-price {
+    font-size: 0.95rem !important;
+    font-weight: 600 !important;
+    color: #ffffff !important;
+}
+
+.product-store, span.product-store {
+    font-size: 0.75rem !important;
+    color: rgba(255,255,255,0.6) !important;
+    font-weight: normal !important;
+}
+
+/* Location selector styling */
+.location-select .form-select {
+    font-size: 0.85rem !important;
+    font-weight: 500 !important;
+}
+
+.location-icon {
+    font-size: 0.85rem !important;
+}
+
+/* Override any template font styles */
+* {
+    font-family: inherit !important;
+}
+
+/* Ensure no bold text from template */
+strong, b, .fw-bold {
+    font-weight: inherit !important;
+}
+
+/* Line height for consistency */
+p, h6, span, div {
+    line-height: 1.2 !important;
+}
+
+/* Override any Bootstrap classes */
+.small {
+    font-size: 0.75rem !important;
+    font-weight: normal !important;
+}
+
+.fw-bold {
+    font-weight: 600 !important;
+}
+
+/* Override any template font weights */
+strong, b {
+    font-weight: 600 !important;
+}
+
+/* Override template product card background */
+.product-card {
+    background: none !important;
+}
+</style>
+
+
+<!-- Welcome/User & Location -->
+<div class="d-flex align-items-center justify-content-between mb-3">
+    <div class="d-flex align-items-center">
+        <figure class="avatar avatar-30 rounded coverimg align-middle me-2">
+            @auth
+                <img src="{{ Auth::user()->avatar ? asset('storage/' . Auth::user()->avatar) : asset('template-assets/img/avatars/1.jpg') }}" alt="Profile" style="width: 30px; height: 30px; object-fit: cover;">
+            @else
+                <i class="bi bi-person-circle h2"></i>
+            @endauth
+        </figure>
+        <div>
+            <p class="welcome-label text-truncated mb-0">Welcome,</p>
+            <h6 class="welcome-username mb-0">
+                @auth
+                    {{ Auth::user()->name }}
+                @else
+                    Guest
+                @endauth
+            </h6>
+        </div>
+    </div>
+    <div class="input-group input-group-sm w-auto location-select">
+        <span class="input-group-text bg-none location-icon"><i class="bi bi-geo-alt"></i></span>
+        <select class="form-select form-select-sm bg-none">
+            <option>Lagos</option>
+            <option>Abuja</option>
+            <option>Port Harcourt</option>
+            <option>Kano</option>
+            <option>Ibadan</option>
+        </select>
+    </div>
+</div>
+
+<!-- Banner/Featured Section -->
+<div class="row gx-2 mb-3">
+    <div class="col-7">
+        <div class="card adminuiux-card h-100 p-0 overflow-hidden position-relative">
+            <img src="{{ asset('template-assets/img/ecommerce/image-3.jpg') }}" class="w-100 h-100 object-fit-cover" style="min-height: 160px; max-height: 200px;" alt="Featured">
+            <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-3" style="background:rgba(0,0,0,0.4);">
+                <h5 class="banner-title mb-1">Winter Collection</h5>
+                <p class="banner-subtitle mb-2">Best gifts and collections</p>
+                <a href="#" class="btn btn-sm btn-theme banner-btn">Shop Now</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-5 d-flex flex-column gap-2">
+        <div class="card adminuiux-card p-0 overflow-hidden position-relative flex-fill">
+            <img src="{{ asset('template-assets/img/ecommerce/image-4.jpg') }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="Featured">
+            <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-2" style="background:rgba(0,0,0,0.3);">
+                <h6 class="banner-title mb-1">Accessories</h6>
+            </div>
+        </div>
+        <div class="card adminuiux-card p-0 overflow-hidden position-relative flex-fill">
+            <img src="{{ asset('template-assets/img/ecommerce/image-5.jpg') }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="Featured">
+            <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-2" style="background:rgba(0,0,0,0.3);">
+                <h6 class="banner-title mb-1">Footwear</h6>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Category Swiper -->
+<div class="swiper swipernav mb-3">
+    <div class="swiper-wrapper">
+        @foreach($categories as $category)
+        <a href="{{ route('categories.show', $category) }}" class="swiper-slide w-auto style-none" style="margin-right: 20px;">
+            <div class="card adminuiux-card">
+                <div class="row gx-0">
+                    <div class="col-auto">
+                        <div class="avatar avatar-40 rounded coverimg" style="background-image: url('{{ $category->image ? asset('storage/' . $category->image) : asset('template-assets/img/ecommerce/image-4.jpg') }}');">
+                            <img src="{{ $category->image ? asset('storage/' . $category->image) : asset('template-assets/img/ecommerce/image-4.jpg') }}" alt="{{ $category->name }}" style="display: none;">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card-body py-2">
+                            <p class="category-name text-truncated mb-0">{{ $category->name }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+        @endforeach
+        <a href="{{ route('categories.index') }}" class="swiper-slide w-auto style-none" style="margin-right: 20px;">
+            <div class="card adminuiux-card">
+                <div class="row gx-0">
+                    <div class="col-auto">
+                        <div class="avatar avatar-40 rounded bg-theme-accent-1">
+                            <i class="bi bi-tags h4 text-white"></i>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card-body py-2">
+                            <p class="category-name text-truncated mb-0">All Categories</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="swiper-pagination white-pagination text-left mb-3"></div>
+</div>
+
+<!-- Shop Items Section -->
+<div class="row gx-2 gy-3">
+    @foreach($products->take(6) as $product)
+    <div class="col-6">
+        <div class="card adminuiux-card home-product-card mb-2 position-relative" style="border-radius: 20px; min-height: 200px; background-image: url('{{ $product->image ? asset('storage/' . $product->image) : asset('template-assets/img/ecommerce/image-6.jpg') }}'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+            <!-- Overlay for better text readability -->
+            <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.7) 100%); border-radius: 20px;"></div>
+            
+            <!-- Action buttons -->
+            <div class="position-absolute top-0 end-0 m-2">
+                <i class="bi bi-heart text-white" style="text-shadow: 0 1px 3px rgba(0,0,0,0.5);"></i>
+            </div>
+            <form action="{{ route('cart.add', $product->id) }}" method="POST" class="position-absolute top-0 start-0 m-2">
+                @csrf
+                <button type="submit" class="btn btn-sm btn-theme-accent-1 rounded-circle" style="width: 32px; height: 32px; padding: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
+                    <i class="bi bi-cart-plus text-white" style="font-size: 0.8rem;"></i>
+                </button>
+            </form>
+            
+            <!-- Product info overlay -->
+            <div class="position-absolute bottom-0 start-0 w-100 p-3" style="border-radius: 0 0 20px 20px;">
+                <a href="{{ route('products.show', $product) }}" class="style-none">
+                    <h6 class="product-name text-truncated mb-1" style="text-shadow: 0 1px 3px rgba(0,0,0,0.7);">{{ $product->name }}</h6>
+                </a>
+                <div class="d-flex align-items-center mb-1">
+                    <span class="me-1 product-rating" style="text-shadow: 0 1px 2px rgba(0,0,0,0.7);"><i class="bi bi-star-fill text-warning"></i> {{ number_format($product->rating ?? 4.5, 1) }}</span>
+                    <span class="product-rating" style="text-shadow: 0 1px 2px rgba(0,0,0,0.7);">({{ $product->reviews_count ?? rand(10, 50) }})</span>
+                </div>
+                <div class="d-flex align-items-center justify-content-between">
+                    <span class="product-price" style="text-shadow: 0 1px 3px rgba(0,0,0,0.7);">₦{{ number_format($product->price_naira) }}</span>
+                    <span class="product-store" style="text-shadow: 0 1px 2px rgba(0,0,0,0.7);">{{ $product->store->name ?? 'Bublemart Store' }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endforeach
+</div>
+@endsection

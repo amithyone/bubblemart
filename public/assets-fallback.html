@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bublemart Assets Test</title>
+</head>
+<body style="background: #000; color: #fff; font-family: Arial, sans-serif; padding: 20px;">
+    <h1>🔧 Bublemart Assets Test Page</h1>
+    
+    <h2>Testing Asset URLs:</h2>
+    
+    <div id="results"></div>
+    
+    <script>
+        const assets = [
+            '/template-assets/css/app.css',
+            '/template-assets/js/app.js',
+            '/template-assets/img/favicon.png',
+            '/template-assets/img/logo.svg',
+            '/template-assets/img/ecommerce/image-3.jpg',
+            '/template-assets/img/ecommerce/image-4.jpg',
+            '/template-assets/img/ecommerce/image-5.jpg',
+            '/template-assets/img/avatars/1.jpg'
+        ];
+        
+        const resultsDiv = document.getElementById('results');
+        
+        assets.forEach(asset => {
+            const img = new Image();
+            const div = document.createElement('div');
+            div.style.margin = '10px 0';
+            div.style.padding = '10px';
+            div.style.border = '1px solid #333';
+            div.style.borderRadius = '5px';
+            
+            img.onload = function() {
+                div.innerHTML = `✅ ${asset} - <span style="color: #4CAF50;">LOADED</span>`;
+                div.style.borderColor = '#4CAF50';
+            };
+            
+            img.onerror = function() {
+                div.innerHTML = `❌ ${asset} - <span style="color: #f44336;">404 NOT FOUND</span>`;
+                div.style.borderColor = '#f44336';
+            };
+            
+            img.src = asset;
+            resultsDiv.appendChild(div);
+        });
+    </script>
+    
+    <h2>📋 Manual Test Instructions:</h2>
+    <ol>
+        <li>Try accessing each URL directly in your browser</li>
+        <li>Check your server's file permissions</li>
+        <li>Verify the template-assets folder exists in public/</li>
+        <li>Ensure your web server can serve static files</li>
+    </ol>
+    
+    <h2>🔧 Quick Fix Commands:</h2>
+    <pre style="background: #333; padding: 15px; border-radius: 5px; overflow-x: auto;">
+# On your live server, run these commands:
+
+# 1. Extract assets (if you have the tar.gz file)
+tar -xzf complete-assets.tar.gz -C public/
+
+# 2. Set permissions
+chmod -R 755 public/template-assets/
+chown -R www-data:www-data public/template-assets/
+
+# 3. Clear Laravel cache
+php artisan cache:clear
+php artisan config:clear
+php artisan view:clear
+
+# 4. Create storage link
+php artisan storage:link
+    </pre>
+</body>
+</html> 

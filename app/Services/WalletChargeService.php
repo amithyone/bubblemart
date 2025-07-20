@@ -1,0 +1,133 @@
+<?php
+
+namespace App\Services;
+
+class WalletChargeService
+{
+    /**
+     * Calculate charges for wallet funding based on amount
+     * 
+     * @param float $amount The amount to be funded
+     * @return array Returns array with base_amount, charge, total_amount, and charge_breakdown
+     */
+    public static function calculateCharges($amount)
+    {
+        $baseAmount = $amount;
+        $charge = 0;
+        $chargeBreakdown = [];
+
+        // Tier 1: ₦1,000 - ₦9,999: ₦100 + 1.5%
+        if ($baseAmount >= 1000 && $baseAmount <= 9999) {
+            $fixedCharge = 100;
+            $percentageCharge = $baseAmount * 0.015; // 1.5%
+            $charge = $fixedCharge + $percentageCharge;
+            
+            $chargeBreakdown = [
+                'tier' => 'Tier 1 (₦1,000 - ₦9,999)',
+                'fixed_charge' => $fixedCharge,
+                'percentage_rate' => '1.5%',
+                'percentage_amount' => $percentageCharge,
+                'total_charge' => $charge
+            ];
+        }
+        // Tier 2: ₦10,000 - ₦39,999: ₦200 + 1.5%
+        elseif ($baseAmount >= 10000 && $baseAmount <= 39999) {
+            $fixedCharge = 200;
+            $percentageCharge = $baseAmount * 0.015; // 1.5%
+            $charge = $fixedCharge + $percentageCharge;
+            
+            $chargeBreakdown = [
+                'tier' => 'Tier 2 (₦10,000 - ₦39,999)',
+                'fixed_charge' => $fixedCharge,
+                'percentage_rate' => '1.5%',
+                'percentage_amount' => $percentageCharge,
+                'total_charge' => $charge
+            ];
+        }
+        // Tier 3: ₦40,000 and above: ₦400 + 1.5%
+        elseif ($baseAmount >= 40000) {
+            $fixedCharge = 400;
+            $percentageCharge = $baseAmount * 0.015; // 1.5%
+            $charge = $fixedCharge + $percentageCharge;
+            
+            $chargeBreakdown = [
+                'tier' => 'Tier 3 (₦40,000+)',
+                'fixed_charge' => $fixedCharge,
+                'percentage_rate' => '1.5%',
+                'percentage_amount' => $percentageCharge,
+                'total_charge' => $charge
+            ];
+        }
+        // Below minimum: No charges (but should not happen in normal flow)
+        else {
+            $chargeBreakdown = [
+                'tier' => 'Below minimum',
+                'fixed_charge' => 0,
+                'percentage_rate' => '0%',
+                'percentage_amount' => 0,
+                'total_charge' => 0
+            ];
+        }
+
+        $totalAmount = $baseAmount + $charge;
+
+        return [
+            'base_amount' => $baseAmount,
+            'charge' => $charge,
+            'total_amount' => $totalAmount,
+            'charge_breakdown' => $chargeBreakdown,
+            'formatted' => [
+                'base_amount' => '₦' . number_format($baseAmount, 2),
+                'charge' => '₦' . number_format($charge, 2),
+                'total_amount' => '₦' . number_format($totalAmount, 2)
+            ]
+        ];
+    }
+
+    /**
+     * Get charge information for display
+     * 
+     * @param float $amount
+     * @return array
+     */
+    public static function getChargeInfo($amount)
+    {
+        $charges = self::calculateCharges($amount);
+        
+        return [
+            'amount' => $amount,
+            'charge' => $charges['charge'],
+            'total' => $charges['total_amount'],
+            'breakdown' => $charges['charge_breakdown'],
+            'formatted' => $charges['formatted']
+        ];
+    }
+
+    /**
+     * Validate if amount is within acceptable range
+     * 
+     * @param float $amount
+     * @return bool
+     */
+    public static function isValidAmount($amount)
+    {
+        return $amount >= 1000 && $amount <= 1000000;
+    }
+
+    /**
+     * Get minimum and maximum amounts
+     * 
+     * @return array
+     */
+    public static function getAmountLimits()
+    {
+        return [
+            'min' => 1000,
+            'max' => 1000000,
+            'formatted' => [
+                'min' => '₦1,000',
+                'max' => '₦1,000,000'
+            ]
+        ];
+    }
+} 
