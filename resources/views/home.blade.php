@@ -375,38 +375,42 @@ div.card.adminuiux-card.home-product-card {
         </div>
     </div>
     <div class="col-5 d-flex flex-column gap-2">
-        <div class="card adminuiux-card p-0 overflow-hidden position-relative flex-fill">
-            @if($bannerCategories[1]->image_path)
-                <img src="{{ asset('storage/' . $bannerCategories[1]->image_path) }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $bannerCategories[1]->name }}">
-            @else
-                <img src="{{ asset('template-assets/img/ecommerce/image-4.jpg') }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $bannerCategories[1]->name }}">
-            @endif
-            <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-2" style="background:rgba(0,0,0,0.3);">
-                <!-- Featured Badge -->
-                <div class="position-absolute top-0 end-0 m-1">
-                    <span class="badge bg-warning text-dark" style="font-size: 0.6rem;">
-                        <i class="fas fa-star me-1"></i>Featured
-                    </span>
+        <a href="{{ route('categories.show', $bannerCategories[1]) }}" class="text-decoration-none">
+            <div class="card adminuiux-card p-0 overflow-hidden position-relative flex-fill">
+                @if($bannerCategories[1]->image_path)
+                    <img src="{{ asset('storage/' . $bannerCategories[1]->image_path) }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $bannerCategories[1]->name }}">
+                @else
+                    <img src="{{ asset('template-assets/img/ecommerce/image-4.jpg') }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $bannerCategories[1]->name }}">
+                @endif
+                <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-2" style="background:rgba(0,0,0,0.3);">
+                    <!-- Featured Badge -->
+                    <div class="position-absolute top-0 end-0 m-1">
+                        <span class="badge bg-warning text-dark" style="font-size: 0.6rem;">
+                            <i class="fas fa-star me-1"></i>Featured
+                        </span>
+                    </div>
+                    <h6 class="banner-title mb-1">{{ $bannerCategories[1]->name }}</h6>
                 </div>
-                <h6 class="banner-title mb-1">{{ $bannerCategories[1]->name }}</h6>
             </div>
-        </div>
-        <div class="card adminuiux-card p-0 overflow-hidden position-relative flex-fill">
-            @if($bannerCategories[2]->image_path)
-                <img src="{{ asset('storage/' . $bannerCategories[2]->image_path) }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $bannerCategories[2]->name }}">
-            @else
-                <img src="{{ asset('template-assets/img/ecommerce/image-5.jpg') }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $bannerCategories[2]->name }}">
-            @endif
-            <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-2" style="background:rgba(0,0,0,0.3);">
-                <!-- Featured Badge -->
-                <div class="position-absolute top-0 end-0 m-1">
-                    <span class="badge bg-warning text-dark" style="font-size: 0.6rem;">
-                        <i class="fas fa-star me-1"></i>Featured
-                    </span>
+        </a>
+        <a href="{{ route('categories.show', $bannerCategories[2]) }}" class="text-decoration-none">
+            <div class="card adminuiux-card p-0 overflow-hidden position-relative flex-fill">
+                @if($bannerCategories[2]->image_path)
+                    <img src="{{ asset('storage/' . $bannerCategories[2]->image_path) }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $bannerCategories[2]->name }}">
+                @else
+                    <img src="{{ asset('template-assets/img/ecommerce/image-5.jpg') }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $bannerCategories[2]->name }}">
+                @endif
+                <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-2" style="background:rgba(0,0,0,0.3);">
+                    <!-- Featured Badge -->
+                    <div class="position-absolute top-0 end-0 m-1">
+                        <span class="badge bg-warning text-dark" style="font-size: 0.6rem;">
+                            <i class="fas fa-star me-1"></i>Featured
+                        </span>
+                    </div>
+                    <h6 class="banner-title mb-1">{{ $bannerCategories[2]->name }}</h6>
                 </div>
-                <h6 class="banner-title mb-1">{{ $bannerCategories[2]->name }}</h6>
             </div>
-        </div>
+        </a>
     </div>
 </div>
 @elseif($categories->count() >= 3)
@@ -427,26 +431,30 @@ div.card.adminuiux-card.home-product-card {
         </div>
     </div>
     <div class="col-5 d-flex flex-column gap-2">
-        <div class="card adminuiux-card p-0 overflow-hidden position-relative flex-fill">
-            @if($categories[1]->image_path)
-                <img src="{{ asset('storage/' . $categories[1]->image_path) }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $categories[1]->name }}">
-            @else
-                <img src="{{ asset('template-assets/img/ecommerce/image-4.jpg') }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $categories[1]->name }}">
-            @endif
-            <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-2" style="background:rgba(0,0,0,0.3);">
-                <h6 class="banner-title mb-1">{{ $categories[1]->name }}</h6>
+        <a href="{{ route('categories.show', $categories[1]) }}" class="text-decoration-none">
+            <div class="card adminuiux-card p-0 overflow-hidden position-relative flex-fill">
+                @if($categories[1]->image_path)
+                    <img src="{{ asset('storage/' . $categories[1]->image_path) }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $categories[1]->name }}">
+                @else
+                    <img src="{{ asset('template-assets/img/ecommerce/image-4.jpg') }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $categories[1]->name }}">
+                @endif
+                <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-2" style="background:rgba(0,0,0,0.3);">
+                    <h6 class="banner-title mb-1">{{ $categories[1]->name }}</h6>
+                </div>
             </div>
-        </div>
-        <div class="card adminuiux-card p-0 overflow-hidden position-relative flex-fill">
-            @if($categories[2]->image_path)
-                <img src="{{ asset('storage/' . $categories[2]->image_path) }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $categories[2]->name }}">
-            @else
-                <img src="{{ asset('template-assets/img/ecommerce/image-5.jpg') }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $categories[2]->name }}">
-            @endif
-            <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-2" style="background:rgba(0,0,0,0.3);">
-                <h6 class="banner-title mb-1">{{ $categories[2]->name }}</h6>
+        </a>
+        <a href="{{ route('categories.show', $categories[2]) }}" class="text-decoration-none">
+            <div class="card adminuiux-card p-0 overflow-hidden position-relative flex-fill">
+                @if($categories[2]->image_path)
+                    <img src="{{ asset('storage/' . $categories[2]->image_path) }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $categories[2]->name }}">
+                @else
+                    <img src="{{ asset('template-assets/img/ecommerce/image-5.jpg') }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $categories[2]->name }}">
+                @endif
+                <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-2" style="background:rgba(0,0,0,0.3);">
+                    <h6 class="banner-title mb-1">{{ $categories[2]->name }}</h6>
+                </div>
             </div>
-        </div>
+        </a>
     </div>
 </div>
 @else
@@ -475,43 +483,51 @@ div.card.adminuiux-card.home-product-card {
     </div>
     <div class="col-5 d-flex flex-column gap-2">
         @if($availableCategories->count() > 1)
-        <div class="card adminuiux-card p-0 overflow-hidden position-relative flex-fill">
-            @if($availableCategories[1]->image_path)
-                <img src="{{ asset('storage/' . $availableCategories[1]->image_path) }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $availableCategories[1]->name }}">
-            @else
-                <img src="{{ asset('template-assets/img/ecommerce/image-4.jpg') }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $availableCategories[1]->name }}">
-            @endif
-            <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-2" style="background:rgba(0,0,0,0.3);">
-                <h6 class="banner-title mb-1">{{ $availableCategories[1]->name }}</h6>
+        <a href="{{ route('categories.show', $availableCategories[1]) }}" class="text-decoration-none">
+            <div class="card adminuiux-card p-0 overflow-hidden position-relative flex-fill">
+                @if($availableCategories[1]->image_path)
+                    <img src="{{ asset('storage/' . $availableCategories[1]->image_path) }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $availableCategories[1]->name }}">
+                @else
+                    <img src="{{ asset('template-assets/img/ecommerce/image-4.jpg') }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $availableCategories[1]->name }}">
+                @endif
+                <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-2" style="background:rgba(0,0,0,0.3);">
+                    <h6 class="banner-title mb-1">{{ $availableCategories[1]->name }}</h6>
+                </div>
             </div>
-        </div>
+        </a>
         @endif
         @if($availableCategories->count() > 2)
-        <div class="card adminuiux-card p-0 overflow-hidden position-relative flex-fill">
-            @if($availableCategories[2]->image_path)
-                <img src="{{ asset('storage/' . $availableCategories[2]->image_path) }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $availableCategories[2]->name }}">
-            @else
-                <img src="{{ asset('template-assets/img/ecommerce/image-5.jpg') }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $availableCategories[2]->name }}">
-            @endif
-            <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-2" style="background:rgba(0,0,0,0.3);">
-                <h6 class="banner-title mb-1">{{ $availableCategories[2]->name }}</h6>
+        <a href="{{ route('categories.show', $availableCategories[2]) }}" class="text-decoration-none">
+            <div class="card adminuiux-card p-0 overflow-hidden position-relative flex-fill">
+                @if($availableCategories[2]->image_path)
+                    <img src="{{ asset('storage/' . $availableCategories[2]->image_path) }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $availableCategories[2]->name }}">
+                @else
+                    <img src="{{ asset('template-assets/img/ecommerce/image-5.jpg') }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $availableCategories[2]->name }}">
+                @endif
+                <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-2" style="background:rgba(0,0,0,0.3);">
+                    <h6 class="banner-title mb-1">{{ $availableCategories[2]->name }}</h6>
+                </div>
             </div>
-        </div>
+        </a>
         @endif
         @if($availableCategories->count() <= 1)
         <!-- Fill empty space if only 1 category -->
-        <div class="card adminuiux-card p-0 overflow-hidden position-relative flex-fill">
-            <img src="{{ asset('template-assets/img/ecommerce/image-4.jpg') }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="Explore More">
-            <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-2" style="background:rgba(0,0,0,0.3);">
-                <h6 class="banner-title mb-1">Explore More</h6>
+        <a href="{{ route('categories.index') }}" class="text-decoration-none">
+            <div class="card adminuiux-card p-0 overflow-hidden position-relative flex-fill">
+                <img src="{{ asset('template-assets/img/ecommerce/image-4.jpg') }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="All Categories">
+                <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-2" style="background:rgba(0,0,0,0.3);">
+                    <h6 class="banner-title mb-1">All Categories</h6>
+                </div>
             </div>
-        </div>
-        <div class="card adminuiux-card p-0 overflow-hidden position-relative flex-fill">
-            <img src="{{ asset('template-assets/img/ecommerce/image-5.jpg') }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="Discover">
-            <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-2" style="background:rgba(0,0,0,0.3);">
-                <h6 class="banner-title mb-1">Discover</h6>
+        </a>
+        <a href="{{ route('products.index') }}" class="text-decoration-none">
+            <div class="card adminuiux-card p-0 overflow-hidden position-relative flex-fill">
+                <img src="{{ asset('template-assets/img/ecommerce/image-5.jpg') }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="All Products">
+                <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-2" style="background:rgba(0,0,0,0.3);">
+                    <h6 class="banner-title mb-1">All Products</h6>
+                </div>
             </div>
-        </div>
+        </a>
         @endif
     </div>
 </div>
@@ -529,18 +545,22 @@ div.card.adminuiux-card.home-product-card {
         </div>
     </div>
     <div class="col-5 d-flex flex-column gap-2">
-        <div class="card adminuiux-card p-0 overflow-hidden position-relative flex-fill">
-            <img src="{{ asset('template-assets/img/ecommerce/image-4.jpg') }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="Categories">
-            <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-2" style="background:rgba(0,0,0,0.3);">
-                <h6 class="banner-title mb-1">Categories</h6>
+        <a href="{{ route('categories.index') }}" class="text-decoration-none">
+            <div class="card adminuiux-card p-0 overflow-hidden position-relative flex-fill">
+                <img src="{{ asset('template-assets/img/ecommerce/image-4.jpg') }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="Categories">
+                <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-2" style="background:rgba(0,0,0,0.3);">
+                    <h6 class="banner-title mb-1">Categories</h6>
+                </div>
             </div>
-        </div>
-        <div class="card adminuiux-card p-0 overflow-hidden position-relative flex-fill">
-            <img src="{{ asset('template-assets/img/ecommerce/image-5.jpg') }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="Products">
-            <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-2" style="background:rgba(0,0,0,0.3);">
-                <h6 class="banner-title mb-1">Products</h6>
+        </a>
+        <a href="{{ route('products.index') }}" class="text-decoration-none">
+            <div class="card adminuiux-card p-0 overflow-hidden position-relative flex-fill">
+                <img src="{{ asset('template-assets/img/ecommerce/image-5.jpg') }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="Products">
+                <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-2" style="background:rgba(0,0,0,0.3);">
+                    <h6 class="banner-title mb-1">Products</h6>
+                </div>
             </div>
-        </div>
+        </a>
     </div>
 </div>
 @endif
