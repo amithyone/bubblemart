@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Wallet;
+use App\Services\SpamDetectionService;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 
 class RegisterController extends Controller
 {
@@ -40,6 +42,7 @@ class RegisterController extends Controller
     public function __construct()
     {
         $this->middleware('guest');
+        $this->middleware('registration.rate.limit')->only('register');
     }
 
     /**
@@ -51,10 +54,17 @@ class RegisterController extends Controller
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:255', 'min:2'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'phone' => ['required', 'string', 'max:20'],
+            'phone' => ['required', 'string', 'max:20', 'min:10'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'terms' => ['required', 'accepted'],
+            'captcha' => ['required', 'captcha'],
+            'website' => ['prohibited'], // Honeypot field
+        ], [
+            'captcha.captcha' => 'Please complete the CAPTCHA correctly.',
+            'terms.required' => 'You must accept the terms and conditions.',
+            'website.prohibited' => 'Invalid form submission.',
         ]);
     }
 
@@ -67,12 +77,25 @@ class RegisterController extends Controller
     protected function create(array $data)
     {
         return DB::transaction(function () use ($data) {
-            // Create user
+            // Check for spam
+            $spamService = new SpamDetectionService();
+            $request = request();
+            
+            if ($spamService->isSpamRegistration($request)) {
+                $spamService->flagIP($request->ip());
+                abort(403, 'Registration blocked due to suspicious activity.');
+            }
+
+            // Create user with spam protection data
             $user = User::create([
                 'name' => $data['name'],
                 'email' => $data['email'],
                 'phone' => $data['phone'],
                 'password' => Hash::make($data['password']),
+                'registration_ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+                'is_verified' => false,
+                'is_suspicious' => $spamService->getSpamScore($request) > 5,
             ]);
 
             // Create wallet for the user
@@ -83,5 +106,26 @@ class RegisterController extends Controller
 
             return $user;
         });
+    }
+
+    /**
+     * Handle a registration request for the application.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function register(Request $request)
+    {
+        $this->validator($request->all())->validate();
+
+        $user = $this->create($request->all());
+
+        // Send email verification
+        $user->sendEmailVerificationNotification();
+
+        $this->guard()->login($user);
+
+        return $this->registered($request, $user)
+            ?: redirect($this->redirectPath());
     }
 }

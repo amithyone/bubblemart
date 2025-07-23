@@ -26,6 +26,11 @@ Route::get('/search', [HomeController::class, 'search'])->name('search');
 // Authentication routes
 Auth::routes();
 
+// CAPTCHA refresh route
+Route::get('/captcha/refresh', function() {
+    return response()->json(['captcha' => captcha_img()]);
+})->name('captcha.refresh');
+
 // Product routes
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 Route::get('/products/{product:slug}', [ProductController::class, 'show'])->name('products.show');

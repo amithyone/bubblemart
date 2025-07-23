@@ -259,7 +259,73 @@
 [data-theme="light"] .terms-check .form-check-label a {
     color: #004953 !important;
 }
+
+/* CAPTCHA styling */
+.captcha-container {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    padding: 0.5rem;
+}
+
+[data-theme="light"] .captcha-container {
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.captcha-container img {
+    border-radius: 5px;
+    max-height: 40px;
+}
+
+.captcha-container .btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    border-radius: 5px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+}
+
+[data-theme="light"] .captcha-container .btn {
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: #000000;
+}
+
+.captcha-container .btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+}
+
+[data-theme="light"] .captcha-container .btn:hover {
+    background: rgba(0, 0, 0, 0.1);
+    color: #000000;
+}
 </style>
+
+<script>
+function refreshCaptcha() {
+    fetch('/captcha/refresh', {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.querySelector('.captcha-container img').src = data.captcha;
+    })
+    .catch(error => {
+        console.error('Error refreshing CAPTCHA:', error);
+    });
+}
+
+// Auto-refresh CAPTCHA every 5 minutes
+setInterval(refreshCaptcha, 300000);
+</script>
 
 <div class="auth-container">
     <div class="auth-card card">
@@ -338,6 +404,31 @@
                     <input id="password-confirm" type="password" class="form-control" 
                            name="password_confirmation" required autocomplete="new-password"
                            placeholder="Confirm your password">
+                </div>
+
+                <!-- Honeypot field (hidden) -->
+                <div style="display: none;">
+                    <input type="text" name="website" tabindex="-1" autocomplete="off">
+                </div>
+
+                <!-- CAPTCHA -->
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="bi bi-shield-check me-2"></i>Security Verification
+                    </label>
+                    <div class="captcha-container">
+                        {!! captcha_img() !!}
+                        <button type="button" class="btn btn-sm btn-outline-secondary ms-2" onclick="refreshCaptcha()">
+                            <i class="bi bi-arrow-clockwise"></i> Refresh
+                        </button>
+                    </div>
+                    <input id="captcha" type="text" class="form-control mt-2 @error('captcha') is-invalid @enderror" 
+                           name="captcha" required placeholder="Enter the code above">
+                    @error('captcha')
+                        <div class="invalid-feedback">
+                            <i class="bi bi-exclamation-circle me-1"></i>{{ $message }}
+                        </div>
+                    @enderror
                 </div>
 
                 <div class="terms-check">
