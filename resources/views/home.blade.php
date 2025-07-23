@@ -633,7 +633,7 @@ div.card.adminuiux-card.home-product-card {
                     <span class="product-rating" style="text-shadow: 0 1px 2px rgba(0,0,0,0.7);">({{ $product->reviews_count ?? rand(10, 50) }})</span>
                 </div>
                 <div class="d-flex align-items-center justify-content-between">
-                    <span class="product-price" style="text-shadow: 0 1px 3px rgba(0,0,0,0.7);">₦{{ number_format($product->price_naira) }}</span>
+                    <span class="product-price" style="text-shadow: 0 1px 3px rgba(0,0,0,0.7);">₦{{ number_format(round($product->price_naira / 100) * 100) }}</span>
                     <span class="product-store" style="text-shadow: 0 1px 2px rgba(0,0,0,0.7);">{{ $product->store->name ?? 'Bubblemart Store' }}</span>
                 </div>
             </div>
