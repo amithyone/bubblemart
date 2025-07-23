@@ -66,6 +66,28 @@ class CategoryController extends Controller
             }
         }
 
+        // Apply gender filter if specified
+        if ($request->filled('gender')) {
+            $gender = $request->gender;
+            $genderSubcategoryIds = [];
+            
+            foreach ($category->children as $subcategory) {
+                $subcategoryName = strtolower($subcategory->name);
+                
+                if ($gender === 'male' && (str_contains($subcategoryName, "men's") || str_contains($subcategoryName, "mens"))) {
+                    $genderSubcategoryIds[] = $subcategory->id;
+                } elseif ($gender === 'female' && (str_contains($subcategoryName, "women's") || str_contains($subcategoryName, "womens"))) {
+                    $genderSubcategoryIds[] = $subcategory->id;
+                } elseif ($gender === 'unisex' && str_contains($subcategoryName, "unisex")) {
+                    $genderSubcategoryIds[] = $subcategory->id;
+                }
+            }
+            
+            if (!empty($genderSubcategoryIds)) {
+                $query->whereIn('category_id', $genderSubcategoryIds);
+            }
+        }
+
         // Apply price filter if specified
         if ($request->filled('min_price')) {
             $query->where('price_naira', '>=', $request->min_price);

@@ -60,6 +60,50 @@
                             @enderror
                         </div>
 
+                        <!-- Gender-Based Subcategories Section -->
+                        <div class="mb-4">
+                            <label class="form-label text-dark">
+                                <i class="fas fa-venus-mars me-2"></i>Gender-Based Subcategories
+                            </label>
+                            <div class="card adminuiux-card border-0" style="border-radius: 15px;">
+                                <div class="card-body">
+                                    <p class="text-muted small mb-3">Automatically create subcategories for male and female items:</p>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="create_gender_subcategories" id="create_gender_subcategories" value="1" 
+                                                       {{ old('create_gender_subcategories') ? 'checked' : '' }}>
+                                                <label class="form-check-label text-dark" for="create_gender_subcategories">
+                                                    <i class="fas fa-users me-2 text-primary"></i>Create Gender Subcategories
+                                                </label>
+                                                <small class="text-muted d-block">Automatically creates "Men's" and "Women's" subcategories</small>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="include_unisex" id="include_unisex" value="1" 
+                                                       {{ old('include_unisex') ? 'checked' : '' }}>
+                                                <label class="form-check-label text-dark" for="include_unisex">
+                                                    <i class="fas fa-user-friends me-2 text-primary"></i>Include Unisex
+                                                </label>
+                                                <small class="text-muted d-block">Also create "Unisex" subcategory</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="alert alert-info mt-3">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        <strong>Note:</strong> When enabled, this will automatically create subcategories for better product organization.
+                                    </div>
+                                </div>
+                            </div>
+                            @error('create_gender_subcategories')
+                                <div class="text-danger small">{{ $message }}</div>
+                            @enderror
+                        </div>
+
                         <!-- Variation Types Section -->
                         <div class="mb-4">
                             <label class="form-label text-dark">
@@ -296,6 +340,30 @@ document.getElementById('name').addEventListener('input', function() {
         .replace(/-+/g, '-')
         .trim('-');
     document.getElementById('slug').value = slug;
+});
+
+// Handle gender subcategories checkbox
+document.getElementById('create_gender_subcategories').addEventListener('change', function() {
+    const unisexCheckbox = document.getElementById('include_unisex');
+    const unisexContainer = unisexCheckbox.closest('.col-md-6');
+    
+    if (this.checked) {
+        unisexContainer.style.display = 'block';
+    } else {
+        unisexContainer.style.display = 'none';
+        unisexCheckbox.checked = false;
+    }
+});
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const genderCheckbox = document.getElementById('create_gender_subcategories');
+    const unisexCheckbox = document.getElementById('include_unisex');
+    const unisexContainer = unisexCheckbox.closest('.col-md-6');
+    
+    if (!genderCheckbox.checked) {
+        unisexContainer.style.display = 'none';
+    }
 });
 </script>
 @endsection 

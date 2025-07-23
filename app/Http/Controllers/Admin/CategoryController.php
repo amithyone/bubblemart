@@ -57,6 +57,8 @@ class CategoryController extends Controller
             'is_featured' => 'boolean',
             'variation_types' => 'nullable|array',
             'variation_types.*' => 'string|in:size,color,material,style,fit,pattern',
+            'create_gender_subcategories' => 'boolean',
+            'include_unisex' => 'boolean',
         ]);
 
         // Check featured category limit
@@ -67,7 +69,7 @@ class CategoryController extends Controller
             }
         }
 
-        $data = $request->except(['image', 'variation_types']);
+        $data = $request->except(['image', 'variation_types', 'create_gender_subcategories', 'include_unisex']);
         $data['slug'] = Str::slug($request->name);
         $data['is_active'] = $request->has('is_active');
         $data['is_featured'] = $request->has('is_featured');
@@ -80,10 +82,63 @@ class CategoryController extends Controller
             $data['image_path'] = $imagePath;
         }
 
-        Category::create($data);
+        // Create the main category
+        $category = Category::create($data);
+
+        // Create gender-based subcategories if requested
+        if ($request->has('create_gender_subcategories')) {
+            $this->createGenderSubcategories($category, $request->has('include_unisex'));
+        }
 
         return redirect()->route('admin.categories.index')
             ->with('success', 'Category created successfully!');
+    }
+
+    /**
+     * Create gender-based subcategories for a category
+     */
+    private function createGenderSubcategories(Category $category, bool $includeUnisex = false)
+    {
+        $subcategories = [
+            [
+                'name' => "Men's {$category->name}",
+                'slug' => "mens-" . $category->slug,
+                'description' => "Men's {$category->name} - {$category->description}",
+                'icon' => '👔',
+                'variation_types' => $category->variation_types,
+            ],
+            [
+                'name' => "Women's {$category->name}",
+                'slug' => "womens-" . $category->slug,
+                'description' => "Women's {$category->name} - {$category->description}",
+                'icon' => '👗',
+                'variation_types' => $category->variation_types,
+            ],
+        ];
+
+        if ($includeUnisex) {
+            $subcategories[] = [
+                'name' => "Unisex {$category->name}",
+                'slug' => "unisex-" . $category->slug,
+                'description' => "Unisex {$category->name} - {$category->description}",
+                'icon' => '✨',
+                'variation_types' => $category->variation_types,
+            ];
+        }
+
+        foreach ($subcategories as $subcategoryData) {
+            Category::create([
+                'name' => $subcategoryData['name'],
+                'slug' => $subcategoryData['slug'],
+                'description' => $subcategoryData['description'],
+                'icon' => $subcategoryData['icon'],
+                'is_active' => $category->is_active,
+                'is_featured' => false, // Subcategories are not featured by default
+                'sort_order' => 1,
+                'parent_id' => $category->id,
+                'variation_types' => $subcategoryData['variation_types'],
+            ]);
+        }
     }
 
     public function show(Category $category)
