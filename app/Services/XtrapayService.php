@@ -19,17 +19,11 @@ class XtrapayService
         
         // Check if XTRAPAY_ACCESS_KEY is set
         if (!$key || $key === 'your_default_access_key') {
-            Log::warning('XtrapayService: XTRAPAY_ACCESS_KEY not set or invalid, using demo mode');
-            // Fallback to demo mode for development
+            Log::error('XtrapayService: XTRAPAY_ACCESS_KEY not set or invalid');
             return [
-                'reference' => $reference,
-                'accountNumber' => '1234567890',
-                'bank' => 'Demo Bank',
-                'accountName' => 'BUBLEMART DEMO ACCOUNT',
-                'amount' => $finalAmount,
-                'message' => "Please transfer ₦{$finalAmount} to the bank details above.",
-                'expiry' => 600,
-                'demo_mode' => true
+                'error' => true,
+                'message' => 'Payment service is not configured. Please contact support.',
+                'reference' => $reference
             ];
         }
         
@@ -75,17 +69,17 @@ class XtrapayService
                         'status_code' => $responseData['statusCode'] ?? 'unknown'
                     ]);
                     
-                    // Fall back to demo mode if API returns error
-                    Log::warning('XtrapayService: Falling back to demo mode due to API error');
+                    // Return error if API returns error
+                    Log::error('XtrapayService: API returned error', [
+                        'response_data' => $responseData,
+                        'status_code' => $responseData['statusCode'] ?? 'unknown'
+                    ]);
+                    
                     return [
+                        'error' => true,
+                        'message' => 'Payment service temporarily unavailable. Please try again later.',
                         'reference' => $reference,
-                        'accountNumber' => '1234567890',
-                        'bank' => 'Demo Bank',
-                        'accountName' => 'BUBLEMART DEMO ACCOUNT',
-                        'amount' => $finalAmount,
-                        'message' => "Please transfer ₦{$finalAmount} to the bank details above. (Demo Mode - API Error: " . ($responseData['message'] ?? 'Unknown Error') . ")",
-                        'expiry' => 600,
-                        'demo_mode' => true
+                        'api_error' => $responseData['message'] ?? 'Unknown Error'
                     ];
                 }
             } else {
@@ -94,17 +88,17 @@ class XtrapayService
                     'response_body' => $response->body()
                 ]);
                 
-                // Fall back to demo mode if API fails
-                Log::warning('XtrapayService: Falling back to demo mode due to API failure');
+                // Return error if API fails
+                Log::error('XtrapayService: HTTP request failed', [
+                    'status_code' => $response->status(),
+                    'response_body' => $response->body()
+                ]);
+                
                 return [
+                    'error' => true,
+                    'message' => 'Payment service temporarily unavailable. Please try again later.',
                     'reference' => $reference,
-                    'accountNumber' => '1234567890',
-                    'bank' => 'Demo Bank',
-                    'accountName' => 'BUBLEMART DEMO ACCOUNT',
-                    'amount' => $finalAmount,
-                    'message' => "Please transfer ₦{$finalAmount} to the bank details above. (Demo Mode - API Unavailable)",
-                    'expiry' => 600,
-                    'demo_mode' => true
+                    'http_error' => 'HTTP ' . $response->status()
                 ];
             }
         } catch (\Exception $e) {
@@ -114,17 +108,17 @@ class XtrapayService
                 'trace' => $e->getTraceAsString()
             ]);
             
-            // Fall back to demo mode if exception occurs
-            Log::warning('XtrapayService: Falling back to demo mode due to exception');
+            // Return error if exception occurs
+            Log::error('XtrapayService: Exception occurred', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
             return [
+                'error' => true,
+                'message' => 'Payment service error occurred. Please try again later.',
                 'reference' => $reference,
-                'accountNumber' => '1234567890',
-                'bank' => 'Demo Bank',
-                'accountName' => 'BUBLEMART DEMO ACCOUNT',
-                'amount' => $finalAmount,
-                'message' => "Please transfer ₦{$finalAmount} to the bank details above. (Demo Mode - Service Error)",
-                'expiry' => 600,
-                'demo_mode' => true
+                'exception' => $e->getMessage()
             ];
         }
     }
@@ -138,12 +132,11 @@ class XtrapayService
         
         // Check if XTRAPAY_ACCESS_KEY is set
         if (!$key || $key === 'your_default_access_key') {
-            Log::warning('XtrapayService: XTRAPAY_ACCESS_KEY not set, using demo mode for payment status check');
-            // For demo mode, simulate successful payment after a delay
+            Log::error('XtrapayService: XTRAPAY_ACCESS_KEY not set for payment status check');
             return [
-                'status' => 'paid',
-                'message' => 'Payment confirmed (Demo Mode)',
-                'demo_mode' => true
+                'error' => true,
+                'message' => 'Payment service is not configured. Please contact support.',
+                'status' => 'failed'
             ];
         }
         
