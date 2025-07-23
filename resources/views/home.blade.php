@@ -443,7 +443,7 @@ div.card.adminuiux-card.home-product-card {
     $hasCategories = $availableCategories->count() > 0;
 @endphp
 
-@if($hasCategories)
+@if($hasCategories && $availableCategories->get(0))
 <!-- Dynamic Banner with Available Categories -->
 <div class="row gx-2 mb-3">
     <div class="col-7">
@@ -457,7 +457,7 @@ div.card.adminuiux-card.home-product-card {
         </div>
     </div>
     <div class="col-5 d-flex flex-column gap-2">
-        @if($availableCategories->count() > 1)
+        @if($availableCategories->count() > 1 && $availableCategories->get(1))
         <a href="{{ route('categories.show', $availableCategories->get(1)) }}" class="text-decoration-none">
             <div class="card adminuiux-card p-0 overflow-hidden position-relative flex-fill">
                 <img src="{{ asset('storage/' . $availableCategories->get(1)->image_path) }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $availableCategories->get(1)->name }}">
@@ -467,7 +467,7 @@ div.card.adminuiux-card.home-product-card {
             </div>
         </a>
         @endif
-        @if($availableCategories->count() > 2)
+        @if($availableCategories->count() > 2 && $availableCategories->get(2))
         <a href="{{ route('categories.show', $availableCategories->get(2)) }}" class="text-decoration-none">
             <div class="card adminuiux-card p-0 overflow-hidden position-relative flex-fill">
                 <img src="{{ asset('storage/' . $availableCategories->get(2)->image_path) }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $availableCategories->get(2)->name }}">
