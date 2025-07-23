@@ -44,6 +44,12 @@
             font-size: 14px;
         }
 
+        /* Light theme body */
+        [data-theme="light"] body {
+            background: #ffffff !important;
+            color: #000000 !important;
+        }
+
         /* Mobile Header */
         .mobile-admin-header {
             background: var(--dark-bg) !important;
@@ -56,10 +62,20 @@
             padding: 0.5rem 1rem;
         }
 
+        /* Light theme mobile header */
+        [data-theme="light"] .mobile-admin-header {
+            background: #ffffff !important;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+        }
+
         .mobile-admin-header .navbar-brand {
             color: var(--dark-accent) !important;
             font-weight: 600;
             font-size: 1.1rem;
+        }
+
+        [data-theme="light"] .mobile-admin-header .navbar-brand {
+            color: var(--dark-accent) !important;
         }
 
         /* Mobile Menu Button */
@@ -89,6 +105,12 @@
             overflow-y: auto;
         }
 
+        /* Light theme mobile sidebar */
+        [data-theme="light"] .mobile-sidebar {
+            background: #ffffff !important;
+            border-right: 1px solid rgba(0, 0, 0, 0.1) !important;
+        }
+
         .mobile-sidebar.show {
             left: 0;
         }
@@ -97,6 +119,11 @@
             background: var(--dark-surface) !important;
             padding: 1rem;
             border-bottom: 1px solid var(--dark-border) !important;
+        }
+
+        [data-theme="light"] .mobile-sidebar-header {
+            background: #f8f9fa !important;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
         }
 
         .mobile-sidebar-close {
@@ -148,6 +175,12 @@
             overflow: hidden;
         }
 
+        [data-theme="light"] .mobile-card {
+            background: #ffffff !important;
+            border: 1px solid rgba(0, 0, 0, 0.1) !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
         .mobile-card:hover {
             border-color: var(--dark-accent) !important;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
@@ -160,6 +193,11 @@
             border-bottom: 1px solid var(--dark-border) !important;
         }
 
+        [data-theme="light"] .mobile-card-header {
+            background: #f8f9fa !important;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+        }
+
         .mobile-card-body {
             padding: 1rem;
         }
@@ -170,10 +208,18 @@
             margin-bottom: 0.5rem;
         }
 
+        [data-theme="light"] .mobile-card-title {
+            color: #000000 !important;
+        }
+
         .mobile-card-subtitle {
             color: var(--dark-text-secondary) !important;
             font-size: 0.875rem;
             margin-bottom: 0.75rem;
+        }
+
+        [data-theme="light"] .mobile-card-subtitle {
+            color: rgba(0, 0, 0, 0.6) !important;
         }
 
         /* Ensure all text is white by default */
@@ -182,8 +228,17 @@
             color: var(--dark-text) !important;
         }
 
+        [data-theme="light"] .mobile-card,
+        [data-theme="light"] .mobile-card * {
+            color: #000000 !important;
+        }
+
         .mobile-card .text-muted {
             color: var(--dark-text-secondary) !important;
+        }
+
+        [data-theme="light"] .mobile-card .text-muted {
+            color: rgba(0, 0, 0, 0.6) !important;
         }
 
         .mobile-card .text-success {
@@ -338,6 +393,12 @@
             text-align: center;
         }
 
+        [data-theme="light"] .mobile-stat-card {
+            background: #ffffff !important;
+            border: 1px solid rgba(0, 0, 0, 0.1) !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
         .mobile-stat-icon {
             font-size: 2rem;
             color: var(--dark-accent) !important;
@@ -351,9 +412,17 @@
             margin-bottom: 0.25rem;
         }
 
+        [data-theme="light"] .mobile-stat-number {
+            color: #000000 !important;
+        }
+
         .mobile-stat-label {
             color: var(--dark-text-secondary) !important;
             font-size: 0.875rem;
+        }
+
+        [data-theme="light"] .mobile-stat-label {
+            color: rgba(0, 0, 0, 0.6) !important;
         }
 
         /* Mobile Pagination */
@@ -500,6 +569,34 @@
 
         .text-dark {
             color: var(--dark-text) !important;
+        }
+
+        /* Light theme overrides */
+        [data-theme="light"] h1, 
+        [data-theme="light"] h2, 
+        [data-theme="light"] h3, 
+        [data-theme="light"] h4, 
+        [data-theme="light"] h5, 
+        [data-theme="light"] h6 {
+            color: #000000 !important;
+        }
+
+        [data-theme="light"] p, 
+        [data-theme="light"] span, 
+        [data-theme="light"] div {
+            color: #000000 !important;
+        }
+
+        [data-theme="light"] .text-white {
+            color: #000000 !important;
+        }
+
+        [data-theme="light"] .text-dark {
+            color: #000000 !important;
+        }
+
+        [data-theme="light"] .text-muted {
+            color: rgba(0, 0, 0, 0.6) !important;
         }
 
         /* Form elements */
