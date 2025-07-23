@@ -448,31 +448,31 @@ div.card.adminuiux-card.home-product-card {
 <div class="row gx-2 mb-3">
     <div class="col-7">
         <div class="card adminuiux-card h-100 p-0 overflow-hidden position-relative">
-            <img src="{{ asset('storage/' . $availableCategories[0]->image_path) }}" class="w-100 h-100 object-fit-cover" style="min-height: 160px; max-height: 200px;" alt="{{ $availableCategories[0]->name }}">
+            <img src="{{ asset('storage/' . $availableCategories->get(0)->image_path) }}" class="w-100 h-100 object-fit-cover" style="min-height: 160px; max-height: 200px;" alt="{{ $availableCategories->get(0)->name }}">
             <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-3" style="background:rgba(0,0,0,0.4);">
-                <h5 class="banner-title mb-1">{{ $availableCategories[0]->name }}</h5>
-                <p class="banner-subtitle mb-2">{{ $availableCategories[0]->description ?: 'Best gifts and collections' }}</p>
-                <a href="{{ route('categories.show', $availableCategories[0]) }}" class="btn btn-sm btn-theme">Shop Now</a>
+                <h5 class="banner-title mb-1">{{ $availableCategories->get(0)->name }}</h5>
+                <p class="banner-subtitle mb-2">{{ $availableCategories->get(0)->description ?: 'Best gifts and collections' }}</p>
+                <a href="{{ route('categories.show', $availableCategories->get(0)) }}" class="btn btn-sm btn-theme">Shop Now</a>
             </div>
         </div>
     </div>
     <div class="col-5 d-flex flex-column gap-2">
         @if($availableCategories->count() > 1)
-        <a href="{{ route('categories.show', $availableCategories[1]) }}" class="text-decoration-none">
+        <a href="{{ route('categories.show', $availableCategories->get(1)) }}" class="text-decoration-none">
             <div class="card adminuiux-card p-0 overflow-hidden position-relative flex-fill">
-                <img src="{{ asset('storage/' . $availableCategories[1]->image_path) }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $availableCategories[1]->name }}">
+                <img src="{{ asset('storage/' . $availableCategories->get(1)->image_path) }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $availableCategories->get(1)->name }}">
                 <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-2" style="background:rgba(0,0,0,0.3);">
-                    <h6 class="banner-title mb-1">{{ $availableCategories[1]->name }}</h6>
+                    <h6 class="banner-title mb-1">{{ $availableCategories->get(1)->name }}</h6>
                 </div>
             </div>
         </a>
         @endif
         @if($availableCategories->count() > 2)
-        <a href="{{ route('categories.show', $availableCategories[2]) }}" class="text-decoration-none">
+        <a href="{{ route('categories.show', $availableCategories->get(2)) }}" class="text-decoration-none">
             <div class="card adminuiux-card p-0 overflow-hidden position-relative flex-fill">
-                <img src="{{ asset('storage/' . $availableCategories[2]->image_path) }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $availableCategories[2]->name }}">
+                <img src="{{ asset('storage/' . $availableCategories->get(2)->image_path) }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $availableCategories->get(2)->name }}">
                 <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-2" style="background:rgba(0,0,0,0.3);">
-                    <h6 class="banner-title mb-1">{{ $availableCategories[2]->name }}</h6>
+                    <h6 class="banner-title mb-1">{{ $availableCategories->get(2)->name }}</h6>
                 </div>
             </div>
         </a>
