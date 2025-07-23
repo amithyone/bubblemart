@@ -57,6 +57,7 @@ class CategoryController extends Controller
             'is_featured' => 'boolean',
             'variation_types' => 'nullable|array',
             'variation_types.*' => 'string|in:size,color,material,style,fit,pattern',
+            'gender' => 'nullable|in:male,female,unisex,all',
             'create_gender_subcategories' => 'boolean',
             'include_unisex' => 'boolean',
         ]);
@@ -70,6 +71,7 @@ class CategoryController extends Controller
         }
 
         $data = $request->except(['image', 'variation_types', 'create_gender_subcategories', 'include_unisex']);
+        $data['gender'] = $request->input('gender', 'all');
         $data['slug'] = Str::slug($request->name);
         $data['is_active'] = $request->has('is_active');
         $data['is_featured'] = $request->has('is_featured');

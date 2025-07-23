@@ -60,10 +60,76 @@
                             @enderror
                         </div>
 
+                        <!-- Gender Variation Section -->
+                        <div class="mb-4">
+                            <label class="form-label text-dark">
+                                <i class="fas fa-venus-mars me-2"></i>Gender Variation
+                            </label>
+                            <div class="card adminuiux-card border-0" style="border-radius: 15px;">
+                                <div class="card-body">
+                                    <p class="text-muted small mb-3">Select the gender variation for this category:</p>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="gender" value="all" id="gender_all" 
+                                                       {{ old('gender', 'all') === 'all' ? 'checked' : '' }}>
+                                                <label class="form-check-label text-dark" for="gender_all">
+                                                    <i class="fas fa-users me-2 text-primary"></i>All Genders
+                                                </label>
+                                                <small class="text-muted d-block">Suitable for all genders (default)</small>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="gender" value="male" id="gender_male" 
+                                                       {{ old('gender') === 'male' ? 'checked' : '' }}>
+                                                <label class="form-check-label text-dark" for="gender_male">
+                                                    <i class="fas fa-mars me-2 text-primary"></i>Men's Only
+                                                </label>
+                                                <small class="text-muted d-block">Specifically for men</small>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="gender" value="female" id="gender_female" 
+                                                       {{ old('gender') === 'female' ? 'checked' : '' }}>
+                                                <label class="form-check-label text-dark" for="gender_female">
+                                                    <i class="fas fa-venus me-2 text-primary"></i>Women's Only
+                                                </label>
+                                                <small class="text-muted d-block">Specifically for women</small>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="gender" value="unisex" id="gender_unisex" 
+                                                       {{ old('gender') === 'unisex' ? 'checked' : '' }}>
+                                                <label class="form-check-label text-dark" for="gender_unisex">
+                                                    <i class="fas fa-user-friends me-2 text-primary"></i>Unisex
+                                                </label>
+                                                <small class="text-muted d-block">Suitable for everyone</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="alert alert-info mt-3">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        <strong>Note:</strong> This will enable gender-based filtering for users browsing this category.
+                                    </div>
+                                </div>
+                            </div>
+                            @error('gender')
+                                <div class="text-danger small">{{ $message }}</div>
+                            @enderror
+                        </div>
+
                         <!-- Gender-Based Subcategories Section -->
                         <div class="mb-4">
                             <label class="form-label text-dark">
-                                <i class="fas fa-venus-mars me-2"></i>Gender-Based Subcategories
+                                <i class="fas fa-sitemap me-2"></i>Gender-Based Subcategories
                             </label>
                             <div class="card adminuiux-card border-0" style="border-radius: 15px;">
                                 <div class="card-body">

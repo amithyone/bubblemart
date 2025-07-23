@@ -69,22 +69,35 @@ class CategoryController extends Controller
         // Apply gender filter if specified
         if ($request->filled('gender')) {
             $gender = $request->gender;
-            $genderSubcategoryIds = [];
             
-            foreach ($category->children as $subcategory) {
-                $subcategoryName = strtolower($subcategory->name);
-                
-                if ($gender === 'male' && (str_contains($subcategoryName, "men's") || str_contains($subcategoryName, "mens"))) {
-                    $genderSubcategoryIds[] = $subcategory->id;
-                } elseif ($gender === 'female' && (str_contains($subcategoryName, "women's") || str_contains($subcategoryName, "womens"))) {
-                    $genderSubcategoryIds[] = $subcategory->id;
-                } elseif ($gender === 'unisex' && str_contains($subcategoryName, "unisex")) {
-                    $genderSubcategoryIds[] = $subcategory->id;
+            // If category has gender field set, filter by that
+            if ($category->supportsGenderFiltering()) {
+                if ($category->gender === $gender || $category->gender === 'all') {
+                    // Show products from this category
+                    $query->where('category_id', $category->id);
+                } else {
+                    // No products match this gender filter
+                    $query->where('id', 0); // Return no results
                 }
-            }
-            
-            if (!empty($genderSubcategoryIds)) {
-                $query->whereIn('category_id', $genderSubcategoryIds);
+            } else {
+                // Fallback to subcategory-based filtering
+                $genderSubcategoryIds = [];
+                
+                foreach ($category->children as $subcategory) {
+                    $subcategoryName = strtolower($subcategory->name);
+                    
+                    if ($gender === 'male' && (str_contains($subcategoryName, "men's") || str_contains($subcategoryName, "mens"))) {
+                        $genderSubcategoryIds[] = $subcategory->id;
+                    } elseif ($gender === 'female' && (str_contains($subcategoryName, "women's") || str_contains($subcategoryName, "womens"))) {
+                        $genderSubcategoryIds[] = $subcategory->id;
+                    } elseif ($gender === 'unisex' && str_contains($subcategoryName, "unisex")) {
+                        $genderSubcategoryIds[] = $subcategory->id;
+                    }
+                }
+                
+                if (!empty($genderSubcategoryIds)) {
+                    $query->whereIn('category_id', $genderSubcategoryIds);
+                }
             }
         }
 

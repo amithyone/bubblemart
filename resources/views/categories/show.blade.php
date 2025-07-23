@@ -292,29 +292,35 @@ strong, b {
                         @endif
                         
                         <!-- Gender Filter -->
-                        @if($category->children->count() > 0)
+                        @if($category->supportsGenderFiltering() || $category->hasGenderSubcategories())
                         <div class="col-md-6">
                             <label class="form-label small">Gender</label>
                             <select name="gender" class="form-select form-select-sm" style="border-radius: 8px;">
                                 <option value="">All Genders</option>
-                                @foreach($category->children as $subcategory)
-                                    @if(str_contains(strtolower($subcategory->name), "men's") || str_contains(strtolower($subcategory->name), "mens"))
-                                        <option value="male" {{ request('gender') === 'male' ? 'selected' : '' }}>Men's</option>
-                                        @break
-                                    @endif
-                                @endforeach
-                                @foreach($category->children as $subcategory)
-                                    @if(str_contains(strtolower($subcategory->name), "women's") || str_contains(strtolower($subcategory->name), "womens"))
-                                        <option value="female" {{ request('gender') === 'female' ? 'selected' : '' }}>Women's</option>
-                                        @break
-                                    @endif
-                                @endforeach
-                                @foreach($category->children as $subcategory)
-                                    @if(str_contains(strtolower($subcategory->name), "unisex"))
-                                        <option value="unisex" {{ request('gender') === 'unisex' ? 'selected' : '' }}>Unisex</option>
-                                        @break
-                                    @endif
-                                @endforeach
+                                @if($category->supportsGenderFiltering())
+                                    @foreach($category->getGenderOptions() as $value => $label)
+                                        <option value="{{ $value }}" {{ request('gender') === $value ? 'selected' : '' }}>{{ $label }}</option>
+                                    @endforeach
+                                @else
+                                    @foreach($category->children as $subcategory)
+                                        @if(str_contains(strtolower($subcategory->name), "men's") || str_contains(strtolower($subcategory->name), "mens"))
+                                            <option value="male" {{ request('gender') === 'male' ? 'selected' : '' }}>Men's</option>
+                                            @break
+                                        @endif
+                                    @endforeach
+                                    @foreach($category->children as $subcategory)
+                                        @if(str_contains(strtolower($subcategory->name), "women's") || str_contains(strtolower($subcategory->name), "womens"))
+                                            <option value="female" {{ request('gender') === 'female' ? 'selected' : '' }}>Women's</option>
+                                            @break
+                                        @endif
+                                    @endforeach
+                                    @foreach($category->children as $subcategory)
+                                        @if(str_contains(strtolower($subcategory->name), "unisex"))
+                                            <option value="unisex" {{ request('gender') === 'unisex' ? 'selected' : '' }}>Unisex</option>
+                                            @break
+                                        @endif
+                                    @endforeach
+                                @endif
                             </select>
                         </div>
                         @endif

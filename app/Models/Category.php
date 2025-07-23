@@ -19,6 +19,7 @@ class Category extends Model
         'sort_order',
         'parent_id',
         'variation_types',
+        'gender',
     ];
 
     protected $casts = [
@@ -184,5 +185,53 @@ class Category extends Model
             ->where('is_featured', true)
             ->orderBy('sort_order')
             ->get();
+    }
+
+    /**
+     * Check if this category supports gender filtering
+     */
+    public function supportsGenderFiltering(): bool
+    {
+        return !is_null($this->gender) && $this->gender !== 'all';
+    }
+
+    /**
+     * Get gender options for this category
+     */
+    public function getGenderOptions(): array
+    {
+        if (!$this->supportsGenderFiltering()) {
+            return [];
+        }
+
+        $options = [];
+        
+        if ($this->gender === 'male' || $this->gender === 'all') {
+            $options['male'] = "Men's";
+        }
+        
+        if ($this->gender === 'female' || $this->gender === 'all') {
+            $options['female'] = "Women's";
+        }
+        
+        if ($this->gender === 'unisex' || $this->gender === 'all') {
+            $options['unisex'] = "Unisex";
+        }
+
+        return $options;
+    }
+
+    /**
+     * Check if this category has gender subcategories
+     */
+    public function hasGenderSubcategories(): bool
+    {
+        return $this->children()->where(function($query) {
+            $query->where('name', 'like', "%men's%")
+                  ->orWhere('name', 'like', "%mens%")
+                  ->orWhere('name', 'like', "%women's%")
+                  ->orWhere('name', 'like', "%womens%")
+                  ->orWhere('name', 'like', "%unisex%");
+        })->exists();
     }
 }
