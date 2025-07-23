@@ -71,7 +71,7 @@
             <div class="mobile-stat-icon">
                 <i class="fas fa-star"></i>
             </div>
-            <div class="mobile-stat-number">{{ $categories->where('is_featured', true)->count() }}</div>
+            <div class="mobile-stat-number">{{ $categories->where('is_featured', true)->count() }}/3</div>
             <div class="mobile-stat-label">Featured</div>
         </div>
         

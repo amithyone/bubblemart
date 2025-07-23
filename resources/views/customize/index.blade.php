@@ -282,119 +282,7 @@ strong, b {
 
         <!-- Categories Grid -->
         <div class="row gx-2 gy-3">
-            <!-- Jewelry Category -->
-            <div class="col-6 col-md-4 col-lg-3">
-                <a href="{{ route('customize.category', 'jewelry') }}" class="text-decoration-none">
-                    <div class="card adminuiux-card h-100 category-card">
-                        <div class="position-absolute top-0 end-0 m-2">
-                            <span class="badge bg-warning text-dark">
-                                <i class="fas fa-star me-1"></i>Featured
-                            </span>
-                        </div>
-                        <div class="card-body text-center p-3">
-                            <div class="mb-3">
-                                <span class="display-1">💎</span>
-                            </div>
-                            <h6 class="category-title mb-2">Jewelry</h6>
-                            <p class="category-description mb-0">Rings, Necklaces, Bracelets, Watches</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-
-            <!-- Frames Category -->
-            <div class="col-6 col-md-4 col-lg-3">
-                <a href="{{ route('customize.category', 'frames') }}" class="text-decoration-none">
-                    <div class="card adminuiux-card h-100 category-card">
-                        <div class="position-absolute top-0 end-0 m-2">
-                            <span class="badge bg-warning text-dark">
-                                <i class="fas fa-star me-1"></i>Featured
-                            </span>
-                        </div>
-                        <div class="card-body text-center p-3">
-                            <div class="mb-3">
-                                <span class="display-1">🖼️</span>
-                            </div>
-                            <h6 class="category-title mb-2">Frames</h6>
-                            <p class="category-description mb-0">Photo Frames & Picture Frames</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-
-            <!-- Wears Category -->
-            <div class="col-6 col-md-4 col-lg-3">
-                <a href="{{ route('customize.category', 'wears') }}" class="text-decoration-none">
-                    <div class="card adminuiux-card h-100 category-card">
-                        <div class="position-absolute top-0 end-0 m-2">
-                            <span class="badge bg-warning text-dark">
-                                <i class="fas fa-star me-1"></i>Featured
-                            </span>
-                        </div>
-                        <div class="card-body text-center p-3">
-                            <div class="mb-3">
-                                <span class="display-1">👕</span>
-                            </div>
-                            <h6 class="category-title mb-2">Wears</h6>
-                            <p class="category-description mb-0">Hoodies, T-shirts, Caps</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-
-            <!-- Drinkware Category -->
-            <div class="col-6 col-md-4 col-lg-3">
-                <a href="{{ route('customize.category', 'drinkware') }}" class="text-decoration-none">
-                    <div class="card adminuiux-card h-100 category-card">
-                        <div class="position-absolute top-0 end-0 m-2">
-                            <span class="badge bg-warning text-dark">
-                                <i class="fas fa-star me-1"></i>Featured
-                            </span>
-                        </div>
-                        <div class="card-body text-center p-3">
-                            <div class="mb-3">
-                                <span class="display-1">☕</span>
-                            </div>
-                            <h6 class="category-title mb-2">Drinkware</h6>
-                            <p class="category-description mb-0">Cups, Mugs, Bottles</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-
-            <!-- Cards Category -->
-            <div class="col-6 col-md-4 col-lg-3">
-                <a href="{{ route('customize.category', 'cards') }}" class="text-decoration-none">
-                    <div class="card adminuiux-card h-100 category-card">
-                        <div class="card-body text-center p-3">
-                            <div class="mb-3">
-                                <span class="display-1">💳</span>
-                            </div>
-                            <h6 class="category-title mb-2">Cards</h6>
-                            <p class="category-description mb-0">Fan Cards, ATM Cards</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-
-            <!-- Home & Living Category -->
-            <div class="col-6 col-md-4 col-lg-3">
-                <a href="{{ route('customize.category', 'home-living') }}" class="text-decoration-none">
-                    <div class="card adminuiux-card h-100 category-card">
-                        <div class="card-body text-center p-3">
-                            <div class="mb-3">
-                                <span class="display-1">🏠</span>
-                            </div>
-                            <h6 class="category-title mb-2">Home & Living</h6>
-                            <p class="category-description mb-0">Pillows, Blankets, Decor</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-
-            <!-- Dynamic Categories from Database -->
-            @foreach($categories as $category)
-                @if(!in_array(strtolower($category->name), ['jewelry', 'frames', 'wears', 'drinkware', 'cards', 'home-living']))
+            @forelse($categories as $category)
                 <div class="col-6 col-md-4 col-lg-3">
                     <a href="{{ route('customize.category', $category->slug) }}" class="text-decoration-none">
                         <div class="card adminuiux-card h-100 category-card">
@@ -415,8 +303,17 @@ strong, b {
                         </div>
                     </a>
                 </div>
-                @endif
-            @endforeach
+            @empty
+                <div class="col-12">
+                    <div class="text-center py-5">
+                        <div class="mb-3">
+                            <span class="display-1">📦</span>
+                        </div>
+                        <h5 class="text-muted">No categories available</h5>
+                        <p class="text-muted">Please contact an administrator to add categories.</p>
+                    </div>
+                </div>
+            @endforelse
         </div>
 
         <!-- Info Card -->

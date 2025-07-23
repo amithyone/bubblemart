@@ -153,4 +153,36 @@ class Category extends Model
         
         return array_unique($types);
     }
+
+    /**
+     * Check if this category can be featured
+     */
+    public function canBeFeatured(): bool
+    {
+        if ($this->is_featured) {
+            return true; // Already featured, can remain featured
+        }
+        
+        $featuredCount = self::where('is_featured', true)->count();
+        return $featuredCount < 3;
+    }
+
+    /**
+     * Get the count of featured categories
+     */
+    public static function getFeaturedCount(): int
+    {
+        return self::where('is_featured', true)->count();
+    }
+
+    /**
+     * Get all featured categories
+     */
+    public static function getFeaturedCategories()
+    {
+        return self::where('is_active', true)
+            ->where('is_featured', true)
+            ->orderBy('sort_order')
+            ->get();
+    }
 }

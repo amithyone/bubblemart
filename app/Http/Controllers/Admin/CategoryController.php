@@ -59,6 +59,14 @@ class CategoryController extends Controller
             'variation_types.*' => 'string|in:size,color,material,style,fit,pattern',
         ]);
 
+        // Check featured category limit
+        if ($request->has('is_featured')) {
+            $featuredCount = Category::where('is_featured', true)->count();
+            if ($featuredCount >= 3) {
+                return back()->withErrors(['is_featured' => 'Maximum 3 categories can be featured. Please unfeature another category first.'])->withInput();
+            }
+        }
+
         $data = $request->except(['image', 'variation_types']);
         $data['slug'] = Str::slug($request->name);
         $data['is_active'] = $request->has('is_active');
@@ -110,6 +118,14 @@ class CategoryController extends Controller
             'variation_types' => 'nullable|array',
             'variation_types.*' => 'string|in:size,color,material,style,fit,pattern',
         ]);
+
+        // Check featured category limit (only if trying to feature a category that wasn't featured before)
+        if ($request->has('is_featured') && !$category->is_featured) {
+            $featuredCount = Category::where('is_featured', true)->count();
+            if ($featuredCount >= 3) {
+                return back()->withErrors(['is_featured' => 'Maximum 3 categories can be featured. Please unfeature another category first.'])->withInput();
+            }
+        }
 
         $data = $request->except(['image', 'variation_types']);
         $data['slug'] = Str::slug($request->name);

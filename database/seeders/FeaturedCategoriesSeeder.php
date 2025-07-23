@@ -13,12 +13,11 @@ class FeaturedCategoriesSeeder extends Seeder
      */
     public function run(): void
     {
-        // Set some popular categories as featured
+        // Set only 3 popular categories as featured (limit)
         $featuredCategories = [
             'jewelry',
             'frames', 
-            'wears',
-            'drinkware'
+            'wears'
         ];
 
         foreach ($featuredCategories as $slug) {

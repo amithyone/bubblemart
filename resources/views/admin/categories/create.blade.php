@@ -194,7 +194,13 @@
                                                     <i class="fas fa-star me-2 text-warning"></i>Featured
                                                 </label>
                                                 <small class="text-muted d-block">Show this category prominently on homepage</small>
+                                                <small class="text-info d-block">
+                                                    <i class="fas fa-info-circle me-1"></i>Maximum 3 categories can be featured
+                                                </small>
                                             </div>
+                                            @error('is_featured')
+                                                <div class="text-danger small mt-1">{{ $message }}</div>
+                                            @enderror
                                         </div>
                                     </div>
                                 </div>
@@ -244,7 +250,7 @@
                         <ul class="text-muted small">
                             <li><strong>Active:</strong> Visible to customers</li>
                             <li><strong>Inactive:</strong> Hidden from customers</li>
-                            <li><strong>Featured:</strong> Shown prominently on homepage</li>
+                            <li><strong>Featured:</strong> Shown prominently on homepage (max 3)</li>
                         </ul>
                     </div>
                     
