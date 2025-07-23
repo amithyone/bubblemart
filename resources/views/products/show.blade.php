@@ -133,6 +133,19 @@
     font-size: 0.875rem !important;
     padding: 0.25rem 0.5rem !important;
 }
+
+/* Admin section styling */
+.admin-actions-section {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+[data-theme="light"] .admin-actions-section {
+    background: rgba(0, 0, 0, 0.02);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
 </style>
 
 <!-- Welcome/User -->
@@ -177,7 +190,32 @@
     <div class="col-md-6 mb-3">
         <div class="card adminuiux-card" style="border-radius: 20px;">
             <div class="card-body p-4">
-                <h4 class="fw-bold mb-2 text-theme-1">{{ $product->name }}</h4>
+                <div class="d-flex align-items-start justify-content-between mb-2">
+                    <div class="flex-grow-1">
+                        <h4 class="fw-bold mb-0 text-theme-1">{{ $product->name }}</h4>
+                        @auth
+                            @if(Auth::user()->is_admin)
+                                <div class="mt-1">
+                                    <span class="badge {{ $product->is_active ? 'bg-success' : 'bg-danger' }} me-2">
+                                        <i class="bi {{ $product->is_active ? 'bi-check-circle' : 'bi-x-circle' }} me-1"></i>
+                                        {{ $product->is_active ? 'Active' : 'Inactive' }}
+                                    </span>
+                                    <span class="badge {{ $product->is_featured ? 'bg-warning' : 'bg-secondary' }}">
+                                        <i class="bi {{ $product->is_featured ? 'bi-star-fill' : 'bi-star' }} me-1"></i>
+                                        {{ $product->is_featured ? 'Featured' : 'Regular' }}
+                                    </span>
+                                </div>
+                            @endif
+                        @endauth
+                    </div>
+                    @auth
+                        @if(Auth::user()->is_admin)
+                            <a href="{{ route('admin.products.edit', $product->id) }}" class="btn btn-sm btn-outline-primary ms-2" style="border-radius: 10px;">
+                                <i class="bi bi-pencil me-1"></i>Edit
+                            </a>
+                        @endif
+                    @endauth
+                </div>
                 <p class="text-secondary mb-3">{{ $product->description }}</p>
                 
                 <!-- Price -->
@@ -427,6 +465,42 @@
                         </a>
                     </div>
                 </form>
+                
+                <!-- Admin Quick Actions -->
+                @auth
+                    @if(Auth::user()->is_admin)
+                        <div class="admin-actions-section">
+                            <h6 class="fw-bold mb-3">
+                                <i class="bi bi-gear me-2 text-theme-1"></i>
+                                Admin Actions
+                            </h6>
+                            <div class="row gx-2">
+                                <div class="col-6">
+                                    <a href="{{ route('admin.products.edit', $product->id) }}" class="btn btn-outline-primary btn-sm w-100" style="border-radius: 10px;">
+                                        <i class="bi bi-pencil me-1"></i>Edit Product
+                                    </a>
+                                </div>
+                                <div class="col-6">
+                                    <a href="{{ route('admin.products.index') }}" class="btn btn-outline-secondary btn-sm w-100" style="border-radius: 10px;">
+                                        <i class="bi bi-list me-1"></i>All Products
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="row gx-2 mt-2">
+                                <div class="col-6">
+                                    <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-info btn-sm w-100" style="border-radius: 10px;">
+                                        <i class="bi bi-speedometer2 me-1"></i>Dashboard
+                                    </a>
+                                </div>
+                                <div class="col-6">
+                                    <span class="btn btn-outline-success btn-sm w-100" style="border-radius: 10px; cursor: default;">
+                                        <i class="bi bi-eye me-1"></i>ID: {{ $product->id }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                @endauth
             </div>
         </div>
     </div>
