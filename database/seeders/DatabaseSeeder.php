@@ -27,6 +27,7 @@ class DatabaseSeeder extends Seeder
             ProductSeeder::class,
             SettingsSeeder::class,
             WearableVariationsSeeder::class,
+            JewelrySubcategoriesSeeder::class,
         ]);
     }
 }

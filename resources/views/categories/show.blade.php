@@ -239,41 +239,105 @@ strong, b {
     @endif
 </div>
 
-<!-- Subcategories (if any) -->
-@if($category->children->count() > 0)
+<!-- Filters and Subcategories -->
 <div class="mb-4">
-    <h6 class="page-title mb-3">
-        <i class="bi bi-folder me-2"></i>
-        Subcategories
-    </h6>
-    <div class="row gx-2 gy-3">
-        @foreach($category->children as $subcategory)
-        <div class="col-6 col-md-3">
-            <a href="{{ route('categories.show', $subcategory->slug) }}" class="text-decoration-none">
-                <div class="card adminuiux-card category-card">
-                    @if($subcategory->is_featured)
-                        <div class="position-absolute top-0 end-0 m-2">
-                            <span class="badge bg-warning text-dark" style="font-size: 0.6rem;">
-                                <i class="fas fa-star me-1"></i>Featured
-                            </span>
-                        </div>
-                    @endif
-                    <div class="card-body text-center p-3">
-                        <div class="mb-2">
-                            <span class="display-4">{{ $subcategory->icon ?? '📁' }}</span>
-                        </div>
-                        <h6 class="category-title mb-1">{{ $subcategory->name }}</h6>
-                        <span class="badge bg-theme-1 text-white" style="border-radius: 8px; font-size: 0.7rem;">
-                            {{ round(($subcategory->products_count ?? 0) / 100) * 100 }} Products
-                        </span>
-                    </div>
-                </div>
-            </a>
+    <div class="row">
+        <!-- Subcategories Navigation -->
+        @if($category->children->count() > 0)
+        <div class="col-12 mb-3">
+            <h6 class="page-title mb-3">
+                <i class="bi bi-folder me-2"></i>
+                Browse by Type
+            </h6>
+            <div class="d-flex flex-wrap gap-2">
+                <a href="{{ route('categories.show', $category->slug) }}" 
+                   class="btn btn-sm {{ request('subcategory') ? 'btn-outline-theme' : 'btn-theme' }}" 
+                   style="border-radius: 10px;">
+                    <i class="bi bi-grid me-1"></i>
+                    All {{ $category->name }}
+                </a>
+                <a href="{{ route('categories.show', $category->slug, ['subcategory' => 'parent']) }}" 
+                   class="btn btn-sm {{ request('subcategory') === 'parent' ? 'btn-theme' : 'btn-outline-theme' }}" 
+                   style="border-radius: 10px;">
+                    <i class="bi bi-collection me-1"></i>
+                    General {{ $category->name }}
+                </a>
+                @foreach($category->children as $subcategory)
+                <a href="{{ route('categories.show', $category->slug, ['subcategory' => $subcategory->id]) }}" 
+                   class="btn btn-sm {{ request('subcategory') == $subcategory->id ? 'btn-theme' : 'btn-outline-theme' }}" 
+                   style="border-radius: 10px;">
+                    <i class="bi bi-tag me-1"></i>
+                    {{ $subcategory->name }}
+                    <span class="badge bg-white text-theme-1 ms-1" style="font-size: 0.6rem;">
+                        {{ round(($subcategory->products_count ?? 0) / 100) * 100 }}
+                    </span>
+                </a>
+                @endforeach
+            </div>
         </div>
-        @endforeach
+        @endif
+
+        <!-- Filters -->
+        <div class="col-12">
+            <div class="card adminuiux-card" style="border-radius: 15px;">
+                <div class="card-body">
+                    <h6 class="page-title mb-3">
+                        <i class="bi bi-funnel me-2"></i>
+                        Filters
+                    </h6>
+                    <form method="GET" action="{{ route('categories.show', $category->slug) }}" class="row g-3">
+                        <!-- Preserve subcategory filter -->
+                        @if(request('subcategory'))
+                            <input type="hidden" name="subcategory" value="{{ request('subcategory') }}">
+                        @endif
+                        
+                        <!-- Price Range -->
+                        <div class="col-md-6">
+                            <label class="form-label small">Price Range (₦)</label>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <input type="number" name="min_price" class="form-control form-control-sm" 
+                                           placeholder="Min" value="{{ request('min_price') }}" 
+                                           style="border-radius: 8px;">
+                                </div>
+                                <div class="col-6">
+                                    <input type="number" name="max_price" class="form-control form-control-sm" 
+                                           placeholder="Max" value="{{ request('max_price') }}" 
+                                           style="border-radius: 8px;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sort Order -->
+                        <div class="col-md-6">
+                            <label class="form-label small">Sort By</label>
+                            <select name="sort" class="form-select form-select-sm" style="border-radius: 8px;">
+                                <option value="newest" {{ request('sort') === 'newest' ? 'selected' : '' }}>Newest First</option>
+                                <option value="price_low" {{ request('sort') === 'price_low' ? 'selected' : '' }}>Price: Low to High</option>
+                                <option value="price_high" {{ request('sort') === 'price_high' ? 'selected' : '' }}>Price: High to Low</option>
+                                <option value="name" {{ request('sort') === 'name' ? 'selected' : '' }}>Name A-Z</option>
+                            </select>
+                        </div>
+
+                        <!-- Filter Buttons -->
+                        <div class="col-12">
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-theme btn-sm" style="border-radius: 8px;">
+                                    <i class="bi bi-search me-1"></i>
+                                    Apply Filters
+                                </button>
+                                <a href="{{ route('categories.show', $category->slug) }}" class="btn btn-outline-theme btn-sm" style="border-radius: 8px;">
+                                    <i class="bi bi-x-circle me-1"></i>
+                                    Clear All
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-@endif
 
 <!-- Products Grid -->
 @if($products->count() > 0)

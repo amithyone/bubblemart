@@ -37,7 +37,7 @@ class CategoryController extends Controller
     /**
      * Display the specified category.
      */
-    public function show(Category $category)
+    public function show(Category $category, Request $request)
     {
         // Load the category with its children and their product counts
         $category->load(['children' => function($query) {
@@ -50,10 +50,49 @@ class CategoryController extends Controller
             $categoryIds[] = $child->id;
         }
 
-        $products = Product::whereIn('category_id', $categoryIds)
+        $query = Product::whereIn('category_id', $categoryIds)
             ->where('is_active', true)
-            ->with(['store', 'category'])
-            ->paginate(12);
+            ->with(['store', 'category']);
+
+        // Apply subcategory filter if specified
+        if ($request->filled('subcategory')) {
+            $subcategoryId = $request->subcategory;
+            if ($subcategoryId === 'parent') {
+                // Show only products from parent category
+                $query->where('category_id', $category->id);
+            } else {
+                // Show products from specific subcategory
+                $query->where('category_id', $subcategoryId);
+            }
+        }
+
+        // Apply price filter if specified
+        if ($request->filled('min_price')) {
+            $query->where('price_naira', '>=', $request->min_price);
+        }
+        if ($request->filled('max_price')) {
+            $query->where('price_naira', '<=', $request->max_price);
+        }
+
+        // Apply sort order
+        $sortBy = $request->get('sort', 'newest');
+        switch ($sortBy) {
+            case 'price_low':
+                $query->orderBy('price_naira', 'asc');
+                break;
+            case 'price_high':
+                $query->orderBy('price_naira', 'desc');
+                break;
+            case 'name':
+                $query->orderBy('name', 'asc');
+                break;
+            case 'newest':
+            default:
+                $query->orderBy('created_at', 'desc');
+                break;
+        }
+
+        $products = $query->paginate(12)->withQueryString();
 
         return view('categories.show', compact('category', 'products'));
     }
