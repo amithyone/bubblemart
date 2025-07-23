@@ -31,7 +31,7 @@ class Setting extends Model
     /**
      * Set a setting value
      */
-    public static function setValue(string $key, $value, string $type = 'string', string $group = 'general', string $description = null)
+    public static function setValue(string $key, $value, string $type = 'string', string $group = 'general', ?string $description = null)
     {
         $setting = static::updateOrCreate(
             ['key' => $key],
