@@ -59,7 +59,7 @@ class RegisterController extends Controller
             'phone' => ['required', 'string', 'max:20', 'min:10'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'terms' => ['required', 'accepted'],
-            'captcha' => ['required', 'captcha'],
+            'captcha' => ['required', 'captcha:easy'],
             'website' => ['prohibited'], // Honeypot field
         ], [
             'captcha.captcha' => 'Please complete the CAPTCHA correctly.',

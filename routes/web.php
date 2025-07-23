@@ -28,7 +28,7 @@ Auth::routes();
 
 // CAPTCHA refresh route
 Route::get('/captcha/refresh', function() {
-    return response()->json(['captcha' => captcha_img()]);
+    return response()->json(['captcha' => captcha_img('easy')]);
 })->name('captcha.refresh');
 
 // Product routes

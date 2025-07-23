@@ -267,7 +267,8 @@
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 10px;
-    padding: 0.5rem;
+    padding: 0.75rem;
+    gap: 0.5rem;
 }
 
 [data-theme="light"] .captcha-container {
@@ -276,8 +277,15 @@
 }
 
 .captcha-container img {
-    border-radius: 5px;
-    max-height: 40px;
+    border-radius: 8px;
+    max-height: 35px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: #ffffff;
+    padding: 2px;
+}
+
+[data-theme="light"] .captcha-container img {
+    border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .captcha-container .btn {
@@ -317,6 +325,8 @@ function refreshCaptcha() {
     .then(response => response.json())
     .then(data => {
         document.querySelector('.captcha-container img').src = data.captcha;
+        document.getElementById('captcha').value = ''; // Clear input
+        document.getElementById('captcha').focus(); // Focus on input
     })
     .catch(error => {
         console.error('Error refreshing CAPTCHA:', error);
@@ -325,6 +335,11 @@ function refreshCaptcha() {
 
 // Auto-refresh CAPTCHA every 5 minutes
 setInterval(refreshCaptcha, 300000);
+
+// Auto-capitalize CAPTCHA input
+document.getElementById('captcha').addEventListener('input', function() {
+    this.value = this.value.toUpperCase();
+});
 </script>
 
 <div class="auth-container">
@@ -417,13 +432,16 @@ setInterval(refreshCaptcha, 300000);
                         <i class="bi bi-shield-check me-2"></i>Security Verification
                     </label>
                     <div class="captcha-container">
-                        {!! captcha_img() !!}
-                        <button type="button" class="btn btn-sm btn-outline-secondary ms-2" onclick="refreshCaptcha()">
-                            <i class="bi bi-arrow-clockwise"></i> Refresh
+                        {!! captcha_img('easy') !!}
+                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="refreshCaptcha()">
+                            <i class="bi bi-arrow-clockwise"></i> New Code
                         </button>
                     </div>
                     <input id="captcha" type="text" class="form-control mt-2 @error('captcha') is-invalid @enderror" 
-                           name="captcha" required placeholder="Enter the code above">
+                           name="captcha" required placeholder="Enter the 4 characters above" maxlength="4">
+                    <small class="text-muted mt-1 d-block">
+                        <i class="bi bi-info-circle me-1"></i>Enter the 4 characters shown in the image above
+                    </small>
                     @error('captcha')
                         <div class="invalid-feedback">
                             <i class="bi bi-exclamation-circle me-1"></i>{{ $message }}
