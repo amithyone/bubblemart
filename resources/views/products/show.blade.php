@@ -65,17 +65,7 @@
     color: #000000 !important;
 }
 
-[data-theme="light"] .location-select {
-    color: #000000 !important;
-}
 
-[data-theme="light"] .location-select .form-select {
-    color: #000000 !important;
-}
-
-[data-theme="light"] .location-icon {
-    color: #000000 !important;
-}
 
 /* Light theme overrides for buttons */
 [data-theme="light"] .btn-theme {
@@ -145,36 +135,24 @@
 }
 </style>
 
-<!-- Welcome/User & Location -->
-<div class="d-flex align-items-center justify-content-between mb-3">
-    <div class="d-flex align-items-center">
-        <figure class="avatar avatar-30 rounded coverimg align-middle me-2">
+<!-- Welcome/User -->
+<div class="d-flex align-items-center mb-3">
+    <figure class="avatar avatar-30 rounded coverimg align-middle me-2">
+        @auth
+            <img src="{{ Auth::user()->avatar ? asset('storage/' . Auth::user()->avatar) : asset('template-assets/img/avatars/1.jpg') }}" alt="Profile" style="width: 30px; height: 30px; object-fit: cover;">
+        @else
+            <i class="bi bi-person-circle h2"></i>
+        @endauth
+    </figure>
+    <div>
+        <p class="small welcome-label text-truncated mb-0">Welcome,</p>
+        <h6 class="fw-bold welcome-username mb-0">
             @auth
-                <img src="{{ Auth::user()->avatar ? asset('storage/' . Auth::user()->avatar) : asset('template-assets/img/avatars/1.jpg') }}" alt="Profile" style="width: 30px; height: 30px; object-fit: cover;">
+                {{ Auth::user()->name }}
             @else
-                <i class="bi bi-person-circle h2"></i>
+                Guest
             @endauth
-        </figure>
-        <div>
-            <p class="small welcome-label text-truncated mb-0">Welcome,</p>
-            <h6 class="fw-bold welcome-username mb-0">
-                @auth
-                    {{ Auth::user()->name }}
-                @else
-                    Guest
-                @endauth
-            </h6>
-        </div>
-    </div>
-    <div class="input-group input-group-sm w-auto location-select">
-        <span class="input-group-text bg-none location-icon"><i class="bi bi-geo-alt"></i></span>
-        <select class="form-select form-select-sm bg-none">
-            <option>Lagos</option>
-            <option>Abuja</option>
-            <option>Port Harcourt</option>
-            <option>Kano</option>
-            <option>Ibadan</option>
-        </select>
+        </h6>
     </div>
 </div>
 
