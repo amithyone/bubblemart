@@ -8,7 +8,7 @@
     <div class="row mb-4">
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center">
-                <h1 class="h3 mb-0 text-white">
+                <h1 class="h3 mb-0 text-dark">
                     <i class="fas fa-edit me-2"></i>Edit Category
                 </h1>
                 <div>
@@ -25,7 +25,7 @@
             <!-- Category Information Card -->
             <div class="card adminuiux-card shadow mb-4">
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-white">
+                    <h6 class="m-0 font-weight-bold text-dark">
                         <i class="fas fa-tag me-2"></i>Category Information
                     </h6>
                 </div>
@@ -222,18 +222,18 @@
             <!-- Category Stats Card -->
             <div class="card adminuiux-card shadow mb-4">
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-white">
+                    <h6 class="m-0 font-weight-bold text-dark">
                         <i class="fas fa-chart-bar me-2"></i>Category Statistics
                     </h6>
                 </div>
                 <div class="card-body">
                     <div class="row text-center">
                         <div class="col-6 mb-3">
-                            <div class="text-white h4">{{ $category->products->count() }}</div>
+                            <div class="text-dark h4">{{ $category->products->count() }}</div>
                             <div class="text-muted small">Total Products</div>
                         </div>
                         <div class="col-6 mb-3">
-                            <div class="text-white h4">{{ $category->status }}</div>
+                            <div class="text-dark h4">{{ $category->status }}</div>
                             <div class="text-muted small">Status</div>
                         </div>
                     </div>
@@ -258,17 +258,17 @@
                     
                     <div class="mb-2">
                         <small class="text-muted">Created:</small><br>
-                        <span class="text-white">{{ $category->created_at->format('M j, Y') }}</span>
+                        <span class="text-dark">{{ $category->created_at->format('M j, Y') }}</span>
                     </div>
                     
                     <div class="mb-2">
                         <small class="text-muted">Last Updated:</small><br>
-                        <span class="text-white">{{ $category->updated_at->format('M j, Y g:i A') }}</span>
+                        <span class="text-dark">{{ $category->updated_at->format('M j, Y g:i A') }}</span>
                     </div>
                     
                     <div class="mb-2">
                         <small class="text-muted">Slug:</small><br>
-                        <span class="text-white">{{ $category->slug }}</span>
+                        <span class="text-dark">{{ $category->slug }}</span>
                     </div>
                 </div>
             </div>
@@ -276,7 +276,7 @@
             <!-- Quick Actions Card -->
             <div class="card adminuiux-card shadow">
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-white">
+                    <h6 class="m-0 font-weight-bold text-dark">
                         <i class="fas fa-bolt me-2"></i>Quick Actions
                     </h6>
                 </div>
@@ -306,14 +306,14 @@
     <div class="modal-dialog">
         <div class="modal-content adminuiux-card">
             <div class="modal-header">
-                <h5 class="modal-title text-white">Toggle Category Status</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                <h5 class="modal-title text-dark">Toggle Category Status</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form action="{{ route('admin.categories.toggle-status', $category) }}" method="POST">
                 @csrf
                 @method('PATCH')
                 <div class="modal-body">
-                    <p class="text-white">Are you sure you want to toggle the status of "{{ $category->name }}"?</p>
+                    <p class="text-dark">Are you sure you want to toggle the status of "{{ $category->name }}"?</p>
                     <p class="text-muted">Current status: <strong>{{ $category->status }}</strong></p>
                 </div>
                 <div class="modal-footer">
@@ -330,14 +330,14 @@
     <div class="modal-dialog">
         <div class="modal-content adminuiux-card">
             <div class="modal-header">
-                <h5 class="modal-title text-white">Delete Category</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                <h5 class="modal-title text-dark">Delete Category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form action="{{ route('admin.categories.destroy', $category) }}" method="POST">
                 @csrf
                 @method('DELETE')
                 <div class="modal-body">
-                    <p class="text-white">Are you sure you want to delete "{{ $category->name }}"?</p>
+                    <p class="text-dark">Are you sure you want to delete "{{ $category->name }}"?</p>
                     <p class="text-danger">This action cannot be undone!</p>
                     @if($category->products->count() > 0)
                         <div class="alert alert-warning">
