@@ -450,33 +450,100 @@ div.card.adminuiux-card.home-product-card {
     </div>
 </div>
 @else
-<!-- Fallback Banner Section -->
+<!-- Dynamic Fallback Banner Section -->
+@php
+    $availableCategories = $categories->take(3);
+    $hasCategories = $availableCategories->count() > 0;
+@endphp
+
+@if($hasCategories)
+<!-- Dynamic Banner with Available Categories -->
 <div class="row gx-2 mb-3">
     <div class="col-7">
         <div class="card adminuiux-card h-100 p-0 overflow-hidden position-relative">
-            <img src="{{ asset('template-assets/img/ecommerce/image-3.jpg') }}" class="w-100 h-100 object-fit-cover" style="min-height: 160px; max-height: 200px;" alt="Featured">
+            @if($availableCategories[0]->image_path)
+                <img src="{{ asset('storage/' . $availableCategories[0]->image_path) }}" class="w-100 h-100 object-fit-cover" style="min-height: 160px; max-height: 200px;" alt="{{ $availableCategories[0]->name }}">
+            @else
+                <img src="{{ asset('template-assets/img/ecommerce/image-3.jpg') }}" class="w-100 h-100 object-fit-cover" style="min-height: 160px; max-height: 200px;" alt="{{ $availableCategories[0]->name }}">
+            @endif
             <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-3" style="background:rgba(0,0,0,0.4);">
-                <h5 class="banner-title mb-1">Featured Collection</h5>
-                <p class="banner-subtitle mb-2">Best gifts and collections</p>
-                <a href="{{ route('categories.index') }}" class="btn btn-sm btn-theme">Shop Now</a>
+                <h5 class="banner-title mb-1">{{ $availableCategories[0]->name }}</h5>
+                <p class="banner-subtitle mb-2">{{ $availableCategories[0]->description ?: 'Best gifts and collections' }}</p>
+                <a href="{{ route('categories.show', $availableCategories[0]) }}" class="btn btn-sm btn-theme">Shop Now</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-5 d-flex flex-column gap-2">
+        @if($availableCategories->count() > 1)
+        <div class="card adminuiux-card p-0 overflow-hidden position-relative flex-fill">
+            @if($availableCategories[1]->image_path)
+                <img src="{{ asset('storage/' . $availableCategories[1]->image_path) }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $availableCategories[1]->name }}">
+            @else
+                <img src="{{ asset('template-assets/img/ecommerce/image-4.jpg') }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $availableCategories[1]->name }}">
+            @endif
+            <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-2" style="background:rgba(0,0,0,0.3);">
+                <h6 class="banner-title mb-1">{{ $availableCategories[1]->name }}</h6>
+            </div>
+        </div>
+        @endif
+        @if($availableCategories->count() > 2)
+        <div class="card adminuiux-card p-0 overflow-hidden position-relative flex-fill">
+            @if($availableCategories[2]->image_path)
+                <img src="{{ asset('storage/' . $availableCategories[2]->image_path) }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $availableCategories[2]->name }}">
+            @else
+                <img src="{{ asset('template-assets/img/ecommerce/image-5.jpg') }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $availableCategories[2]->name }}">
+            @endif
+            <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-2" style="background:rgba(0,0,0,0.3);">
+                <h6 class="banner-title mb-1">{{ $availableCategories[2]->name }}</h6>
+            </div>
+        </div>
+        @endif
+        @if($availableCategories->count() <= 1)
+        <!-- Fill empty space if only 1 category -->
+        <div class="card adminuiux-card p-0 overflow-hidden position-relative flex-fill">
+            <img src="{{ asset('template-assets/img/ecommerce/image-4.jpg') }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="Explore More">
+            <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-2" style="background:rgba(0,0,0,0.3);">
+                <h6 class="banner-title mb-1">Explore More</h6>
+            </div>
+        </div>
+        <div class="card adminuiux-card p-0 overflow-hidden position-relative flex-fill">
+            <img src="{{ asset('template-assets/img/ecommerce/image-5.jpg') }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="Discover">
+            <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-2" style="background:rgba(0,0,0,0.3);">
+                <h6 class="banner-title mb-1">Discover</h6>
+            </div>
+        </div>
+        @endif
+    </div>
+</div>
+@else
+<!-- Generic Fallback Banner Section -->
+<div class="row gx-2 mb-3">
+    <div class="col-7">
+        <div class="card adminuiux-card h-100 p-0 overflow-hidden position-relative">
+            <img src="{{ asset('template-assets/img/ecommerce/image-3.jpg') }}" class="w-100 h-100 object-fit-cover" style="min-height: 160px; max-height: 200px;" alt="Welcome">
+            <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-3" style="background:rgba(0,0,0,0.4);">
+                <h5 class="banner-title mb-1">Welcome to Bublemart</h5>
+                <p class="banner-subtitle mb-2">Discover amazing gifts and collections</p>
+                <a href="{{ route('categories.index') }}" class="btn btn-sm btn-theme">Explore Now</a>
             </div>
         </div>
     </div>
     <div class="col-5 d-flex flex-column gap-2">
         <div class="card adminuiux-card p-0 overflow-hidden position-relative flex-fill">
-            <img src="{{ asset('template-assets/img/ecommerce/image-4.jpg') }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="Featured">
+            <img src="{{ asset('template-assets/img/ecommerce/image-4.jpg') }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="Categories">
             <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-2" style="background:rgba(0,0,0,0.3);">
-                <h6 class="banner-title mb-1">Accessories</h6>
+                <h6 class="banner-title mb-1">Categories</h6>
             </div>
         </div>
         <div class="card adminuiux-card p-0 overflow-hidden position-relative flex-fill">
-            <img src="{{ asset('template-assets/img/ecommerce/image-5.jpg') }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="Featured">
+            <img src="{{ asset('template-assets/img/ecommerce/image-5.jpg') }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="Products">
             <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-2" style="background:rgba(0,0,0,0.3);">
-                <h6 class="banner-title mb-1">Footwear</h6>
+                <h6 class="banner-title mb-1">Products</h6>
             </div>
         </div>
     </div>
 </div>
+@endif
 @endif
 
 
