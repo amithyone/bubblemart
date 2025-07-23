@@ -264,7 +264,7 @@ strong, b {
                         </div>
                         <h6 class="category-title mb-1">{{ $subcategory->name }}</h6>
                         <span class="badge bg-theme-1 text-white" style="border-radius: 8px; font-size: 0.7rem;">
-                            {{ $subcategory->products_count ?? 0 }} Products
+                            {{ round(($subcategory->products_count ?? 0) / 100) * 100 }} Products
                         </span>
                     </div>
                 </div>
@@ -281,7 +281,7 @@ strong, b {
     <div class="d-flex align-items-center justify-content-between mb-3">
         <h6 class="page-title mb-0">
             <i class="bi bi-box-seam me-2"></i>
-            Products ({{ $products->count() }})
+            Products ({{ round($products->count() / 100) * 100 }})
         </h6>
         <a href="{{ route('products.index') }}" class="btn btn-sm btn-outline-theme" style="border-radius: 10px;">
             <i class="bi bi-grid me-1"></i>
