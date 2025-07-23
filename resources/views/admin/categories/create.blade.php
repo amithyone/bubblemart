@@ -169,6 +169,38 @@
                             </div>
                         </div>
 
+                        <!-- Status Section -->
+                        <div class="mb-4">
+                            <label class="form-label text-dark">
+                                <i class="fas fa-cog me-2"></i>Category Status
+                            </label>
+                            <div class="card adminuiux-card border-0" style="border-radius: 15px;">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="is_active" id="is_active" value="1" {{ old('is_active', true) ? 'checked' : '' }}>
+                                                <label class="form-check-label text-dark" for="is_active">
+                                                    <i class="fas fa-check-circle me-2 text-success"></i>Active
+                                                </label>
+                                                <small class="text-muted d-block">Make this category visible to customers</small>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="is_featured" id="is_featured" value="1" {{ old('is_featured') ? 'checked' : '' }}>
+                                                <label class="form-check-label text-dark" for="is_featured">
+                                                    <i class="fas fa-star me-2 text-warning"></i>Featured
+                                                </label>
+                                                <small class="text-muted d-block">Show this category prominently on homepage</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="mb-3">
                             <label for="image" class="form-label text-dark">Category Image</label>
                             <input type="file" class="form-control" id="image" name="image" accept="image/*">
@@ -212,6 +244,7 @@
                         <ul class="text-muted small">
                             <li><strong>Active:</strong> Visible to customers</li>
                             <li><strong>Inactive:</strong> Hidden from customers</li>
+                            <li><strong>Featured:</strong> Shown prominently on homepage</li>
                         </ul>
                     </div>
                     

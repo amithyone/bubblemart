@@ -148,22 +148,43 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="status" class="form-label text-dark">Status</label>
-                                <select class="form-select" id="status" name="status">
-                                    <option value="active" {{ $category->status === 'active' ? 'selected' : '' }}>Active</option>
-                                    <option value="inactive" {{ $category->status === 'inactive' ? 'selected' : '' }}>Inactive</option>
-                                </select>
-                                @error('status')
-                                    <div class="text-danger small">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            
-                            <div class="col-md-6 mb-3">
                                 <label for="sort_order" class="form-label text-dark">Sort Order</label>
                                 <input type="number" class="form-control" id="sort_order" name="sort_order" value="{{ old('sort_order', $category->sort_order ?? 0) }}" min="0">
                                 @error('sort_order')
                                     <div class="text-danger small">{{ $message }}</div>
                                 @enderror
+                            </div>
+                        </div>
+
+                        <!-- Status Section -->
+                        <div class="mb-4">
+                            <label class="form-label text-dark">
+                                <i class="fas fa-cog me-2"></i>Category Status
+                            </label>
+                            <div class="card adminuiux-card border-0" style="border-radius: 15px;">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="is_active" id="is_active" value="1" {{ old('is_active', $category->is_active) ? 'checked' : '' }}>
+                                                <label class="form-check-label text-dark" for="is_active">
+                                                    <i class="fas fa-check-circle me-2 text-success"></i>Active
+                                                </label>
+                                                <small class="text-muted d-block">Make this category visible to customers</small>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="is_featured" id="is_featured" value="1" {{ old('is_featured', $category->is_featured) ? 'checked' : '' }}>
+                                                <label class="form-check-label text-dark" for="is_featured">
+                                                    <i class="fas fa-star me-2 text-warning"></i>Featured
+                                                </label>
+                                                <small class="text-muted d-block">Show this category prominently on homepage</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 

@@ -14,6 +14,7 @@ class CustomizationController extends Controller
     public function index()
     {
         $categories = Category::where('is_active', true)
+            ->orderBy('is_featured', 'desc') // Featured categories first
             ->orderBy('sort_order')
             ->get();
 

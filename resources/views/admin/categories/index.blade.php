@@ -69,6 +69,14 @@
         
         <div class="mobile-stat-card">
             <div class="mobile-stat-icon">
+                <i class="fas fa-star"></i>
+            </div>
+            <div class="mobile-stat-number">{{ $categories->where('is_featured', true)->count() }}</div>
+            <div class="mobile-stat-label">Featured</div>
+        </div>
+        
+        <div class="mobile-stat-card">
+            <div class="mobile-stat-icon">
                 <i class="fas fa-box"></i>
             </div>
             <div class="mobile-stat-number">{{ $totalProducts }}</div>
@@ -113,6 +121,11 @@
                                     <span class="badge bg-success">Active</span>
                                 @else
                                     <span class="badge bg-danger">Inactive</span>
+                                @endif
+                                @if($category->is_featured)
+                                    <span class="badge bg-warning ms-1">
+                                        <i class="fas fa-star me-1"></i>Featured
+                                    </span>
                                 @endif
                             </div>
                         </div>

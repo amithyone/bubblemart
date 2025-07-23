@@ -286,6 +286,11 @@ strong, b {
             <div class="col-6 col-md-4 col-lg-3">
                 <a href="{{ route('customize.category', 'jewelry') }}" class="text-decoration-none">
                     <div class="card adminuiux-card h-100 category-card">
+                        <div class="position-absolute top-0 end-0 m-2">
+                            <span class="badge bg-warning text-dark">
+                                <i class="fas fa-star me-1"></i>Featured
+                            </span>
+                        </div>
                         <div class="card-body text-center p-3">
                             <div class="mb-3">
                                 <span class="display-1">💎</span>
@@ -301,6 +306,11 @@ strong, b {
             <div class="col-6 col-md-4 col-lg-3">
                 <a href="{{ route('customize.category', 'frames') }}" class="text-decoration-none">
                     <div class="card adminuiux-card h-100 category-card">
+                        <div class="position-absolute top-0 end-0 m-2">
+                            <span class="badge bg-warning text-dark">
+                                <i class="fas fa-star me-1"></i>Featured
+                            </span>
+                        </div>
                         <div class="card-body text-center p-3">
                             <div class="mb-3">
                                 <span class="display-1">🖼️</span>
@@ -316,6 +326,11 @@ strong, b {
             <div class="col-6 col-md-4 col-lg-3">
                 <a href="{{ route('customize.category', 'wears') }}" class="text-decoration-none">
                     <div class="card adminuiux-card h-100 category-card">
+                        <div class="position-absolute top-0 end-0 m-2">
+                            <span class="badge bg-warning text-dark">
+                                <i class="fas fa-star me-1"></i>Featured
+                            </span>
+                        </div>
                         <div class="card-body text-center p-3">
                             <div class="mb-3">
                                 <span class="display-1">👕</span>
@@ -331,6 +346,11 @@ strong, b {
             <div class="col-6 col-md-4 col-lg-3">
                 <a href="{{ route('customize.category', 'drinkware') }}" class="text-decoration-none">
                     <div class="card adminuiux-card h-100 category-card">
+                        <div class="position-absolute top-0 end-0 m-2">
+                            <span class="badge bg-warning text-dark">
+                                <i class="fas fa-star me-1"></i>Featured
+                            </span>
+                        </div>
                         <div class="card-body text-center p-3">
                             <div class="mb-3">
                                 <span class="display-1">☕</span>
@@ -378,6 +398,13 @@ strong, b {
                 <div class="col-6 col-md-4 col-lg-3">
                     <a href="{{ route('customize.category', $category->slug) }}" class="text-decoration-none">
                         <div class="card adminuiux-card h-100 category-card">
+                            @if($category->is_featured)
+                                <div class="position-absolute top-0 end-0 m-2">
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="fas fa-star me-1"></i>Featured
+                                    </span>
+                                </div>
+                            @endif
                             <div class="card-body text-center p-3">
                                 <div class="mb-3">
                                     <span class="display-1">{{ $category->icon ?? '🎁' }}</span>
