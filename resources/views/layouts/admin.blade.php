@@ -579,6 +579,21 @@
         [data-theme="light"] h5, 
         [data-theme="light"] h6 {
             color: #000000 !important;
+            font-weight: 600 !important;
+        }
+
+        /* Additional admin header visibility fixes */
+        [data-theme="light"] .mobile-header h1,
+        [data-theme="light"] .mobile-admin-header h1,
+        [data-theme="light"] .page-header h1,
+        [data-theme="light"] .card-header h1,
+        [data-theme="light"] .card-header h2,
+        [data-theme="light"] .card-header h3,
+        [data-theme="light"] .card-header h4,
+        [data-theme="light"] .card-header h5,
+        [data-theme="light"] .card-header h6 {
+            color: #000000 !important;
+            font-weight: 600 !important;
         }
 
         [data-theme="light"] p, 
@@ -589,6 +604,18 @@
 
         [data-theme="light"] .text-white {
             color: #000000 !important;
+        }
+
+        /* Ensure all white text becomes black in light theme */
+        [data-theme="light"] .text-white,
+        [data-theme="light"] h1.text-white,
+        [data-theme="light"] h2.text-white,
+        [data-theme="light"] h3.text-white,
+        [data-theme="light"] h4.text-white,
+        [data-theme="light"] h5.text-white,
+        [data-theme="light"] h6.text-white {
+            color: #000000 !important;
+            font-weight: 600 !important;
         }
 
         [data-theme="light"] .text-dark {
