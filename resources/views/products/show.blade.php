@@ -81,7 +81,7 @@
 [data-theme="light"] .btn-theme {
     background-color: #036674 !important;
     border-color: #036674 !important;
-    color: #ffffff !important;
+    color:rgb(221, 227, 225) !important;
 }
 
 [data-theme="light"] .btn-theme:hover {
