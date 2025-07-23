@@ -345,7 +345,72 @@ div.card.adminuiux-card.home-product-card {
 </div>
 
 <!-- Banner/Featured Section -->
-@if($categories->count() >= 3)
+@php
+    $featuredCategories = $categories->where('is_featured', true);
+    $bannerCategories = $featuredCategories->take(3);
+    $hasFeatured = $bannerCategories->count() >= 3;
+@endphp
+
+@if($hasFeatured)
+<!-- Featured Categories Banner -->
+<div class="row gx-2 mb-3">
+    <div class="col-7">
+        <div class="card adminuiux-card h-100 p-0 overflow-hidden position-relative">
+            @if($bannerCategories[0]->image_path)
+                <img src="{{ asset('storage/' . $bannerCategories[0]->image_path) }}" class="w-100 h-100 object-fit-cover" style="min-height: 160px; max-height: 200px;" alt="{{ $bannerCategories[0]->name }}">
+            @else
+                <img src="{{ asset('template-assets/img/ecommerce/image-3.jpg') }}" class="w-100 h-100 object-fit-cover" style="min-height: 160px; max-height: 200px;" alt="{{ $bannerCategories[0]->name }}">
+            @endif
+            <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-3" style="background:rgba(0,0,0,0.4);">
+                <!-- Featured Badge -->
+                <div class="position-absolute top-0 end-0 m-2">
+                    <span class="badge bg-warning text-dark">
+                        <i class="fas fa-star me-1"></i>Featured
+                    </span>
+                </div>
+                <h5 class="banner-title mb-1">{{ $bannerCategories[0]->name }}</h5>
+                <p class="banner-subtitle mb-2">{{ $bannerCategories[0]->description ?: 'Best gifts and collections' }}</p>
+                <a href="{{ route('categories.show', $bannerCategories[0]) }}" class="btn btn-sm btn-theme">Shop Now</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-5 d-flex flex-column gap-2">
+        <div class="card adminuiux-card p-0 overflow-hidden position-relative flex-fill">
+            @if($bannerCategories[1]->image_path)
+                <img src="{{ asset('storage/' . $bannerCategories[1]->image_path) }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $bannerCategories[1]->name }}">
+            @else
+                <img src="{{ asset('template-assets/img/ecommerce/image-4.jpg') }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $bannerCategories[1]->name }}">
+            @endif
+            <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-2" style="background:rgba(0,0,0,0.3);">
+                <!-- Featured Badge -->
+                <div class="position-absolute top-0 end-0 m-1">
+                    <span class="badge bg-warning text-dark" style="font-size: 0.6rem;">
+                        <i class="fas fa-star me-1"></i>Featured
+                    </span>
+                </div>
+                <h6 class="banner-title mb-1">{{ $bannerCategories[1]->name }}</h6>
+            </div>
+        </div>
+        <div class="card adminuiux-card p-0 overflow-hidden position-relative flex-fill">
+            @if($bannerCategories[2]->image_path)
+                <img src="{{ asset('storage/' . $bannerCategories[2]->image_path) }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $bannerCategories[2]->name }}">
+            @else
+                <img src="{{ asset('template-assets/img/ecommerce/image-5.jpg') }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $bannerCategories[2]->name }}">
+            @endif
+            <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-2" style="background:rgba(0,0,0,0.3);">
+                <!-- Featured Badge -->
+                <div class="position-absolute top-0 end-0 m-1">
+                    <span class="badge bg-warning text-dark" style="font-size: 0.6rem;">
+                        <i class="fas fa-star me-1"></i>Featured
+                    </span>
+                </div>
+                <h6 class="banner-title mb-1">{{ $bannerCategories[2]->name }}</h6>
+            </div>
+        </div>
+    </div>
+</div>
+@elseif($categories->count() >= 3)
+<!-- Fallback to Regular Categories -->
 <div class="row gx-2 mb-3">
     <div class="col-7">
         <div class="card adminuiux-card h-100 p-0 overflow-hidden position-relative">
@@ -414,94 +479,7 @@ div.card.adminuiux-card.home-product-card {
 </div>
 @endif
 
-<!-- Featured Categories Section -->
-@php
-    $featuredCategories = $categories->where('is_featured', true);
-@endphp
-@if($featuredCategories->count() > 0)
-<div class="mb-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h5 class="featured-section-title mb-0">
-            <i class="bi bi-star-fill text-warning me-2"></i>Featured Categories
-        </h5>
-        <a href="{{ route('categories.index') }}" class="text-decoration-none">
-            <small class="text-muted">View All</small>
-        </a>
-    </div>
-    
-    <div class="row gx-2 gy-3">
-        @foreach($featuredCategories as $category)
-        <div class="col-6 col-md-4">
-            <a href="{{ route('categories.show', $category) }}" class="text-decoration-none">
-                <div class="card adminuiux-card featured-category-card position-relative" style="border-radius: 15px; overflow: hidden; min-height: 120px;">
-                    <!-- Featured Badge -->
-                    <div class="position-absolute top-0 end-0 m-2">
-                        <span class="badge bg-warning text-dark">
-                            <i class="fas fa-star me-1"></i>Featured
-                        </span>
-                    </div>
-                    
-                    <!-- Category Background -->
-                    @if($category->image_path)
-                        <div class="position-absolute top-0 start-0 w-100 h-100" style="background-image: url('{{ asset('storage/' . $category->image_path) }}'); background-size: cover; background-position: center; opacity: 0.8;"></div>
-                    @else
-                        <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(135deg, #004953 0%, #005a66 100%);"></div>
-                    @endif
-                    
-                    <!-- Overlay -->
-                    <div class="position-absolute top-0 start-0 w-100 h-100" style="background: rgba(0,0,0,0.4);"></div>
-                    
-                    <!-- Content -->
-                    <div class="position-relative h-100 d-flex flex-column justify-content-center align-items-center p-3">
-                        <div class="mb-2">
-                            @if($category->icon)
-                                <span class="display-4">{{ $category->icon }}</span>
-                            @else
-                                <div class="avatar avatar-50 rounded d-flex align-items-center justify-content-center" style="background-color: rgba(255,255,255,0.2);">
-                                    @if(str_contains(strtolower($category->name), 'flower'))
-                                        <i class="bi bi-flower1 h3 text-white"></i>
-                                    @elseif(str_contains(strtolower($category->name), 'food') || str_contains(strtolower($category->name), 'dining'))
-                                        <i class="bi bi-cup-straw h3 text-white"></i>
-                                    @elseif(str_contains(strtolower($category->name), 'jewelry'))
-                                        <i class="bi bi-gem h3 text-white"></i>
-                                    @elseif(str_contains(strtolower($category->name), 'electronics') || str_contains(strtolower($category->name), 'smartphone') || str_contains(strtolower($category->name), 'laptop') || str_contains(strtolower($category->name), 'headphone'))
-                                        <i class="bi bi-phone h3 text-white"></i>
-                                    @elseif(str_contains(strtolower($category->name), 'fashion') || str_contains(strtolower($category->name), 'wear') || str_contains(strtolower($category->name), 'shirt') || str_contains(strtolower($category->name), 'hoodie') || str_contains(strtolower($category->name), 'dress') || str_contains(strtolower($category->name), 'jean') || str_contains(strtolower($category->name), 'shoe'))
-                                        <i class="bi bi-shirt h3 text-white"></i>
-                                    @elseif(str_contains(strtolower($category->name), 'home') || str_contains(strtolower($category->name), 'garden') || str_contains(strtolower($category->name), 'living') || str_contains(strtolower($category->name), 'furniture') || str_contains(strtolower($category->name), 'decor') || str_contains(strtolower($category->name), 'kitchen'))
-                                        <i class="bi bi-house h3 text-white"></i>
-                                    @elseif(str_contains(strtolower($category->name), 'book') || str_contains(strtolower($category->name), 'media'))
-                                        <i class="bi bi-journal-text h3 text-white"></i>
-                                    @elseif(str_contains(strtolower($category->name), 'sport') || str_contains(strtolower($category->name), 'outdoor'))
-                                        <i class="bi bi-trophy h3 text-white"></i>
-                                    @elseif(str_contains(strtolower($category->name), 'frame'))
-                                        <i class="bi bi-image h3 text-white"></i>
-                                    @elseif(str_contains(strtolower($category->name), 'drinkware') || str_contains(strtolower($category->name), 'mug') || str_contains(strtolower($category->name), 'cup'))
-                                        <i class="bi bi-cup-hot h3 text-white"></i>
-                                    @elseif(str_contains(strtolower($category->name), 'card'))
-                                        <i class="bi bi-card-text h3 text-white"></i>
-                                    @elseif(str_contains(strtolower($category->name), 'watch'))
-                                        <i class="bi bi-clock h3 text-white"></i>
-                                    @elseif(str_contains(strtolower($category->name), 'accessory'))
-                                        <i class="bi bi-bag h3 text-white"></i>
-                                    @else
-                                        <i class="bi bi-gift h3 text-white"></i>
-                                    @endif
-                                </div>
-                            @endif
-                        </div>
-                        <h6 class="text-white text-center mb-1" style="font-weight: 600; text-shadow: 0 1px 3px rgba(0,0,0,0.5);">{{ $category->name }}</h6>
-                        @if($category->description)
-                            <small class="text-white-50 text-center" style="text-shadow: 0 1px 2px rgba(0,0,0,0.5);">{{ Str::limit($category->description, 30) }}</small>
-                        @endif
-                    </div>
-                </div>
-            </a>
-        </div>
-        @endforeach
-    </div>
-</div>
-@endif
+
 
 <!-- All Categories Swiper -->
 <div class="swiper swipernav mb-3">
