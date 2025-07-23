@@ -184,6 +184,7 @@
                                   method="POST" 
                                   class="d-inline">
                                 @csrf
+                                @method('PATCH')
                                 <button type="submit" 
                                         class="mobile-btn {{ $category->is_active ? 'mobile-btn-warning' : 'mobile-btn-success' }}" 
                                         title="{{ $category->is_active ? 'Deactivate' : 'Activate' }}">

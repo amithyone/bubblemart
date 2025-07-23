@@ -230,6 +230,7 @@
                         </a>
                         <form action="{{ route('admin.stores.toggle-status', $store) }}" method="POST" class="d-inline">
                             @csrf
+                            @method('PATCH')
                             <button type="submit" class="btn btn-{{ $store->is_active ? 'warning' : 'success' }}">
                                 <i class="fas fa-toggle-{{ $store->is_active ? 'off' : 'on' }} me-1"></i>
                                 {{ $store->is_active ? 'Deactivate' : 'Activate' }}
