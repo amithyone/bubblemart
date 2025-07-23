@@ -317,14 +317,55 @@ div.card.adminuiux-card.home-product-card {
 </div>
 
 <!-- Banner/Featured Section -->
+@if($categories->count() >= 3)
+<div class="row gx-2 mb-3">
+    <div class="col-7">
+        <div class="card adminuiux-card h-100 p-0 overflow-hidden position-relative">
+            @if($categories[0]->image_path)
+                <img src="{{ asset('storage/' . $categories[0]->image_path) }}" class="w-100 h-100 object-fit-cover" style="min-height: 160px; max-height: 200px;" alt="{{ $categories[0]->name }}">
+            @else
+                <img src="{{ asset('template-assets/img/ecommerce/image-3.jpg') }}" class="w-100 h-100 object-fit-cover" style="min-height: 160px; max-height: 200px;" alt="{{ $categories[0]->name }}">
+            @endif
+            <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-3" style="background:rgba(0,0,0,0.4);">
+                <h5 class="banner-title mb-1">{{ $categories[0]->name }}</h5>
+                <p class="banner-subtitle mb-2">{{ $categories[0]->description ?: 'Best gifts and collections' }}</p>
+                <a href="{{ route('categories.show', $categories[0]) }}" class="btn btn-sm btn-theme">Shop Now</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-5 d-flex flex-column gap-2">
+        <div class="card adminuiux-card p-0 overflow-hidden position-relative flex-fill">
+            @if($categories[1]->image_path)
+                <img src="{{ asset('storage/' . $categories[1]->image_path) }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $categories[1]->name }}">
+            @else
+                <img src="{{ asset('template-assets/img/ecommerce/image-4.jpg') }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $categories[1]->name }}">
+            @endif
+            <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-2" style="background:rgba(0,0,0,0.3);">
+                <h6 class="banner-title mb-1">{{ $categories[1]->name }}</h6>
+            </div>
+        </div>
+        <div class="card adminuiux-card p-0 overflow-hidden position-relative flex-fill">
+            @if($categories[2]->image_path)
+                <img src="{{ asset('storage/' . $categories[2]->image_path) }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $categories[2]->name }}">
+            @else
+                <img src="{{ asset('template-assets/img/ecommerce/image-5.jpg') }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $categories[2]->name }}">
+            @endif
+            <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-2" style="background:rgba(0,0,0,0.3);">
+                <h6 class="banner-title mb-1">{{ $categories[2]->name }}</h6>
+            </div>
+        </div>
+    </div>
+</div>
+@else
+<!-- Fallback Banner Section -->
 <div class="row gx-2 mb-3">
     <div class="col-7">
         <div class="card adminuiux-card h-100 p-0 overflow-hidden position-relative">
             <img src="{{ asset('template-assets/img/ecommerce/image-3.jpg') }}" class="w-100 h-100 object-fit-cover" style="min-height: 160px; max-height: 200px;" alt="Featured">
             <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-3" style="background:rgba(0,0,0,0.4);">
-                <h5 class="banner-title mb-1">Winter Collection</h5>
+                <h5 class="banner-title mb-1">Featured Collection</h5>
                 <p class="banner-subtitle mb-2">Best gifts and collections</p>
-                <a href="#" class="btn btn-sm btn-theme">Shop Now</a>
+                <a href="{{ route('categories.index') }}" class="btn btn-sm btn-theme">Shop Now</a>
             </div>
         </div>
     </div>
@@ -343,6 +384,7 @@ div.card.adminuiux-card.home-product-card {
         </div>
     </div>
 </div>
+@endif
 
 <!-- Category Swiper -->
 <div class="swiper swipernav mb-3">

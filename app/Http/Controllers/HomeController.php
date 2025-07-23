@@ -45,6 +45,7 @@ class HomeController extends Controller
         }
 
         $categories = Category::where('is_active', true)
+            ->orderByRaw('CASE WHEN image_path IS NOT NULL THEN 0 ELSE 1 END')
             ->orderBy('sort_order')
             ->take(8)
             ->get();
