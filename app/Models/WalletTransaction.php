@@ -103,4 +103,20 @@ class WalletTransaction extends Model
     {
         return $query->where('status', 'completed');
     }
+
+    /**
+     * Get formatted metadata value for display.
+     */
+    public function getFormattedMetadataValue($value): string
+    {
+        if (is_array($value)) {
+            return json_encode($value, JSON_PRETTY_PRINT);
+        }
+        
+        if (is_object($value)) {
+            return json_encode($value, JSON_PRETTY_PRINT);
+        }
+        
+        return (string) $value;
+    }
 }

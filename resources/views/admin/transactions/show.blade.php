@@ -209,7 +209,9 @@
                         @foreach($transaction->metadata as $key => $value)
                             <div class="col-md-6 mb-2">
                                 <small class="text-muted">{{ ucfirst(str_replace('_', ' ', $key)) }}</small>
-                                <p class="mb-1"><strong>{{ $value }}</strong></p>
+                                <p class="mb-1">
+                                    <strong>{{ $transaction->getFormattedMetadataValue($value) }}</strong>
+                                </p>
                             </div>
                         @endforeach
                     </div>

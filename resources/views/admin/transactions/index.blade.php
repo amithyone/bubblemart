@@ -217,7 +217,8 @@
                                             <div class="bg-light p-2 rounded">
                                                 @foreach($transaction->metadata as $key => $value)
                                                     <small class="d-block">
-                                                        <strong>{{ ucfirst(str_replace('_', ' ', $key)) }}:</strong> {{ $value }}
+                                                        <strong>{{ ucfirst(str_replace('_', ' ', $key)) }}:</strong> 
+                                                        {{ $transaction->getFormattedMetadataValue($value) }}
                                                     </small>
                                                 @endforeach
                                             </div>
