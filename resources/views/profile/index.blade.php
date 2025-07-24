@@ -678,6 +678,23 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
 </div>
 
+<!-- Hidden form for editing addresses -->
+<form id="editAddressForm" method="POST" style="display: none;">
+    @csrf
+    @method('PATCH')
+    <input type="hidden" id="edit_address_id" name="address_id">
+    <input type="hidden" id="edit_label" name="label">
+    <input type="hidden" id="edit_name" name="name">
+    <input type="hidden" id="edit_phone" name="phone">
+    <input type="hidden" id="edit_address_line_1" name="address_line_1">
+    <input type="hidden" id="edit_address_line_2" name="address_line_2">
+    <input type="hidden" id="edit_city" name="city">
+    <input type="hidden" id="edit_state" name="state">
+    <input type="hidden" id="edit_postal_code" name="postal_code">
+    <input type="hidden" id="edit_country" name="country">
+    <input type="hidden" id="edit_is_default" name="is_default">
+</form>
+
 <!-- Delete Address Confirmation Modal -->
 <div class="modal fade" id="deleteAddressModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
@@ -747,6 +764,47 @@ function editAddress(addressId) {
             alert('Error loading address data');
         });
 }
+
+// Handle form submission for editing
+document.getElementById('addressForm').addEventListener('submit', function(e) {
+    const addressId = document.getElementById('address_id').value;
+    const methodOverride = document.getElementById('method_override').value;
+    
+    // If editing (has address_id and method override), use AJAX
+    if (addressId && methodOverride) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const url = this.action;
+        
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams(formData)
+        })
+        .then(response => {
+            if (response.redirected) {
+                window.location.href = response.url;
+            } else {
+                return response.text();
+            }
+        })
+        .then(data => {
+            if (data) {
+                // Reload page to show updated data
+                window.location.reload();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error updating address');
+        });
+    }
+    // If adding new address, let form submit normally
+});
 
 function setDefaultAddress(addressId) {
     if (confirm('Set this address as your default address?')) {
