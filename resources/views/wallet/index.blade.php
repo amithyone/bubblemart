@@ -951,3 +951,45 @@
 </div>
 
 @endsection
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    function fixBadgeColors() {
+        const isLightTheme = document.documentElement.getAttribute('data-theme') === 'light';
+        const badges = document.querySelectorAll('.badge');
+        
+        badges.forEach(badge => {
+            if (isLightTheme) {
+                if (badge.classList.contains('bg-danger')) {
+                    badge.style.color = '#ffffff';
+                } else if (badge.classList.contains('bg-success')) {
+                    badge.style.color = '#ffffff';
+                } else if (badge.classList.contains('bg-warning')) {
+                    badge.style.color = '#000000';
+                } else if (badge.classList.contains('bg-secondary')) {
+                    badge.style.color = '#ffffff';
+                } else if (badge.classList.contains('bg-info')) {
+                    badge.style.color = '#ffffff';
+                }
+            }
+        });
+    }
+    
+    // Fix on page load
+    fixBadgeColors();
+    
+    // Fix when theme changes (if theme switcher exists)
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
+                setTimeout(fixBadgeColors, 100);
+            }
+        });
+    });
+    
+    observer.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['data-theme']
+    });
+});
+</script>
