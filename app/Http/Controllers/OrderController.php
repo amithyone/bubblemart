@@ -66,9 +66,14 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
+        // Check if user is authenticated
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'Please log in to view your orders.');
+        }
+
         // Ensure user can only view their own orders
         if ($order->user_id !== Auth::id()) {
-            abort(403);
+            abort(403, 'You are not authorized to view this order.');
         }
 
         $order->load(['orderItems.product', 'orderItems.customization', 'orderItems.variationOptions']);

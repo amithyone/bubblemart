@@ -1111,7 +1111,7 @@ function showWalletConfirmationModal(amount) {
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="background: #6c757d; border: none; border-radius: 8px;">
                             <i class="bi bi-x me-2"></i>Cancel
                         </button>
-                        <button type="button" class="btn btn-primary" onclick="confirmWalletPayment(${amount})" style="background: linear-gradient(135deg, #036674 0%, #005a66 100%); border: none; border-radius: 8px;">
+                        <button type="button" class="btn btn-primary" onclick="confirmWalletPayment(${amount})" style="background: linear-gradient(135deg, #036674 0%, #005a66 100%); border: none; border-radius: 8px; color: white;">
                             <i class="bi bi-check-circle me-2"></i>Confirm Payment
                         </button>
                     </div>
@@ -1149,36 +1149,36 @@ function confirmWalletPayment(amount) {
 // Show payment success modal
 function showPaymentSuccessModal(data) {
     const modal = `
-        <div class="modal fade" id="paymentSuccessModal" tabindex="-1">
+        <div class="modal fade" id="paymentSuccessModal" tabindex="-1" style="background: rgba(0, 0, 0, 0.5);">
             <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content" style="background: rgba(0, 0, 0, 0.9) !important; border: none; border-radius: 15px;">
-                    <div class="modal-header" style="background: rgba(0, 168, 107, 0.2) !important; border-bottom: 1px solid rgba(0, 168, 107, 0.3) !important; border-radius: 15px 15px 0 0;">
-                        <h5 class="modal-title text-theme-1">
+                <div class="modal-content" style="background: #ffffff; border-radius: 15px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);">
+                    <div class="modal-header" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important; border-radius: 15px 15px 0 0;">
+                        <h5 class="modal-title text-white">
                             <i class="bi bi-check-circle me-2"></i>Payment Successful!
                         </h5>
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                     </div>
-                    <div class="modal-body text-theme-1">
+                    <div class="modal-body" style="background: #ffffff; padding: 2rem;">
                         <div class="text-center mb-4">
                             <div class="success-icon-container mb-3">
-                                <i class="bi bi-check-circle" style="font-size: 4rem; color: var(--accent-green);"></i>
+                                <i class="bi bi-check-circle" style="font-size: 4rem; color: #28a745;"></i>
                             </div>
-                            <h6 class="text-theme-1 mb-3">Payment Completed Successfully!</h6>
-                            <p class="text-theme-1 mb-0">${data.message || 'Your payment has been processed successfully!'}</p>
-                            ${data.order_id ? `<p class="text-center text-muted mt-2">Order ID: <strong class="text-theme-1">${data.order_id}</strong></p>` : ''}
+                            <h6 class="mb-3" style="color: #333333;">Payment Completed Successfully!</h6>
+                            <p class="mb-0" style="color: #333333;">${data.message || 'Your payment has been processed successfully!'}</p>
+                            ${data.order_id ? `<p class="text-center text-muted mt-2">Order ID: <strong style="color: #036674;">${data.order_id}</strong></p>` : ''}
                         </div>
                         
-                        <div class="success-summary-card" style="background: rgba(0, 168, 107, 0.1) !important; border: 1px solid rgba(0, 168, 107, 0.3) !important; border-radius: 10px; padding: 15px; margin: 15px 0;">
+                        <div class="success-summary-card" style="background: #d4edda; border: 1px solid #c3e6cb; border-radius: 10px; padding: 15px; margin: 15px 0;">
                             <div class="text-center">
-                                <small class="text-muted">
+                                <small style="color: #155724;">
                                     <i class="bi bi-box me-2"></i>
                                     <strong>Your order has been placed and is being processed.</strong>
                                 </small>
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer" style="border-top: 1px solid rgba(255,255,255,0.1) !important; border-radius: 0 0 15px 15px;">
-                        <button type="button" class="btn btn-success" onclick="redirectToOrders()" style="border-radius: 10px; background: linear-gradient(135deg, var(--accent-green) 0%, #00c853 100%) !important; border: none !important;">
+                    <div class="modal-footer" style="background: #f8f9fa; border-radius: 0 0 15px 15px; border-top: 1px solid #dee2e6;">
+                        <button type="button" class="btn btn-success" onclick="redirectToOrders()" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); border: none; border-radius: 8px; color: white;">
                             <i class="bi bi-box me-2"></i>View Orders
                         </button>
                     </div>
