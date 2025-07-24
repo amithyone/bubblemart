@@ -25,20 +25,59 @@ class SettingsController extends Controller
         ]);
 
         foreach ($request->settings as $key => $value) {
-            $setting = Setting::where('key', $key)->first();
-            if ($setting) {
-                // Handle array values (like enabled_countries)
-                if (is_array($value)) {
-                    $value = json_encode($value);
-                }
-                
-                $setting->update(['value' => $value]);
-                Setting::clearCache();
+            // Handle array values (like enabled_countries)
+            if (is_array($value)) {
+                $value = json_encode($value);
             }
+            
+            // Create or update setting
+            Setting::updateOrCreate(
+                ['key' => $key],
+                [
+                    'value' => $value,
+                    'type' => is_numeric($value) ? 'number' : 'string',
+                    'group' => $this->getSettingGroup($key),
+                    'description' => $this->getSettingDescription($key)
+                ]
+            );
+            
+            Setting::clearCache();
         }
 
         return redirect()->route('admin.settings.index')
             ->with('success', 'Settings updated successfully!');
+    }
+
+    /**
+     * Get the group for a setting key
+     */
+    private function getSettingGroup($key)
+    {
+        return match($key) {
+            'exchange_rate', 'markup_percentage', 'shipping_cost_usd', 'tax_percentage' => 'pricing',
+            'telegram_bot_token', 'telegram_chat_id', 'telegram_enabled', 'telegram_message_template' => 'notifications',
+            'enabled_countries' => 'shipping',
+            default => 'general'
+        };
+    }
+
+    /**
+     * Get the description for a setting key
+     */
+    private function getSettingDescription($key)
+    {
+        return match($key) {
+            'exchange_rate' => 'Exchange rate from USD to NGN (Naira)',
+            'markup_percentage' => 'Additional percentage markup on all products',
+            'shipping_cost_usd' => 'Standard shipping cost in USD',
+            'tax_percentage' => 'Tax percentage applied to orders',
+            'telegram_bot_token' => 'Telegram bot token from @BotFather',
+            'telegram_chat_id' => 'Telegram chat ID for notifications',
+            'telegram_enabled' => 'Enable or disable Telegram notifications',
+            'telegram_message_template' => 'Template for Telegram notification messages',
+            'enabled_countries' => 'List of countries enabled for international shipping',
+            default => null
+        };
     }
 
     public function updateExchangeRate()

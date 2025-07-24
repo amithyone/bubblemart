@@ -152,8 +152,8 @@
                                         <strong>Enable Telegram Notifications</strong>
                                     </label>
                                     <select class="form-control" id="telegram_enabled" name="settings[telegram_enabled]">
-                                        <option value="true" {{ ($settings->where('key', 'telegram_enabled')->first()->value ?? 'false') == 'true' ? 'selected' : '' }}>Yes</option>
-                                        <option value="false" {{ ($settings->where('key', 'telegram_enabled')->first()->value ?? 'false') == 'false' ? 'selected' : '' }}>No</option>
+                                        <option value="1" {{ ($settings->where('key', 'telegram_enabled')->first()->value ?? '0') == '1' ? 'selected' : '' }}>Yes</option>
+                                        <option value="0" {{ ($settings->where('key', 'telegram_enabled')->first()->value ?? '0') == '0' ? 'selected' : '' }}>No</option>
                                     </select>
                                     <div class="form-text">Enable or disable Telegram notifications</div>
                                 </div>
@@ -189,29 +189,29 @@
                                         <strong>Notification Types</strong>
                                     </label>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="notify_new_orders" name="settings[notify_new_orders]" value="true" 
-                                               {{ ($settings->where('key', 'notify_new_orders')->first()->value ?? 'true') == 'true' ? 'checked' : '' }}>
+                                        <input class="form-check-input" type="checkbox" id="notify_new_orders" name="settings[notify_new_orders]" value="1" 
+                                               {{ ($settings->where('key', 'notify_new_orders')->first()->value ?? '1') == '1' ? 'checked' : '' }}>
                                         <label class="form-check-label" for="notify_new_orders">
                                             New Orders
                                         </label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="notify_order_updates" name="settings[notify_order_updates]" value="true" 
-                                               {{ ($settings->where('key', 'notify_order_updates')->first()->value ?? 'true') == 'true' ? 'checked' : '' }}>
+                                        <input class="form-check-input" type="checkbox" id="notify_order_updates" name="settings[notify_order_updates]" value="1" 
+                                               {{ ($settings->where('key', 'notify_order_updates')->first()->value ?? '1') == '1' ? 'checked' : '' }}>
                                         <label class="form-check-label" for="notify_order_updates">
                                             Order Status Updates
                                         </label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="notify_payments" name="settings[notify_payments]" value="true" 
-                                               {{ ($settings->where('key', 'notify_payments')->first()->value ?? 'true') == 'true' ? 'checked' : '' }}>
+                                        <input class="form-check-input" type="checkbox" id="notify_payments" name="settings[notify_payments]" value="1" 
+                                               {{ ($settings->where('key', 'notify_payments')->first()->value ?? '1') == '1' ? 'checked' : '' }}>
                                         <label class="form-check-label" for="notify_payments">
                                             Payment Confirmations
                                         </label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="notify_low_stock" name="settings[notify_low_stock]" value="true" 
-                                               {{ ($settings->where('key', 'notify_low_stock')->first()->value ?? 'false') == 'true' ? 'checked' : '' }}>
+                                        <input class="form-check-input" type="checkbox" id="notify_low_stock" name="settings[notify_low_stock]" value="1" 
+                                               {{ ($settings->where('key', 'notify_low_stock')->first()->value ?? '0') == '1' ? 'checked' : '' }}>
                                         <label class="form-check-label" for="notify_low_stock">
                                             Low Stock Alerts
                                         </label>
