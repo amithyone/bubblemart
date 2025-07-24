@@ -292,7 +292,7 @@
 <!-- Page Header -->
 <div class="row gx-3 mb-3">
     <div class="col mb-3 mb-lg-4">
-        @if($search)
+        @if(isset($search) && $search)
             <p class="small text-theme-1 text-truncated mb-0">Search Results for "{{ $search }}",</p>
             <h6 class="fw-bold text-theme-accent-1 mb-0">{{ $products->count() }} Product{{ $products->count() !== 1 ? 's' : '' }} Found</h6>
         @else
