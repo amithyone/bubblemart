@@ -947,25 +947,25 @@ function checkPaymentStatus(reference) {
 // Show payment pending modal (for payments that are still being processed)
 function showPaymentPendingModal(reference, message) {
     const modal = `
-        <div class="modal fade" id="paymentPendingModal" tabindex="-1">
+        <div class="modal fade" id="paymentPendingModal" tabindex="-1" style="background: rgba(0, 0, 0, 0.5);">
             <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content" style="background: rgba(0, 0, 0, 0.9) !important; border: none; border-radius: 15px;">
-                    <div class="modal-header" style="background: rgba(252, 164, 136, 0.2) !important; border-bottom: 1px solid rgba(252, 164, 136, 0.3) !important; border-radius: 15px 15px 0 0;">
-                        <h5 class="modal-title text-theme-1">
+                <div class="modal-content" style="background: #ffffff; border-radius: 15px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);">
+                    <div class="modal-header" style="background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%) !important; border-radius: 15px 15px 0 0;">
+                        <h5 class="modal-title text-dark">
                             <i class="bi bi-clock me-2"></i>Payment Processing
                         </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
-                    <div class="modal-body text-theme-1">
+                    <div class="modal-body" style="background: #ffffff; padding: 2rem;">
                         <div class="text-center mb-4">
                             <div class="pending-icon-container mb-3">
-                                <i class="bi bi-clock" style="font-size: 4rem; color: var(--accent-orange);"></i>
+                                <i class="bi bi-clock" style="font-size: 4rem; color: #ffc107;"></i>
                             </div>
-                            <h6 class="text-theme-1 mb-3">Payment is Being Processed</h6>
-                            <p class="text-theme-1 mb-0">${message}</p>
+                            <h6 class="mb-3" style="color: #333333;">Payment is Being Processed</h6>
+                            <p class="mb-0" style="color: #333333;">${message}</p>
                         </div>
                         
-                        <div class="alert alert-info" style="background: rgba(0, 73, 83, 0.1) !important; border: 1px solid rgba(0, 73, 83, 0.3) !important; color: var(--text-primary) !important;">
+                        <div class="alert alert-info" style="background: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460;">
                             <small>
                                 <i class="bi bi-info-circle me-2"></i>
                                 <strong>What happens next?</strong> We'll automatically check your payment status. You can also manually check again in a few minutes.
@@ -975,15 +975,15 @@ function showPaymentPendingModal(reference, message) {
                         <div class="text-center mt-3">
                             <small class="text-muted">
                                 <i class="bi bi-arrow-clockwise me-1"></i>
-                                Reference: <strong class="text-theme-1">${reference}</strong>
+                                Reference: <strong style="color: #036674;">${reference}</strong>
                             </small>
                         </div>
                     </div>
-                    <div class="modal-footer" style="border-top: 1px solid rgba(255,255,255,0.1) !important; border-radius: 0 0 15px 15px;">
-                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="border-radius: 10px;">
+                    <div class="modal-footer" style="background: #f8f9fa; border-radius: 0 0 15px 15px; border-top: 1px solid #dee2e6;">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="background: #6c757d; border: none; border-radius: 8px;">
                             <i class="bi bi-x me-2"></i>Close
                         </button>
-                        <button type="button" class="btn btn-warning" onclick="checkPaymentStatus('${reference}')" style="border-radius: 10px; background: linear-gradient(135deg, var(--accent-orange) 0%, #ff8c42 100%) !important; border: none !important;">
+                        <button type="button" class="btn btn-warning" onclick="checkPaymentStatus('${reference}')" style="background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%); border: none; border-radius: 8px; color: #000000;">
                             <i class="bi bi-arrow-clockwise me-2"></i>Check Again
                         </button>
                     </div>
@@ -1010,28 +1010,26 @@ function showPaymentPendingModal(reference, message) {
 // Show payment error modal
 function showPaymentErrorModal(title, message) {
     const modal = `
-        <div class="modal fade" id="paymentErrorModal" tabindex="-1">
+        <div class="modal fade" id="paymentErrorModal" tabindex="-1" style="background: rgba(0, 0, 0, 0.5);">
             <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content" style="background: rgba(0, 0, 0, 0.9) !important; border: none; border-radius: 15px;">
-                    <div class="modal-header" style="background: rgba(249, 73, 67, 0.2) !important; border-bottom: 1px solid rgba(249, 73, 67, 0.3) !important; border-radius: 15px 15px 0 0;">
-                        <h5 class="modal-title text-theme-1">
+                <div class="modal-content" style="background: #ffffff; border-radius: 15px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);">
+                    <div class="modal-header bg-danger text-white" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%) !important; border-radius: 15px 15px 0 0;">
+                        <h5 class="modal-title">
                             <i class="bi bi-exclamation-triangle me-2"></i>${title}
                         </h5>
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                     </div>
-                    <div class="modal-body text-theme-1">
-                        <div class="text-center mb-4">
-                            <div class="error-icon-container mb-3">
-                                <i class="bi bi-x-circle" style="font-size: 4rem; color: var(--accent-red);"></i>
-                            </div>
-                            <p class="text-theme-1 mb-0">${message}</p>
+                    <div class="modal-body" style="background: #ffffff; padding: 2rem;">
+                        <div class="text-center mb-3">
+                            <i class="bi bi-exclamation-triangle text-danger" style="font-size: 3rem; color: #dc3545;"></i>
                         </div>
+                        <p class="text-center mb-0" style="color: #333333;">${message}</p>
                     </div>
-                    <div class="modal-footer" style="border-top: 1px solid rgba(255,255,255,0.1) !important; border-radius: 0 0 15px 15px;">
-                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="border-radius: 10px;">
+                    <div class="modal-footer" style="background: #f8f9fa; border-radius: 0 0 15px 15px; border-top: 1px solid #dee2e6;">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="background: #6c757d; border: none; border-radius: 8px;">
                             <i class="bi bi-x me-2"></i>Close
                         </button>
-                        <button type="button" class="btn btn-danger" onclick="contactSupport()" style="border-radius: 10px; background: linear-gradient(135deg, var(--accent-red) 0%, #e63946 100%) !important; border: none !important;">
+                        <button type="button" class="btn btn-warning" onclick="contactSupport()" style="background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%); border: none; border-radius: 8px; color: #000000;">
                             <i class="bi bi-headset me-2"></i>Contact Support
                         </button>
                     </div>
@@ -1061,59 +1059,59 @@ function showWalletConfirmationModal(amount) {
     const balanceAfterPayment = currentBalance - amount;
     
     const modal = `
-        <div class="modal fade" id="walletConfirmationModal" tabindex="-1">
+        <div class="modal fade" id="walletConfirmationModal" tabindex="-1" style="background: rgba(0, 0, 0, 0.5);">
             <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content" style="background: rgba(0, 0, 0, 0.9) !important; border: none; border-radius: 15px;">
-                    <div class="modal-header" style="background: rgba(0, 0, 0, 0.95) !important; border-bottom: 1px solid rgba(255,255,255,0.1) !important; border-radius: 15px 15px 0 0;">
-                        <h5 class="modal-title text-theme-1">
+                <div class="modal-content" style="background: #ffffff; border-radius: 15px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);">
+                    <div class="modal-header" style="background: linear-gradient(135deg, #036674 0%, #005a66 100%) !important; border-radius: 15px 15px 0 0;">
+                        <h5 class="modal-title text-white">
                             <i class="bi bi-wallet2 me-2"></i>Confirm Wallet Payment
                         </h5>
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                     </div>
-                    <div class="modal-body text-theme-1">
+                    <div class="modal-body" style="background: #ffffff; padding: 2rem;">
                         <div class="text-center mb-4">
                             <div class="wallet-icon-container mb-3">
-                                <i class="bi bi-wallet2" style="font-size: 4rem; color: var(--main-color);"></i>
+                                <i class="bi bi-wallet2" style="font-size: 4rem; color: #036674;"></i>
                             </div>
-                            <h6 class="text-theme-1 mb-3">Wallet Payment Confirmation</h6>
-                            <p class="text-theme-1 mb-0">Are you sure you want to pay <strong class="text-theme-1">₦${amount.toLocaleString()}</strong> from your wallet?</p>
+                            <h6 class="mb-3" style="color: #333333;">Wallet Payment Confirmation</h6>
+                            <p class="mb-0" style="color: #333333;">Are you sure you want to pay <strong style="color: #036674;">₦${amount.toLocaleString()}</strong> from your wallet?</p>
                         </div>
                         
-                        <div class="payment-summary-card" style="background: rgba(0, 73, 83, 0.1) !important; border: 1px solid rgba(0, 73, 83, 0.3) !important; border-radius: 10px; padding: 15px; margin: 15px 0;">
+                        <div class="payment-summary-card" style="background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 10px; padding: 15px; margin: 15px 0;">
                             <div class="row text-center">
                                 <div class="col-6">
                                     <div class="summary-item">
                                         <small class="text-muted d-block">Payment Amount</small>
-                                        <strong class="text-theme-1">₦${amount.toLocaleString()}</strong>
+                                        <strong style="color: #036674;">₦${amount.toLocaleString()}</strong>
                                     </div>
                                 </div>
                                 <div class="col-6">
                                     <div class="summary-item">
                                         <small class="text-muted d-block">Current Balance</small>
-                                        <strong class="text-theme-1">₦${currentBalance.toLocaleString()}</strong>
+                                        <strong style="color: #036674;">₦${currentBalance.toLocaleString()}</strong>
                                     </div>
                                 </div>
                             </div>
                             <div class="text-center mt-3">
                                 <small class="text-muted">
                                     <i class="bi bi-info-circle me-1"></i>
-                                    Balance after payment: <strong class="text-theme-1">₦${balanceAfterPayment.toLocaleString()}</strong>
+                                    Balance after payment: <strong style="color: #036674;">₦${balanceAfterPayment.toLocaleString()}</strong>
                                 </small>
                             </div>
                         </div>
                         
-                        <div class="alert alert-info" style="background: rgba(0, 73, 83, 0.1) !important; border: 1px solid rgba(0, 73, 83, 0.3) !important; color: var(--text-primary) !important;">
+                        <div class="alert alert-info" style="background: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460;">
                             <small>
                                 <i class="bi bi-shield-check me-2"></i>
                                 <strong>Secure Payment:</strong> Your payment will be processed securely through your Bubblemart wallet.
                             </small>
                         </div>
                     </div>
-                    <div class="modal-footer" style="border-top: 1px solid rgba(255,255,255,0.1) !important; border-radius: 0 0 15px 15px;">
-                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="border-radius: 10px;">
+                    <div class="modal-footer" style="background: #f8f9fa; border-radius: 0 0 15px 15px; border-top: 1px solid #dee2e6;">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="background: #6c757d; border: none; border-radius: 8px;">
                             <i class="bi bi-x me-2"></i>Cancel
                         </button>
-                        <button type="button" class="btn btn-theme" onclick="confirmWalletPayment(${amount})" style="border-radius: 10px; background: linear-gradient(135deg, var(--main-color) 0%, #005a66 100%) !important; border: none !important;">
+                        <button type="button" class="btn btn-primary" onclick="confirmWalletPayment(${amount})" style="background: linear-gradient(135deg, #036674 0%, #005a66 100%); border: none; border-radius: 8px;">
                             <i class="bi bi-check-circle me-2"></i>Confirm Payment
                         </button>
                     </div>
