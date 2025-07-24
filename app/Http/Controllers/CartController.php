@@ -328,14 +328,16 @@ class CartController extends Controller
             ]);
         }
 
-        // Validate that the user owns this address
-        if ($address->user_id !== $user->id) {
+        // Validate that the user owns this address (with type conversion)
+        if ((int)$address->user_id !== (int)$user->id) {
             \Log::warning('Address ownership validation failed', [
                 'user_id' => $user->id,
                 'address_user_id' => $address->user_id,
                 'address_id' => $addressId,
                 'address_owner' => $address->user_id,
-                'current_user' => $user->id
+                'current_user' => $user->id,
+                'user_id_type' => gettype($user->id),
+                'address_user_id_type' => gettype($address->user_id)
             ]);
             return response()->json([
                 'success' => false,
@@ -484,14 +486,16 @@ class CartController extends Controller
             ]);
         }
 
-        // Validate that the user owns this address
-        if ($address->user_id !== $user->id) {
+        // Validate that the user owns this address (with type conversion)
+        if ((int)$address->user_id !== (int)$user->id) {
             \Log::warning('Xtrapay address ownership validation failed', [
                 'user_id' => $user->id,
                 'address_user_id' => $address->user_id,
                 'address_id' => $addressId,
                 'address_owner' => $address->user_id,
-                'current_user' => $user->id
+                'current_user' => $user->id,
+                'user_id_type' => gettype($user->id),
+                'address_user_id_type' => gettype($address->user_id)
             ]);
             return response()->json([
                 'success' => false,
