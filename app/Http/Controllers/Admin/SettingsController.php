@@ -25,9 +25,19 @@ class SettingsController extends Controller
         ]);
 
         foreach ($request->settings as $key => $value) {
+            // Skip null values (empty fields)
+            if ($value === null) {
+                continue;
+            }
+            
             // Handle array values (like enabled_countries)
             if (is_array($value)) {
                 $value = json_encode($value);
+            }
+            
+            // Convert empty strings to appropriate defaults
+            if ($value === '') {
+                $value = $this->getDefaultValue($key);
             }
             
             // Create or update setting
@@ -77,6 +87,25 @@ class SettingsController extends Controller
             'telegram_message_template' => 'Template for Telegram notification messages',
             'enabled_countries' => 'List of countries enabled for international shipping',
             default => null
+        };
+    }
+
+    /**
+     * Get default value for a setting key
+     */
+    private function getDefaultValue($key)
+    {
+        return match($key) {
+            'telegram_bot_token', 'telegram_chat_id' => '',
+            'telegram_enabled' => '0',
+            'notify_new_orders', 'notify_order_updates', 'notify_payments' => '1',
+            'notify_low_stock' => '0',
+            'telegram_message_template' => '🎉 New order received!',
+            'exchange_rate' => '1600',
+            'markup_percentage' => '0',
+            'shipping_cost_usd' => '5.99',
+            'tax_percentage' => '8',
+            default => ''
         };
     }
 
