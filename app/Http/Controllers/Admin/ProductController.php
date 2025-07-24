@@ -291,8 +291,13 @@ class ProductController extends Controller
     /**
      * Remove a specific gallery image from a product.
      */
-    public function removeGalleryImage(Product $product, $index)
+    public function removeGalleryImage(Request $request, Product $product)
     {
+        $request->validate([
+            'index' => 'required|integer|min:0'
+        ]);
+        
+        $index = $request->index;
         $gallery = $product->gallery ?? [];
         
         if (isset($gallery[$index])) {
