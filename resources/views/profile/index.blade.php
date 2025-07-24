@@ -406,6 +406,81 @@
                     </div>
                 </div>
 
+                <!-- Address Management -->
+                <div class="card adminuiux-card form-card mb-4">
+                    <div class="content">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <h5 class="font-600 mb-0">My Addresses</h5>
+                                <small class="text-secondary">{{ $user->addresses->count() }}/5 addresses used</small>
+                            </div>
+                            @if($user->addresses->count() < 5)
+                                <button type="button" class="btn btn-theme btn-sm" data-bs-toggle="modal" data-bs-target="#addAddressModal">
+                                    <i class="bi bi-plus-circle me-1"></i>Add New Address
+                                </button>
+                            @else
+                                <button type="button" class="btn btn-secondary btn-sm" disabled>
+                                    <i class="bi bi-plus-circle me-1"></i>Address Limit Reached
+                                </button>
+                            @endif
+                        </div>
+
+                        @if($user->addresses->count() > 0)
+                            <div class="row">
+                                @foreach($user->addresses as $address)
+                                    <div class="col-12 col-md-6 col-lg-4 mb-3">
+                                        <div class="card address-card h-100" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
+                                            <div class="card-body">
+                                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                                    <h6 class="font-600 mb-1">{{ $address->label ?: 'Address' }}</h6>
+                                                    <div class="dropdown">
+                                                        <button class="btn btn-sm btn-link text-secondary p-0" type="button" data-bs-toggle="dropdown">
+                                                            <i class="bi bi-three-dots-vertical"></i>
+                                                        </button>
+                                                        <ul class="dropdown-menu">
+                                                            <li><a class="dropdown-item" href="#" onclick="editAddress({{ $address->id }})">
+                                                                <i class="bi bi-pencil me-2"></i>Edit
+                                                            </a></li>
+                                                            <li><a class="dropdown-item" href="#" onclick="setDefaultAddress({{ $address->id }})">
+                                                                <i class="bi bi-star me-2"></i>Set as Default
+                                                            </a></li>
+                                                            <li><hr class="dropdown-divider"></li>
+                                                            <li><a class="dropdown-item text-danger" href="#" onclick="deleteAddress({{ $address->id }})">
+                                                                <i class="bi bi-trash me-2"></i>Delete
+                                                            </a></li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                
+                                                @if($address->is_default)
+                                                    <span class="badge bg-success mb-2">Default Address</span>
+                                                @endif
+                                                
+                                                <p class="mb-1"><strong>{{ $address->name }}</strong></p>
+                                                <p class="mb-1 small">{{ $address->phone }}</p>
+                                                <p class="mb-1 small">{{ $address->address_line_1 }}</p>
+                                                @if($address->address_line_2)
+                                                    <p class="mb-1 small">{{ $address->address_line_2 }}</p>
+                                                @endif
+                                                <p class="mb-0 small">{{ $address->city }}, {{ $address->state }} {{ $address->postal_code }}</p>
+                                                <p class="mb-0 small text-secondary">{{ $address->country_display_name }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <div class="text-center py-4">
+                                <i class="bi bi-geo-alt text-secondary" style="font-size: 3rem;"></i>
+                                <p class="text-secondary mt-2">No addresses saved yet</p>
+                                <button type="button" class="btn btn-theme btn-sm" data-bs-toggle="modal" data-bs-target="#addAddressModal">
+                                    <i class="bi bi-plus-circle me-1"></i>Add Your First Address
+                                </button>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+
                 <!-- Account Actions -->
                 <div class="card adminuiux-card summary-card">
                     <div class="content">
@@ -504,6 +579,200 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+</script>
+
+<!-- Add/Edit Address Modal -->
+<div class="modal fade" id="addAddressModal" tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="background: rgba(16,16,19,0.95); border: 1px solid rgba(255,255,255,0.1);">
+            <div class="modal-header border-0">
+                <h5 class="modal-title text-white" id="addAddressModalLabel">Add New Address</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="addressForm" action="{{ route('profile.addresses.store') }}" method="POST">
+                @csrf
+                <input type="hidden" id="address_id" name="address_id">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <label for="label" class="form-label text-white">Address Label (Optional)</label>
+                            <input type="text" class="form-control" id="label" name="label" placeholder="e.g., Home, Office, Vacation Home">
+                        </div>
+                        
+                        <div class="col-12 col-md-6 mb-3">
+                            <label for="name" class="form-label text-white">Full Name *</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        
+                        <div class="col-12 col-md-6 mb-3">
+                            <label for="phone" class="form-label text-white">Phone Number *</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" required>
+                        </div>
+                        
+                        <div class="col-12 mb-3">
+                            <label for="address_line_1" class="form-label text-white">Address Line 1 *</label>
+                            <input type="text" class="form-control" id="address_line_1" name="address_line_1" required>
+                        </div>
+                        
+                        <div class="col-12 mb-3">
+                            <label for="address_line_2" class="form-label text-white">Address Line 2 (Optional)</label>
+                            <input type="text" class="form-control" id="address_line_2" name="address_line_2" placeholder="Apartment, suite, unit, etc.">
+                        </div>
+                        
+                        <div class="col-12 col-md-6 mb-3">
+                            <label for="city" class="form-label text-white">City *</label>
+                            <input type="text" class="form-control" id="city" name="city" required>
+                        </div>
+                        
+                        <div class="col-12 col-md-6 mb-3">
+                            <label for="state" class="form-label text-white">State/Province *</label>
+                            <input type="text" class="form-control" id="state" name="state" required>
+                        </div>
+                        
+                        <div class="col-12 col-md-6 mb-3">
+                            <label for="postal_code" class="form-label text-white">Postal Code *</label>
+                            <input type="text" class="form-control" id="postal_code" name="postal_code" required>
+                        </div>
+                        
+                        <div class="col-12 col-md-6 mb-3">
+                            <label for="country" class="form-label text-white">Country *</label>
+                            <select class="form-control" id="country" name="country" required>
+                                <option value="">Select Country</option>
+                                @foreach(\App\Models\Setting::getAllCountries() as $code => $name)
+                                    <option value="{{ $code }}">{{ $name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        
+                        <div class="col-12 mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="is_default" name="is_default" value="1">
+                                <label class="form-check-label text-white" for="is_default">
+                                    Set as default address
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-theme">Save Address</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Address Confirmation Modal -->
+<div class="modal fade" id="deleteAddressModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="background: rgba(16,16,19,0.95); border: 1px solid rgba(255,255,255,0.1);">
+            <div class="modal-header border-0">
+                <h5 class="modal-title text-white">Delete Address</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-white">Are you sure you want to delete this address? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteAddressForm" method="POST" style="display: inline;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger">Delete Address</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Address management functions
+function editAddress(addressId) {
+    // Fetch address data and populate modal
+    fetch(`/profile/addresses/${addressId}/edit`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('address_id').value = data.id;
+            document.getElementById('label').value = data.label || '';
+            document.getElementById('name').value = data.name;
+            document.getElementById('phone').value = data.phone;
+            document.getElementById('address_line_1').value = data.address_line_1;
+            document.getElementById('address_line_2').value = data.address_line_2 || '';
+            document.getElementById('city').value = data.city;
+            document.getElementById('state').value = data.state;
+            document.getElementById('postal_code').value = data.postal_code;
+            document.getElementById('country').value = data.country;
+            document.getElementById('is_default').checked = data.is_default;
+            
+            document.getElementById('addAddressModalLabel').textContent = 'Edit Address';
+            document.getElementById('addressForm').action = `/profile/addresses/${addressId}`;
+            
+            const modal = new bootstrap.Modal(document.getElementById('addAddressModal'));
+            modal.show();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error loading address data');
+        });
+}
+
+function setDefaultAddress(addressId) {
+    if (confirm('Set this address as your default address?')) {
+        fetch(`/profile/addresses/${addressId}/default`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error setting default address');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error setting default address');
+        });
+    }
+}
+
+function deleteAddress(addressId) {
+    document.getElementById('deleteAddressForm').action = `/profile/addresses/${addressId}`;
+    const modal = new bootstrap.Modal(document.getElementById('deleteAddressModal'));
+    modal.show();
+}
+
+// Reset modal when closed
+document.getElementById('addAddressModal').addEventListener('hidden.bs.modal', function () {
+    document.getElementById('addressForm').reset();
+    document.getElementById('address_id').value = '';
+    document.getElementById('addAddressModalLabel').textContent = 'Add New Address';
+    document.getElementById('addressForm').action = '{{ route("profile.addresses.store") }}';
+});
+
+// Light theme styling for modals
+if (document.documentElement.getAttribute('data-theme') === 'light') {
+    const modals = document.querySelectorAll('.modal-content');
+    modals.forEach(modal => {
+        modal.style.background = '#ffffff';
+        modal.style.border = '1px solid rgba(0, 0, 0, 0.1)';
+    });
+    
+    const modalTitles = document.querySelectorAll('.modal-title');
+    modalTitles.forEach(title => {
+        title.style.color = '#000000';
+    });
+    
+    const modalTexts = document.querySelectorAll('.modal-body p');
+    modalTexts.forEach(text => {
+        text.style.color = '#000000';
+    });
+}
 </script>
 
 @endsection 

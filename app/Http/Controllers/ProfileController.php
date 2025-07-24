@@ -95,6 +95,151 @@ class ProfileController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        return redirect()->route('profile')->with('success', 'Password updated successfully!');
+        return redirect()->route('profile.index')->with('success', 'Password updated successfully!');
+    }
+
+    /**
+     * Display the user's addresses.
+     */
+    public function addresses()
+    {
+        $user = Auth::user();
+        $addresses = $user->addresses()->orderBy('is_default', 'desc')->orderBy('created_at', 'desc')->get();
+        
+        return view('profile.addresses', compact('user', 'addresses'));
+    }
+
+    /**
+     * Store a new address.
+     */
+    public function storeAddress(Request $request)
+    {
+        $user = Auth::user();
+        
+        // Check address limit (5 addresses max)
+        if ($user->addresses()->count() >= 5) {
+            return back()->withErrors(['address' => 'You can only have a maximum of 5 addresses. Please delete an existing address first.']);
+        }
+
+        $request->validate([
+            'label' => 'nullable|string|max:50',
+            'name' => 'required|string|max:255',
+            'phone' => 'required|string|max:20',
+            'address_line_1' => 'required|string|max:255',
+            'address_line_2' => 'nullable|string|max:255',
+            'city' => 'required|string|max:255',
+            'state' => 'required|string|max:255',
+            'postal_code' => 'required|string|max:20',
+            'country' => 'required|string|max:2',
+            'is_default' => 'nullable|boolean'
+        ]);
+
+        // If setting as default, unset other default addresses
+        if ($request->boolean('is_default')) {
+            $user->addresses()->update(['is_default' => false]);
+        }
+
+        $address = $user->addresses()->create([
+            'label' => $request->label,
+            'name' => $request->name,
+            'phone' => $request->phone,
+            'address_line_1' => $request->address_line_1,
+            'address_line_2' => $request->address_line_2,
+            'city' => $request->city,
+            'state' => $request->state,
+            'postal_code' => $request->postal_code,
+            'country' => $request->country,
+            'is_default' => $request->boolean('is_default')
+        ]);
+
+        return redirect()->route('profile.index')->with('success', 'Address added successfully!');
+    }
+
+    /**
+     * Show address for editing.
+     */
+    public function editAddress($id)
+    {
+        $user = Auth::user();
+        $address = $user->addresses()->findOrFail($id);
+        
+        return response()->json($address);
+    }
+
+    /**
+     * Update an address.
+     */
+    public function updateAddress(Request $request, $id)
+    {
+        $user = Auth::user();
+        $address = $user->addresses()->findOrFail($id);
+
+        $request->validate([
+            'label' => 'nullable|string|max:50',
+            'name' => 'required|string|max:255',
+            'phone' => 'required|string|max:20',
+            'address_line_1' => 'required|string|max:255',
+            'address_line_2' => 'nullable|string|max:255',
+            'city' => 'required|string|max:255',
+            'state' => 'required|string|max:255',
+            'postal_code' => 'required|string|max:20',
+            'country' => 'required|string|max:2',
+            'is_default' => 'nullable|boolean'
+        ]);
+
+        // If setting as default, unset other default addresses
+        if ($request->boolean('is_default')) {
+            $user->addresses()->where('id', '!=', $id)->update(['is_default' => false]);
+        }
+
+        $address->update([
+            'label' => $request->label,
+            'name' => $request->name,
+            'phone' => $request->phone,
+            'address_line_1' => $request->address_line_1,
+            'address_line_2' => $request->address_line_2,
+            'city' => $request->city,
+            'state' => $request->state,
+            'postal_code' => $request->postal_code,
+            'country' => $request->country,
+            'is_default' => $request->boolean('is_default')
+        ]);
+
+        return redirect()->route('profile.index')->with('success', 'Address updated successfully!');
+    }
+
+    /**
+     * Set an address as default.
+     */
+    public function setDefaultAddress($id)
+    {
+        $user = Auth::user();
+        $address = $user->addresses()->findOrFail($id);
+
+        // Unset all other default addresses
+        $user->addresses()->update(['is_default' => false]);
+        
+        // Set this address as default
+        $address->update(['is_default' => true]);
+
+        return response()->json(['success' => true]);
+    }
+
+    /**
+     * Delete an address.
+     */
+    public function deleteAddress($id)
+    {
+        $user = Auth::user();
+        $address = $user->addresses()->findOrFail($id);
+
+        // Don't allow deletion if it's the only address
+        if ($user->addresses()->count() === 1) {
+            return back()->withErrors(['address' => 'You must have at least one address.']);
+        }
+
+        $address->delete();
+
+        return redirect()->route('profile.index')->with('success', 'Address deleted successfully!');
     }
 } 

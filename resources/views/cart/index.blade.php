@@ -520,10 +520,15 @@
                     <!-- Shipping Address Selection -->
                     @auth
                         <div class="shipping-section mb-4">
-                            <h5 class="font-600 mb-3">Shipping Address</h5>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="font-600 mb-0">Shipping Address</h5>
+                                <a href="{{ route('profile.index') }}" class="btn btn-outline-theme btn-sm">
+                                    <i class="bi bi-gear me-1"></i>Manage Addresses
+                                </a>
+                            </div>
                             
                             @php
-                                $userAddresses = auth()->user()->addresses ?? collect();
+                                $userAddresses = auth()->user()->addresses()->orderBy('is_default', 'desc')->orderBy('created_at', 'desc')->get();
                                 $enabledCountries = \App\Models\Setting::getEnabledCountries();
                                 $usStates = \App\Models\Setting::getUsStates();
                             @endphp
@@ -534,10 +539,20 @@
                                         <div class="form-check mb-2">
                                             <input class="form-check-input" type="radio" name="shipping_address" 
                                                    id="address_{{ $address->id }}" value="{{ $address->id }}" 
-                                                   {{ $loop->first ? 'checked' : '' }}>
+                                                   {{ $address->is_default ? 'checked' : '' }}>
                                             <label class="form-check-label" for="address_{{ $address->id }}">
                                                 <div class="address-info">
-                                                    <strong>{{ $address->name }}</strong><br>
+                                                    <div class="d-flex justify-content-between align-items-start">
+                                                        <div>
+                                                            <strong>{{ $address->name }}</strong>
+                                                            @if($address->is_default)
+                                                                <span class="badge bg-success ms-2">Default</span>
+                                                            @endif
+                                                            @if($address->label)
+                                                                <span class="badge bg-secondary ms-1">{{ $address->label }}</span>
+                                                            @endif
+                                                        </div>
+                                                    </div>
                                                     <small class="text-secondary">
                                                         {{ $address->address_line_1 }}<br>
                                                         @if($address->address_line_2){{ $address->address_line_2 }}<br>@endif
