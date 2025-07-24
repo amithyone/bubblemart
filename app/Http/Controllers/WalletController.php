@@ -98,6 +98,7 @@ class WalletController extends Controller
                 'balance_after' => $wallet->balance, // No change yet
                 'description' => 'Pending XtraPay funding',
                 'reference_type' => 'wallet_funding',
+                'reference_id' => $result['reference'], // Set the reference_id for webhook lookup
                 'status' => 'pending',
                 'metadata' => [
                     'payment_method' => 'xtrapay',
@@ -169,6 +170,7 @@ class WalletController extends Controller
                 'balance_after' => $wallet->balance, // No change yet
                 'description' => 'Pending PayVibe funding',
                 'reference_type' => 'wallet_funding',
+                'reference_id' => $result['reference'], // Set the reference_id for webhook lookup
                 'status' => 'pending',
                 'metadata' => [
                     'payment_method' => 'payvibe',

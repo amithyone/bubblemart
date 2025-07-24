@@ -258,7 +258,7 @@ class PayVibeService
             // Find the pending transaction to get the base amount
             $transaction = \App\Models\WalletTransaction::where('type', 'credit')
                 ->where('status', 'pending')
-                ->whereJsonContains('metadata->reference', $reference)
+                ->where('reference_id', $reference)
                 ->first();
             
             if ($transaction) {
@@ -282,7 +282,7 @@ class PayVibeService
                 // Check if transaction was already processed
                 $completedTransaction = \App\Models\WalletTransaction::where('type', 'credit')
                     ->where('status', 'completed')
-                    ->whereJsonContains('metadata->reference', $reference)
+                    ->where('reference_id', $reference)
                     ->first();
                 
                 if ($completedTransaction) {

@@ -143,7 +143,7 @@ class WalletChargeService
     {
         try {
             // Find the pending transaction with this reference
-            $transaction = \App\Models\WalletTransaction::where('reference', $reference)
+            $transaction = \App\Models\WalletTransaction::where('reference_id', $reference)
                 ->where('type', 'credit')
                 ->where('status', 'pending')
                 ->first();
@@ -194,9 +194,7 @@ class WalletChargeService
             try {
                 // Update transaction status
                 $transaction->update([
-                    'status' => 'completed',
-                    'processed_at' => now(),
-                    'gateway' => $gateway
+                    'status' => 'completed'
                 ]);
 
                 // Credit the wallet
