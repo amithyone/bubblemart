@@ -246,6 +246,42 @@
                     </div>
                 </div>
 
+                <!-- Enabled Countries Settings -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-globe me-2"></i>International Shipping Settings</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <strong>Enabled Countries for International Shipping</strong>
+                                <small class="text-muted d-block">Select countries where international products can be shipped</small>
+                            </label>
+                            <div class="row">
+                                @php
+                                    $enabledCountries = json_decode($settings->where('key', 'enabled_countries')->first()->value ?? '[]', true) ?: [];
+                                    $allCountries = \App\Models\Setting::getEnabledCountries();
+                                @endphp
+                                @foreach($allCountries as $code => $name)
+                                    <div class="col-md-4 col-sm-6 mb-2">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" 
+                                                   name="settings[enabled_countries][]" 
+                                                   value="{{ $code }}" 
+                                                   id="country_{{ $code }}"
+                                                   {{ in_array($code, $enabledCountries) ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="country_{{ $code }}">
+                                                {{ $name }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                            <div class="form-text">Only selected countries will be available for international product shipping</div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Test Calculation Results -->
                 <div class="card mb-4" id="testResults" style="display: none;">
                     <div class="card-header">

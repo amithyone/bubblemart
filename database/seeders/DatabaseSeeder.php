@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             StoreSeeder::class,
             ProductSeeder::class,
             SettingsSeeder::class,
+            EnabledCountriesSeeder::class,
             WearableVariationsSeeder::class,
             JewelrySubcategoriesSeeder::class,
             WristwatchVariationSeeder::class,

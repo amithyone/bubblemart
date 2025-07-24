@@ -21,13 +21,17 @@ class SettingsController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'settings' => 'required|array',
-            'settings.*' => 'required'
+            'settings' => 'required|array'
         ]);
 
         foreach ($request->settings as $key => $value) {
             $setting = Setting::where('key', $key)->first();
             if ($setting) {
+                // Handle array values (like enabled_countries)
+                if (is_array($value)) {
+                    $value = json_encode($value);
+                }
+                
                 $setting->update(['value' => $value]);
                 Setting::clearCache();
             }

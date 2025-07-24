@@ -389,6 +389,19 @@
                                         <h5 class="font-600 mb-1">{{ $item['product']->name }}</h5>
                                         <p class="color-theme mb-2">{{ $item['product']->store->name ?? 'Bubblemart' }}</p>
                                         
+                                        <!-- Product Scope Badge -->
+                                        <div class="mb-2">
+                                            @if($item['product']->isUsOnly())
+                                                <span class="badge bg-warning text-dark me-2">
+                                                    <i class="bi bi-geo-alt-fill me-1"></i>US Only
+                                                </span>
+                                            @else
+                                                <span class="badge bg-success me-2">
+                                                    <i class="bi bi-globe me-1"></i>International
+                                                </span>
+                                            @endif
+                                        </div>
+                                        
                                         @if($item['customization'])
                                             <div class="mb-2">
                                                 <span class="badge bg-theme-accent-1 me-2">{{ ucfirst($item['customization']->type) }} Customization</span>
@@ -504,6 +517,48 @@
                         </div>
                     </div>
                     
+                    <!-- Shipping Address Selection -->
+                    @auth
+                        <div class="shipping-section mb-4">
+                            <h5 class="font-600 mb-3">Shipping Address</h5>
+                            
+                            @php
+                                $userAddresses = auth()->user()->addresses ?? collect();
+                                $enabledCountries = \App\Models\Setting::getEnabledCountries();
+                                $usStates = \App\Models\Setting::getUsStates();
+                            @endphp
+                            
+                            @if($userAddresses->count() > 0)
+                                <div class="address-selection">
+                                    @foreach($userAddresses as $address)
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="radio" name="shipping_address" 
+                                                   id="address_{{ $address->id }}" value="{{ $address->id }}" 
+                                                   {{ $loop->first ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="address_{{ $address->id }}">
+                                                <div class="address-info">
+                                                    <strong>{{ $address->name }}</strong><br>
+                                                    <small class="text-secondary">
+                                                        {{ $address->address_line_1 }}<br>
+                                                        @if($address->address_line_2){{ $address->address_line_2 }}<br>@endif
+                                                        {{ $address->city }}, {{ $address->getStateDisplayNameAttribute() }} {{ $address->postal_code }}<br>
+                                                        {{ $address->getCountryDisplayNameAttribute() }}
+                                                    </small>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle me-2"></i>
+                                    <strong>No addresses found:</strong> Please add a shipping address to continue.
+                                    <a href="{{ route('profile.index') }}" class="alert-link">Add Address</a>
+                                </div>
+                            @endif
+                        </div>
+                    @endauth
+
                     <!-- Payment Options -->
                     <div class="payment-section">
                         <h5 class="font-600 mb-3">Payment Method</h5>
@@ -659,7 +714,14 @@ document.addEventListener('DOMContentLoaded', function() {
 function processPayment() {
     console.log('Payment process started');
     const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+    const shippingAddress = document.querySelector('input[name="shipping_address"]:checked');
     const total = {{ $total + 500 }}; // Total including delivery fee
+    
+    // Validate shipping address selection
+    if (!shippingAddress) {
+        showPaymentErrorModal('Shipping Address Required', 'Please select a shipping address to continue.');
+        return;
+    }
     
     console.log('Payment method:', paymentMethod);
     console.log('Total amount:', total);
@@ -679,7 +741,8 @@ function processPayment() {
         @endif
         
         // Process wallet payment
-        showWalletConfirmationModal(total);
+        const addressId = shippingAddress.value;
+        showWalletConfirmationModal(total, addressId);
     } else if (paymentMethod === 'xtrapay') {
         // Process Xtrapay payment
         processXtrapayPayment(total);
@@ -690,8 +753,8 @@ function processPayment() {
 }
 
 // Process wallet payment
-function processWalletPayment(amount) {
-    console.log('Processing wallet payment for amount:', amount);
+function processWalletPayment(amount, addressId = null) {
+    console.log('Processing wallet payment for amount:', amount, 'address:', addressId);
     
     // Show loading
     const payButton = document.querySelector('button[onclick="processPayment()"]');
@@ -706,7 +769,8 @@ function processWalletPayment(amount) {
             'X-CSRF-TOKEN': '{{ csrf_token() }}'
         },
         body: JSON.stringify({
-            amount: amount
+            amount: amount,
+            address_id: addressId
         })
     })
     .then(response => {
@@ -1054,7 +1118,7 @@ function showPaymentErrorModal(title, message) {
 }
 
 // Show wallet confirmation modal
-function showWalletConfirmationModal(amount) {
+function showWalletConfirmationModal(amount, addressId = null) {
     const currentBalance = {{ auth()->user()->wallet->balance ?? 0 }};
     const balanceAfterPayment = currentBalance - amount;
     
@@ -1142,8 +1206,12 @@ function confirmWalletPayment(amount) {
     const bootstrapModal = bootstrap.Modal.getInstance(modalElement);
     bootstrapModal.hide();
     
-    console.log('Processing wallet payment for amount:', amount);
-    processWalletPayment(amount);
+    // Get selected address
+    const shippingAddress = document.querySelector('input[name="shipping_address"]:checked');
+    const addressId = shippingAddress ? shippingAddress.value : null;
+    
+    console.log('Processing wallet payment for amount:', amount, 'address:', addressId);
+    processWalletPayment(amount, addressId);
 }
 
 // Show payment success modal

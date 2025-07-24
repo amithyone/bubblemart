@@ -136,6 +136,84 @@ class Setting extends Model
     }
 
     /**
+     * Get enabled countries list
+     */
+    public static function getEnabledCountries(): array
+    {
+        return static::getValue('enabled_countries', [
+            'US' => 'United States',
+            'CA' => 'Canada',
+            'GB' => 'United Kingdom',
+            'AU' => 'Australia',
+            'DE' => 'Germany',
+            'FR' => 'France',
+            'IT' => 'Italy',
+            'ES' => 'Spain',
+            'NL' => 'Netherlands',
+            'BE' => 'Belgium',
+            'CH' => 'Switzerland',
+            'AT' => 'Austria',
+            'SE' => 'Sweden',
+            'NO' => 'Norway',
+            'DK' => 'Denmark',
+            'FI' => 'Finland',
+            'IE' => 'Ireland',
+            'NZ' => 'New Zealand',
+            'JP' => 'Japan',
+            'SG' => 'Singapore',
+            'HK' => 'Hong Kong',
+            'KR' => 'South Korea',
+            'AE' => 'United Arab Emirates',
+            'SA' => 'Saudi Arabia',
+            'IL' => 'Israel',
+            'BR' => 'Brazil',
+            'MX' => 'Mexico',
+            'AR' => 'Argentina',
+            'CL' => 'Chile',
+            'CO' => 'Colombia',
+            'PE' => 'Peru',
+            'ZA' => 'South Africa',
+            'EG' => 'Egypt',
+            'MA' => 'Morocco',
+            'NG' => 'Nigeria',
+            'KE' => 'Kenya',
+            'GH' => 'Ghana',
+            'UG' => 'Uganda',
+            'TZ' => 'Tanzania',
+            'ET' => 'Ethiopia',
+            'IN' => 'India',
+            'PK' => 'Pakistan',
+            'BD' => 'Bangladesh',
+            'LK' => 'Sri Lanka',
+            'NP' => 'Nepal',
+            'TH' => 'Thailand',
+            'VN' => 'Vietnam',
+            'MY' => 'Malaysia',
+            'ID' => 'Indonesia',
+            'PH' => 'Philippines'
+        ]);
+    }
+
+    /**
+     * Get US states list
+     */
+    public static function getUsStates(): array
+    {
+        return [
+            'AL' => 'Alabama', 'AK' => 'Alaska', 'AZ' => 'Arizona', 'AR' => 'Arkansas', 'CA' => 'California',
+            'CO' => 'Colorado', 'CT' => 'Connecticut', 'DE' => 'Delaware', 'FL' => 'Florida', 'GA' => 'Georgia',
+            'HI' => 'Hawaii', 'ID' => 'Idaho', 'IL' => 'Illinois', 'IN' => 'Indiana', 'IA' => 'Iowa',
+            'KS' => 'Kansas', 'KY' => 'Kentucky', 'LA' => 'Louisiana', 'ME' => 'Maine', 'MD' => 'Maryland',
+            'MA' => 'Massachusetts', 'MI' => 'Michigan', 'MN' => 'Minnesota', 'MS' => 'Mississippi', 'MO' => 'Missouri',
+            'MT' => 'Montana', 'NE' => 'Nebraska', 'NV' => 'Nevada', 'NH' => 'New Hampshire', 'NJ' => 'New Jersey',
+            'NM' => 'New Mexico', 'NY' => 'New York', 'NC' => 'North Carolina', 'ND' => 'North Dakota', 'OH' => 'Ohio',
+            'OK' => 'Oklahoma', 'OR' => 'Oregon', 'PA' => 'Pennsylvania', 'RI' => 'Rhode Island', 'SC' => 'South Carolina',
+            'SD' => 'South Dakota', 'TN' => 'Tennessee', 'TX' => 'Texas', 'UT' => 'Utah', 'VT' => 'Vermont',
+            'VA' => 'Virginia', 'WA' => 'Washington', 'WV' => 'West Virginia', 'WI' => 'Wisconsin', 'WY' => 'Wyoming'
+        ];
+    }
+
+    /**
      * Clear all settings cache
      */
     public static function clearCache()

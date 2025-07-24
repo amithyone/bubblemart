@@ -22,6 +22,57 @@ class CartController extends Controller
     }
 
     /**
+     * Get cart items from session data
+     */
+    private function getCartItems($cart)
+    {
+        $cartItems = [];
+        
+        foreach ($cart as $cartKey => $item) {
+            $parts = explode('_', $cartKey);
+            $productId = $parts[0];
+            
+            $product = Product::find($productId);
+            if ($product) {
+                $cartItems[] = [
+                    'product' => $product,
+                    'cartKey' => $cartKey,
+                    'item' => $item
+                ];
+            }
+        }
+        
+        return $cartItems;
+    }
+
+    /**
+     * Check if cart items are compatible with the given address
+     */
+    private function validateCartScopeCompatibility($cartItems, $address)
+    {
+        $errors = [];
+        
+        foreach ($cartItems as $item) {
+            $product = $item['product'];
+            
+            // Check if US-only product is being shipped to non-US address
+            if ($product->isUsOnly() && !$address->isUsAddress()) {
+                $errors[] = "Product '{$product->name}' is US-only and cannot be shipped to {$address->getCountryDisplayNameAttribute()}";
+            }
+            
+            // Check if international product is being shipped to non-enabled country
+            if ($product->isInternational()) {
+                $enabledCountries = \App\Models\Setting::getEnabledCountries();
+                if (!array_key_exists($address->country, $enabledCountries)) {
+                    $errors[] = "Product '{$product->name}' cannot be shipped to {$address->getCountryDisplayNameAttribute()}";
+                }
+            }
+        }
+        
+        return $errors;
+    }
+
+    /**
      * Display the shopping cart.
      */
     public function index()
@@ -370,12 +421,35 @@ class CartController extends Controller
     public function payWithWallet(Request $request)
     {
         $request->validate([
-            'amount' => 'required|numeric|min:1'
+            'amount' => 'required|numeric|min:1',
+            'address_id' => 'required|exists:addresses,id'
         ]);
 
         $user = auth()->user();
         $wallet = $user->wallet;
         $amount = $request->amount;
+        $address = Address::findOrFail($request->address_id);
+
+        // Validate that the user owns this address
+        if ($address->user_id !== $user->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid shipping address selected.'
+            ]);
+        }
+
+        // Get cart items for scope validation
+        $cart = Session::get('cart', []);
+        $cartItems = $this->getCartItems($cart);
+        
+        // Validate product scope compatibility
+        $scopeErrors = $this->validateCartScopeCompatibility($cartItems, $address);
+        if (!empty($scopeErrors)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Shipping restriction: ' . implode(', ', $scopeErrors)
+            ]);
+        }
 
         // Log the payment attempt
         \Log::info('Wallet payment attempt', [

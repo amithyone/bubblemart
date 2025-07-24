@@ -101,6 +101,15 @@
                     <label class="mobile-checkbox-label" for="allow_customization">Allow customization</label>
                 </div>
                 
+                <div class="mobile-form-group">
+                    <label for="scope">Product Scope <span class="text-danger">*</span></label>
+                    <select name="scope" id="scope" class="mobile-input" required>
+                        <option value="international" {{ old('scope', 'international') == 'international' ? 'selected' : '' }}>International (Worldwide)</option>
+                        <option value="us_only" {{ old('scope') == 'us_only' ? 'selected' : '' }}>US Only</option>
+                    </select>
+                    <small class="text-muted">US Only products can only be shipped to US addresses</small>
+                </div>
+                
                 <div class="d-flex gap-3 mt-4">
                     <button type="submit" class="mobile-btn mobile-btn-primary flex-fill">
                         <i class="fas fa-plus me-2"></i>Create Product

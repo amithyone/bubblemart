@@ -31,4 +31,33 @@ class Address extends Model
     {
         return $this->belongsTo(Order::class);
     }
+
+    /**
+     * Check if this is a US address
+     */
+    public function isUsAddress(): bool
+    {
+        return $this->country === 'US';
+    }
+
+    /**
+     * Get country display name
+     */
+    public function getCountryDisplayNameAttribute(): string
+    {
+        $countries = \App\Models\Setting::getEnabledCountries();
+        return $countries[$this->country] ?? $this->country;
+    }
+
+    /**
+     * Get state display name (for US addresses)
+     */
+    public function getStateDisplayNameAttribute(): string
+    {
+        if ($this->isUsAddress()) {
+            $states = \App\Models\Setting::getUsStates();
+            return $states[$this->state] ?? $this->state;
+        }
+        return $this->state;
+    }
 }

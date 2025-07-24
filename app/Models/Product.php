@@ -21,6 +21,7 @@ class Product extends Model
         'is_featured',
         'is_active',
         'allow_customization',
+        'scope',
         'stock',
         'sku',
         'delivery_options',
@@ -152,5 +153,29 @@ class Product extends Model
     public function getFormattedPriceUsdAttribute()
     {
         return "$" . number_format($this->final_price, 2);
+    }
+
+    /**
+     * Check if product is US-only
+     */
+    public function isUsOnly(): bool
+    {
+        return $this->scope === 'us_only';
+    }
+
+    /**
+     * Check if product is international
+     */
+    public function isInternational(): bool
+    {
+        return $this->scope === 'international';
+    }
+
+    /**
+     * Get scope display name
+     */
+    public function getScopeDisplayNameAttribute(): string
+    {
+        return $this->scope === 'us_only' ? 'US Only' : 'International';
     }
 }
