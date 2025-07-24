@@ -16,9 +16,13 @@ class CategoryController extends Controller
         $categories = Category::where('is_active', true)
             ->whereNull('parent_id') // Only show parent categories
             ->orderBy('sort_order')
-            ->withCount('products')
+            ->withCount(['products' => function($query) {
+                $query->where('is_active', true);
+            }])
             ->with(['children' => function($query) {
-                $query->withCount('products');
+                $query->withCount(['products' => function($query) {
+                    $query->where('is_active', true);
+                }]);
             }])
             ->get();
 
@@ -41,7 +45,9 @@ class CategoryController extends Controller
     {
         // Load the category with its children and their product counts
         $category->load(['children' => function($query) {
-            $query->withCount('products');
+            $query->withCount(['products' => function($query) {
+                $query->where('is_active', true);
+            }]);
         }]);
 
         // Get products from this category and all its subcategories

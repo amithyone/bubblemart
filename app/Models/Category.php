@@ -33,6 +33,11 @@ class Category extends Model
         return $this->hasMany(Product::class);
     }
 
+    public function activeProducts(): HasMany
+    {
+        return $this->hasMany(Product::class)->where('is_active', true);
+    }
+
     public function parent(): BelongsTo
     {
         return $this->belongsTo(Category::class, 'parent_id');
@@ -68,14 +73,14 @@ class Category extends Model
 
     public function getAllProducts()
     {
-        $productIds = $this->products->pluck('id');
+        $productIds = $this->activeProducts->pluck('id');
         
         // Get products from subcategories
         foreach ($this->children as $child) {
             $productIds = $productIds->merge($child->getAllProducts()->pluck('id'));
         }
         
-        return Product::whereIn('id', $productIds);
+        return Product::whereIn('id', $productIds)->where('is_active', true);
     }
 
     /**
