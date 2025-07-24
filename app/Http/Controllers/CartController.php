@@ -736,16 +736,16 @@ class CartController extends Controller
                 
                 $unitPrice = $product->final_price_naira + $variationAdjustment + ($customization ? $customization->additional_cost : 0);
                 
-                // Use shipping address for receiver information
-                $receiverName = $order->receiver_name;
-                $receiverAddress = $order->receiver_address;
-                $receiverPhone = $order->receiver_phone;
+                // Use shipping address for receiver information with fallbacks
+                $receiverName = $order->receiver_name ?: $shippingAddress->name ?: 'Customer';
+                $receiverAddress = $order->receiver_address ?: $shippingAddress->address_line_1 ?: 'Address not provided';
+                $receiverPhone = $order->receiver_phone ?: $shippingAddress->phone ?: 'Phone not provided';
                 $receiverNote = $order->receiver_note;
                 
                 if ($customization) {
                     // Use customization receiver info if available
-                    $receiverName = $customization->receiver_name ?: $order->receiver_name;
-                    $receiverPhone = $customization->receiver_phone ?: $order->receiver_phone;
+                    $receiverName = $customization->receiver_name ?: $receiverName;
+                    $receiverPhone = $customization->receiver_phone ?: $receiverPhone;
                     $receiverNote = $customization->receiver_note;
                     
                     // Build address from customization fields if available
@@ -760,10 +760,20 @@ class CartController extends Controller
                         $receiverAddress = implode(', ', $addressParts);
                     } elseif ($customization->receiver_address) {
                         $receiverAddress = $customization->receiver_address;
-                    } else {
-                        $receiverAddress = $order->receiver_address;
                     }
                 }
+
+                // Ensure we have valid values for required fields
+                $receiverName = $receiverName ?: 'Customer';
+                $receiverAddress = $receiverAddress ?: 'Address not provided';
+                $receiverPhone = $receiverPhone ?: 'Phone not provided';
+
+                \Log::info('Creating order item with receiver info', [
+                    'receiver_name' => $receiverName,
+                    'receiver_address' => $receiverAddress,
+                    'receiver_phone' => $receiverPhone,
+                    'product_id' => $product->id
+                ]);
 
                 $orderItem = OrderItem::create([
                     'order_id' => $order->id,
