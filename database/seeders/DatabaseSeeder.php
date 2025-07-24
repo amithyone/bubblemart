@@ -25,11 +25,18 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,
             StoreSeeder::class,
             ProductSeeder::class,
-            SettingsSeeder::class,
-            EnabledCountriesSeeder::class,
+            CustomizeProductSeeder::class,
+            CustomizeCategorySeeder::class,
+            SubcategorySeeder::class,
+            CategoryVariationTypesSeeder::class,
+            ProductVariationSeeder::class,
             WearableVariationsSeeder::class,
-            JewelrySubcategoriesSeeder::class,
+            UpdateProductsSeeder::class,
+            SettingsSeeder::class,
+            TelegramSettingsSeeder::class,
             WristwatchVariationSeeder::class,
+            EnabledCountriesSeeder::class,
+            TestUserSeeder::class, // Add test user for payment testing
         ]);
     }
 }
