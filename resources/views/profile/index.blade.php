@@ -247,6 +247,19 @@
     color: #721c24 !important;
 }
 
+/* Modal background fixes */
+#addAddressModal .modal-content,
+#deleteAddressModal .modal-content {
+    background: #101013 !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+}
+
+[data-theme="light"] #addAddressModal .modal-content,
+[data-theme="light"] #deleteAddressModal .modal-content {
+    background: #ffffff !important;
+    border: 1px solid rgba(0,0,0,0.1) !important;
+}
+
 /* Enhanced card padding */
 .profile-card {
     padding: 2rem !important;
@@ -584,7 +597,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <!-- Add/Edit Address Modal -->
 <div class="modal fade" id="addAddressModal" tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content" style="background: rgba(16,16,19,0.95); border: 1px solid rgba(255,255,255,0.1);">
+        <div class="modal-content" style="background: #101013; border: 1px solid rgba(255,255,255,0.1);">
             <div class="modal-header border-0">
                 <h5 class="modal-title text-white" id="addAddressModalLabel">Add New Address</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -666,7 +679,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <!-- Delete Address Confirmation Modal -->
 <div class="modal fade" id="deleteAddressModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content" style="background: rgba(16,16,19,0.95); border: 1px solid rgba(255,255,255,0.1);">
+        <div class="modal-content" style="background: #101013; border: 1px solid rgba(255,255,255,0.1);">
             <div class="modal-header border-0">
                 <h5 class="modal-title text-white">Delete Address</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
