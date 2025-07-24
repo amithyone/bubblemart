@@ -336,11 +336,28 @@
                         <input type="text" 
                                class="form-control border-0 bg-none" 
                                name="tracking_input" 
-                               placeholder="Order number or phone number" 
+                               placeholder="Order number (any format) or phone number" 
                                required
                                style="font-size: 1.1rem;">
                     </div>
                 </div>
+                
+                <!-- Order Number Format Examples -->
+                <div class="mb-4">
+                    <p class="text-secondary small mb-2">You can use any of these formats:</p>
+                    <div class="row gx-2 justify-content-center">
+                        <div class="col-auto">
+                            <span class="badge bg-secondary me-1">#ORD-688294FDBAD38</span>
+                        </div>
+                        <div class="col-auto">
+                            <span class="badge bg-secondary me-1">ORD-688294FDBAD38</span>
+                        </div>
+                        <div class="col-auto">
+                            <span class="badge bg-secondary">688294FDBAD38</span>
+                        </div>
+                    </div>
+                </div>
+                
                 <button type="submit" class="btn btn-theme btn-lg px-5" style="border-radius: 15px;">
                     <i class="bi bi-search me-2"></i>
                     Track Gift

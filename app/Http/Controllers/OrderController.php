@@ -373,10 +373,14 @@ class OrderController extends Controller
             'tracking_input' => 'required|string',
         ]);
 
-        $input = $request->tracking_input;
+        $input = trim($request->tracking_input);
+
+        // Clean and normalize the input
+        $cleanInput = $this->normalizeOrderNumber($input);
 
         // Try to find order by order number or phone
-        $order = Order::where('order_number', $input)
+        $order = Order::where('order_number', $cleanInput)
+            ->orWhere('order_number', $input) // Try original input as well
             ->orWhereHas('orderItems', function ($query) use ($input) {
                 $query->where('receiver_phone', $input);
             })
@@ -388,5 +392,31 @@ class OrderController extends Controller
         }
 
         return view('track.result', compact('order'));
+    }
+
+    /**
+     * Normalize order number input to handle different formats.
+     */
+    private function normalizeOrderNumber($input)
+    {
+        // Remove any leading/trailing whitespace
+        $input = trim($input);
+        
+        // Remove leading # if present
+        if (strpos($input, '#') === 0) {
+            $input = substr($input, 1);
+        }
+        
+        // Remove ORD- prefix if present
+        if (strpos($input, 'ORD-') === 0) {
+            $input = substr($input, 4);
+        }
+        
+        // Add ORD- prefix if not present
+        if (strpos($input, 'ORD-') !== 0) {
+            $input = 'ORD-' . $input;
+        }
+        
+        return $input;
     }
 }
