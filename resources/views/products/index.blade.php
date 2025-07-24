@@ -91,20 +91,20 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(16,16,19,0.8) 0%, rgba(0,0,0,0.9) 100%);
+    background: linear-gradient(135deg, rgba(16,16,19,0.6) 0%, rgba(0,0,0,0.7) 100%);
     z-index: 1;
 }
 
 [data-theme="light"] .product-card-bg::before {
-    background: linear-gradient(135deg, rgba(255,255,255,0.85) 0%, rgba(248,249,250,0.9) 100%);
+    background: linear-gradient(135deg, rgba(255,255,255,0.6) 0%, rgba(248,249,250,0.7) 100%);
 }
 
 .product-card-bg:hover::before {
-    background: linear-gradient(135deg, rgba(16,17,19,0.7) 0%, rgba(0,0,0,0.8) 100%);
+    background: linear-gradient(135deg, rgba(16,17,19,0.5) 0%, rgba(0,0,0,0.6) 100%);
 }
 
 [data-theme="light"] .product-card-bg:hover::before {
-    background: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(248,249,250,0.85) 100%);
+    background: linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(248,249,250,0.6) 100%);
 }
 
 .product-card-content {
@@ -531,19 +531,22 @@
                 // Improved image handling with multiple fallbacks
                 $productImage = null;
                 if ($product->image && Storage::disk('public')->exists($product->image)) {
-                    $productImage = asset('storage/' . $product->image);
+                    $productImage = url('storage/' . $product->image);
                 } elseif ($product->gallery && is_array($product->gallery) && count($product->gallery) > 0) {
                     // Use first gallery image if main image doesn't exist
                     $firstGalleryImage = $product->gallery[0];
                     if (Storage::disk('public')->exists($firstGalleryImage)) {
-                        $productImage = asset('storage/' . $firstGalleryImage);
+                        $productImage = url('storage/' . $firstGalleryImage);
                     }
                 }
                 
                 // Final fallback to default image
                 if (!$productImage) {
-                    $productImage = asset('template-assets/img/ecommerce/image-6.jpg');
+                    $productImage = url('template-assets/img/ecommerce/image-6.jpg');
                 }
+                
+                // Debug: Log the image URL (remove this in production)
+                // \Log::info('Product image URL', ['product' => $product->name, 'image_url' => $productImage]);
             @endphp
             
             <div class="card product-card product-card-bg mb-2 position-relative" 
