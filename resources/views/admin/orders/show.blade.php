@@ -204,176 +204,142 @@
         <div class="col-12">
             <h6 class="mb-2"><i class="fas fa-truck me-2"></i>Complete Delivery Information</h6>
             @foreach($order->items as $item)
-                @if($item->receiver_name || $item->customization)
+                @if($item->receiver_name || $item->receiver_address)
                     <div class="card mb-2">
                         <div class="card-header bg-light py-2">
                             <h6 class="mb-0 text-primary">{{ $item->product->name ?? 'Product' }}</h6>
                         </div>
                         <div class="card-body p-3">
-                            @if($item->customization)
-                                <!-- Complete delivery info from customization object -->
-                                <div class="row mb-2">
-                                    @if($item->customization->receiver_name)
-                                        <div class="col-6">
-                                            <small class="text-muted">Receiver Name</small>
-                                            <p class="mb-1"><strong>{{ $item->customization->receiver_name }}</strong></p>
-                                        </div>
-                                    @endif
-                                    @if($item->customization->receiver_phone)
-                                        <div class="col-6">
-                                            <small class="text-muted">Receiver Phone</small>
-                                            <p class="mb-1"><strong>{{ $item->customization->receiver_phone }}</strong></p>
-                                        </div>
-                                    @endif
-                                    @if($item->customization->receiver_gender)
-                                        <div class="col-6">
-                                            <small class="text-muted">Receiver Gender</small>
-                                            <p class="mb-1"><strong>{{ ucfirst($item->customization->receiver_gender) }}</strong></p>
-                                        </div>
-                                    @endif
-                                    @if($item->customization->sender_name)
-                                        <div class="col-6">
-                                            <small class="text-muted">Sender Name</small>
-                                            <p class="mb-1"><strong>{{ $item->customization->sender_name }}</strong></p>
-                                        </div>
-                                    @endif
+                            <!-- Complete delivery info from order item -->
+                            <div class="row mb-2">
+                                @if($item->receiver_name)
+                                    <div class="col-6">
+                                        <small class="text-muted">Receiver Name</small>
+                                        <p class="mb-1"><strong>{{ $item->receiver_name }}</strong></p>
+                                    </div>
+                                @endif
+                                @if($item->receiver_phone)
+                                    <div class="col-6">
+                                        <small class="text-muted">Receiver Phone</small>
+                                        <p class="mb-1"><strong>{{ $item->receiver_phone }}</strong></p>
+                                    </div>
+                                @endif
+                                @if($item->receiver_gender)
+                                    <div class="col-6">
+                                        <small class="text-muted">Receiver Gender</small>
+                                        <p class="mb-1"><strong>{{ ucfirst($item->receiver_gender) }}</strong></p>
+                                    </div>
+                                @endif
+                                @if($item->sender_name)
+                                    <div class="col-6">
+                                        <small class="text-muted">Sender Name</small>
+                                        <p class="mb-1"><strong>{{ $item->sender_name }}</strong></p>
+                                    </div>
+                                @endif
+                            </div>
+                            
+                            <!-- Complete Address Information -->
+                            @if($item->receiver_address || $item->receiver_street || $item->receiver_city || $item->receiver_house_number)
+                                <div class="mb-2">
+                                    <small class="text-muted">Complete Delivery Address</small>
+                                    <div class="bg-light p-2 rounded">
+                                        @if($item->receiver_house_number){{ $item->receiver_house_number }}, @endif
+                                        @if($item->receiver_street){{ $item->receiver_street }}, @endif
+                                        @if($item->receiver_city){{ $item->receiver_city }}, @endif
+                                        @if($item->receiver_state){{ $item->receiver_state }}, @endif
+                                        @if($item->receiver_zip){{ $item->receiver_zip }}, @endif
+                                        @if($item->receiver_country){{ $item->receiver_country }}@endif
+                                    </div>
                                 </div>
                                 
-                                <!-- Complete Address Information -->
-                                @if($item->customization->receiver_address || $item->customization->receiver_street || $item->customization->receiver_city || $item->customization->receiver_house_number)
-                                    <div class="mb-2">
-                                        <small class="text-muted">Complete Delivery Address</small>
-                                        <div class="bg-light p-2 rounded">
-                                            @if($item->customization->receiver_house_number){{ $item->customization->receiver_house_number }}, @endif
-                                            @if($item->customization->receiver_street){{ $item->customization->receiver_street }}, @endif
-                                            @if($item->customization->receiver_city){{ $item->customization->receiver_city }}, @endif
-                                            @if($item->customization->receiver_state){{ $item->customization->receiver_state }}, @endif
-                                            @if($item->customization->receiver_zip){{ $item->customization->receiver_zip }}, @endif
-                                            @if($item->customization->receiver_country){{ $item->customization->receiver_country }}@endif
-                                        </div>
+                                <!-- Detailed Address Breakdown -->
+                                <div class="mb-2">
+                                    <small class="text-muted">Address Details Breakdown</small>
+                                    <div class="bg-light p-2 rounded">
+                                        @if($item->receiver_house_number)
+                                            <div class="mb-1"><strong>House/Unit Number:</strong> {{ $item->receiver_house_number }}</div>
+                                        @endif
+                                        @if($item->receiver_street)
+                                            <div class="mb-1"><strong>Street:</strong> {{ $item->receiver_street }}</div>
+                                        @endif
+                                        @if($item->receiver_city)
+                                            <div class="mb-1"><strong>City:</strong> {{ $item->receiver_city }}</div>
+                                        @endif
+                                        @if($item->receiver_state)
+                                            <div class="mb-1"><strong>State/Province:</strong> {{ $item->receiver_state }}</div>
+                                        @endif
+                                        @if($item->receiver_zip)
+                                            <div class="mb-1"><strong>ZIP/Postal Code:</strong> {{ $item->receiver_zip }}</div>
+                                        @endif
+                                        @if($item->receiver_country)
+                                            <div class="mb-1"><strong>Country:</strong> {{ $item->receiver_country }}</div>
+                                        @endif
                                     </div>
-                                    
-                                    <!-- Detailed Address Breakdown -->
-                                    <div class="mb-2">
-                                        <small class="text-muted">Address Details Breakdown</small>
-                                        <div class="bg-light p-2 rounded">
-                                            @if($item->customization->receiver_house_number)
-                                                <div class="mb-1"><strong>House/Unit Number:</strong> {{ $item->customization->receiver_house_number }}</div>
-                                            @endif
-                                            @if($item->customization->receiver_street)
-                                                <div class="mb-1"><strong>Street:</strong> {{ $item->customization->receiver_street }}</div>
-                                            @endif
-                                            @if($item->customization->receiver_city)
-                                                <div class="mb-1"><strong>City:</strong> {{ $item->customization->receiver_city }}</div>
-                                            @endif
-                                            @if($item->customization->receiver_state)
-                                                <div class="mb-1"><strong>State/Province:</strong> {{ $item->customization->receiver_state }}</div>
-                                            @endif
-                                            @if($item->customization->receiver_zip)
-                                                <div class="mb-1"><strong>ZIP/Postal Code:</strong> {{ $item->customization->receiver_zip }}</div>
-                                            @endif
-                                            @if($item->customization->receiver_country)
-                                                <div class="mb-1"><strong>Country:</strong> {{ $item->customization->receiver_country }}</div>
-                                            @endif
-                                        </div>
-                                    </div>
-                                @elseif($item->customization->receiver_address)
-                                    <div class="mb-2">
-                                        <small class="text-muted">Delivery Address</small>
-                                        <div class="bg-light p-2 rounded">
-                                            {{ $item->customization->receiver_address }}
-                                        </div>
-                                    </div>
-                                @endif
-                                
-                                @if($item->customization->receiver_note)
-                                    <div class="mb-2">
-                                        <small class="text-muted">Delivery Note</small>
-                                        <div class="bg-light p-2 rounded">
-                                            {{ $item->customization->receiver_note }}
-                                        </div>
-                                    </div>
-                                @endif
-                                
-                                @if($item->customization->delivery_method)
-                                    <div class="mb-2">
-                                        <small class="text-muted">Delivery Method</small>
-                                        <p class="mb-1"><strong>{{ ucwords(str_replace('_', ' ', $item->customization->delivery_method)) }}</strong></p>
-                                    </div>
-                                @endif
-                                
-                                <!-- Customization Details -->
-                                @if($item->customization->type || $item->customization->message || $item->customization->special_request)
-                                    <div class="mb-2">
-                                        <small class="text-muted">Customization Details</small>
-                                        <div class="bg-light p-2 rounded">
-                                            @if($item->customization->type)
-                                                <div class="mb-1">
-                                                    <strong>Type:</strong> {{ ucfirst($item->customization->type) }}
-                                                </div>
-                                            @endif
-                                            @if($item->customization->message)
-                                                <div class="mb-1">
-                                                    <strong>Message:</strong> {{ $item->customization->message }}
-                                                </div>
-                                            @endif
-                                            @if($item->customization->special_request)
-                                                <div class="mb-1">
-                                                    <strong>Special Request:</strong> {{ $item->customization->special_request }}
-                                                </div>
-                                            @endif
-                                            @if($item->customization->additional_cost > 0)
-                                                <div class="mb-1">
-                                                    <strong>Additional Cost:</strong> ₦{{ number_format($item->customization->additional_cost, 2) }}
-                                                </div>
-                                            @endif
-                                        </div>
-                                    </div>
-                                @endif
-                                
-                                @if($item->customization->media_path)
-                                    <div class="mb-3">
-                                        <h6 class="text-primary mb-2"><i class="fas fa-image me-2"></i>Custom Image</h6>
-                                        <div class="text-center">
-                                            <img src="{{ asset('storage/' . $item->customization->media_path) }}" 
-                                                 alt="Custom Design" 
-                                                 class="img-fluid rounded" 
-                                                 style="max-width: 200px; max-height: 200px; object-fit: cover;">
-                                        </div>
-                                    </div>
-                                @endif
-                            @else
-                                <!-- Delivery info from order item fields -->
-                                <div class="row mb-2">
-                                    @if($item->receiver_name)
-                                        <div class="col-6">
-                                            <small class="text-muted">Receiver</small>
-                                            <p class="mb-1"><strong>{{ $item->receiver_name }}</strong></p>
-                                        </div>
-                                    @endif
-                                    @if($item->receiver_phone)
-                                        <div class="col-6">
-                                            <small class="text-muted">Phone</small>
-                                            <p class="mb-1"><strong>{{ $item->receiver_phone }}</strong></p>
-                                        </div>
-                                    @endif
                                 </div>
-                                @if($item->receiver_address)
-                                    <div class="mb-2">
-                                        <small class="text-muted">Delivery Address</small>
-                                        <div class="bg-light p-2 rounded">
-                                            {{ $item->receiver_address }}
-                                        </div>
+                            @elseif($item->receiver_address)
+                                <div class="mb-2">
+                                    <small class="text-muted">Delivery Address</small>
+                                    <div class="bg-light p-2 rounded">
+                                        {{ $item->receiver_address }}
                                     </div>
-                                @endif
-                                @if($item->receiver_note)
-                                    <div class="mb-2">
-                                        <small class="text-muted">Delivery Note</small>
-                                        <div class="bg-light p-2 rounded">
-                                            {{ $item->receiver_note }}
-                                        </div>
+                                </div>
+                            @endif
+                            
+                            @if($item->receiver_note)
+                                <div class="mb-2">
+                                    <small class="text-muted">Delivery Note</small>
+                                    <div class="bg-light p-2 rounded">
+                                        {{ $item->receiver_note }}
                                     </div>
-                                @endif
+                                </div>
+                            @endif
+                            
+                            @if($item->delivery_method)
+                                <div class="mb-2">
+                                    <small class="text-muted">Delivery Method</small>
+                                    <p class="mb-1"><strong>{{ ucwords(str_replace('_', ' ', $item->delivery_method)) }}</strong></p>
+                                </div>
+                            @endif
+                            
+                            <!-- Customization Details (if available) -->
+                            @if($item->customization && ($item->customization->type || $item->customization->message || $item->customization->special_request))
+                                <div class="mb-2">
+                                    <small class="text-muted">Customization Details</small>
+                                    <div class="bg-light p-2 rounded">
+                                        @if($item->customization->type)
+                                            <div class="mb-1">
+                                                <strong>Type:</strong> {{ ucfirst($item->customization->type) }}
+                                            </div>
+                                        @endif
+                                        @if($item->customization->message)
+                                            <div class="mb-1">
+                                                <strong>Message:</strong> {{ $item->customization->message }}
+                                            </div>
+                                        @endif
+                                        @if($item->customization->special_request)
+                                            <div class="mb-1">
+                                                <strong>Special Request:</strong> {{ $item->customization->special_request }}
+                                            </div>
+                                        @endif
+                                        @if($item->customization->additional_cost > 0)
+                                            <div class="mb-1">
+                                                <strong>Additional Cost:</strong> ₦{{ number_format($item->customization->additional_cost, 2) }}
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            @endif
+                            
+                            @if($item->customization && $item->customization->media_path)
+                                <div class="mb-3">
+                                    <h6 class="text-primary mb-2"><i class="fas fa-image me-2"></i>Custom Image</h6>
+                                    <div class="text-center">
+                                        <img src="{{ asset('storage/' . $item->customization->media_path) }}" 
+                                             alt="Custom Design" 
+                                             class="img-fluid rounded" 
+                                             style="max-width: 200px; max-height: 200px; object-fit: cover;">
+                                    </div>
+                                </div>
                             @endif
                         </div>
                     </div>
