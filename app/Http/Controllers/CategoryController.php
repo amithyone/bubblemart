@@ -131,4 +131,102 @@ class CategoryController extends Controller
 
         return view('categories.show', compact('category', 'products'));
     }
+
+    /**
+     * Load more products for a category via AJAX.
+     */
+    public function loadMore(Category $category, Request $request)
+    {
+        // Load the category with its children and their product counts
+        $category->load(['children' => function($query) {
+            $query->withCount('products');
+        }]);
+
+        // Get products from this category and all its subcategories
+        $categoryIds = [$category->id];
+        foreach ($category->children as $child) {
+            $categoryIds[] = $child->id;
+        }
+
+        $query = Product::whereIn('category_id', $categoryIds)
+            ->where('is_active', true)
+            ->with(['store', 'category']);
+
+        // Apply subcategory filter if specified
+        if ($request->filled('subcategory')) {
+            $subcategoryId = $request->subcategory;
+            if ($subcategoryId === 'parent') {
+                $query->where('category_id', $category->id);
+            } else {
+                $query->where('category_id', $subcategoryId);
+            }
+        }
+
+        // Apply gender filter if specified
+        if ($request->filled('gender')) {
+            $gender = $request->gender;
+            
+            if ($category->supportsGenderFiltering()) {
+                if ($category->gender === $gender || $category->gender === 'all') {
+                    $query->where('category_id', $category->id);
+                } else {
+                    $query->where('id', 0);
+                }
+            } else {
+                $genderSubcategoryIds = [];
+                
+                foreach ($category->children as $subcategory) {
+                    $subcategoryName = strtolower($subcategory->name);
+                    
+                    if ($gender === 'male' && (str_contains($subcategoryName, "men's") || str_contains($subcategoryName, "mens"))) {
+                        $genderSubcategoryIds[] = $subcategory->id;
+                    } elseif ($gender === 'female' && (str_contains($subcategoryName, "women's") || str_contains($subcategoryName, "womens"))) {
+                        $genderSubcategoryIds[] = $subcategory->id;
+                    } elseif ($gender === 'unisex' && str_contains($subcategoryName, "unisex")) {
+                        $genderSubcategoryIds[] = $subcategory->id;
+                    }
+                }
+                
+                if (!empty($genderSubcategoryIds)) {
+                    $query->whereIn('category_id', $genderSubcategoryIds);
+                }
+            }
+        }
+
+        // Apply price filter if specified
+        if ($request->filled('min_price')) {
+            $query->where('price_naira', '>=', $request->min_price);
+        }
+        if ($request->filled('max_price')) {
+            $query->where('price_naira', '<=', $request->max_price);
+        }
+
+        // Apply sort order
+        $sortBy = $request->get('sort', 'newest');
+        switch ($sortBy) {
+            case 'price_low':
+                $query->orderBy('price_naira', 'asc');
+                break;
+            case 'price_high':
+                $query->orderBy('price_naira', 'desc');
+                break;
+            case 'name':
+                $query->orderBy('name', 'asc');
+                break;
+            case 'newest':
+            default:
+                $query->orderBy('created_at', 'desc');
+                break;
+        }
+
+        $products = $query->paginate(12)->withQueryString();
+
+        return response()->json([
+            'products' => $products->items(),
+            'hasMorePages' => $products->hasMorePages(),
+            'nextPageUrl' => $products->nextPageUrl(),
+            'currentPage' => $products->currentPage(),
+            'lastPage' => $products->lastPage(),
+        ]);
+    }
 }

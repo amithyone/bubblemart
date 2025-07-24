@@ -38,6 +38,7 @@ Route::get('/products/{product:slug}', [ProductController::class, 'show'])->name
 // Category routes
 Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
 Route::get('/categories/{category:slug}', [CategoryController::class, 'show'])->name('categories.show');
+Route::get('/categories/{category:slug}/load-more', [CategoryController::class, 'loadMore'])->name('categories.load-more');
 
 // Customization routes (guest access for viewing)
 Route::get('/customize', [CustomizationController::class, 'index'])->name('customize.index');

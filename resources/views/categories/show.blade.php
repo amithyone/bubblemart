@@ -428,10 +428,18 @@ strong, b {
         @endforeach
     </div>
     
-    <!-- Pagination -->
-    @if($products->hasPages())
+    <!-- Load More Button -->
+    @if($products->hasMorePages())
     <div class="d-flex justify-content-center mt-4">
-        {{ $products->links() }}
+        <button id="load-more-btn" class="btn btn-theme btn-lg px-5" style="border-radius: 15px;" data-page="2" data-category="{{ $category->slug }}">
+            <i class="bi bi-arrow-down me-2"></i>
+            Load More Products
+        </button>
+        <div id="loading-spinner" class="d-none">
+            <div class="spinner-border text-theme" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
     </div>
     @endif
 
@@ -456,4 +464,100 @@ strong, b {
     </div>
 @endif
 
-@endsection 
+@endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const loadMoreBtn = document.getElementById('load-more-btn');
+    const loadingSpinner = document.getElementById('loading-spinner');
+    const productsContainer = document.querySelector('.row.gx-2.gy-3');
+    
+    if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', function() {
+            const currentPage = parseInt(this.dataset.page);
+            const categorySlug = this.dataset.category;
+            
+            // Show loading state
+            loadMoreBtn.classList.add('d-none');
+            loadingSpinner.classList.remove('d-none');
+            
+            // Get current URL parameters for filters
+            const urlParams = new URLSearchParams(window.location.search);
+            const queryString = urlParams.toString();
+            
+            // Make AJAX request
+            fetch(`/categories/${categorySlug}/load-more?page=${currentPage}&${queryString}`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Add new products to the container
+                data.products.forEach(product => {
+                    const productHtml = `
+                        <div class="col-6 col-md-4 col-lg-3">
+                            <div class="card adminuiux-card mb-2 position-relative" style="border-radius: 20px;">
+                                <a href="/products/${product.slug}" class="rounded coverimg height-100 mb-2 m-1 d-block position-relative" style="border-radius: 20px;">
+                                    ${product.image ? 
+                                        `<img src="/storage/${product.image}" alt="${product.name}" class="w-100 rounded" style="border-radius: 20px;">` :
+                                        `<img src="/template-assets/img/ecommerce/image-6.jpg" alt="Product" class="w-100 rounded" style="border-radius: 20px;">`
+                                    }
+                                    <span class="position-absolute top-0 end-0 m-2">
+                                        <i class="bi bi-heart text-white"></i>
+                                    </span>
+                                    <form action="/cart/add/${product.id}" method="POST" class="position-absolute top-0 start-0 m-2">
+                                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                        <button type="submit" class="btn btn-sm btn-theme-accent-1 rounded-circle" style="width: 32px; height: 32px; padding: 0;">
+                                            <i class="bi bi-cart-plus text-white" style="font-size: 0.8rem;"></i>
+                                        </button>
+                                    </form>
+                                </a>
+                                <div class="card-body pt-1 pb-2" style="border-radius: 0 0 20px 20px;">
+                                    <a href="/products/${product.slug}" class="style-none">
+                                        <h6 class="product-title text-truncated mb-1">${product.name}</h6>
+                                    </a>
+                                    <div class="d-flex align-items-center mb-1">
+                                        <span class="me-1 small"><i class="bi bi-star-fill text-warning"></i> ${(product.rating || 4.5).toFixed(1)}</span>
+                                        <span class="small text-secondary">(${product.reviews_count || Math.floor(Math.random() * 40) + 10})</span>
+                                    </div>
+                                    <div class="d-flex align-items-center justify-content-between mb-1">
+                                        <span class="fw-bold">₦${parseInt(product.price_naira).toLocaleString()}</span>
+                                        <span class="small text-secondary">${product.store ? product.store.name : 'Bubblemart Store'}</span>
+                                    </div>
+                                    <div class="small text-secondary">
+                                        ${product.category ? product.category.full_name : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    productsContainer.insertAdjacentHTML('beforeend', productHtml);
+                });
+                
+                // Update button for next page
+                if (data.hasMorePages) {
+                    loadMoreBtn.dataset.page = currentPage + 1;
+                    loadMoreBtn.classList.remove('d-none');
+                } else {
+                    // No more pages, hide the button
+                    loadMoreBtn.parentElement.remove();
+                }
+            })
+            .catch(error => {
+                console.error('Error loading more products:', error);
+                // Show error state
+                loadMoreBtn.classList.remove('d-none');
+                loadMoreBtn.innerHTML = '<i class="bi bi-exclamation-triangle me-2"></i>Error loading products. Click to retry.';
+            })
+            .finally(() => {
+                // Hide loading spinner
+                loadingSpinner.classList.add('d-none');
+            });
+        });
+    }
+});
+</script>
+@endpush 
