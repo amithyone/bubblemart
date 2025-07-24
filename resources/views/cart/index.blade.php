@@ -794,7 +794,8 @@ function processPayment() {
         showWalletConfirmationModal(total, addressId);
     } else if (paymentMethod === 'xtrapay') {
         // Process Xtrapay payment
-        processXtrapayPayment(total);
+        const addressId = shippingAddress.value;
+        processXtrapayPayment(total, addressId);
     } else {
         showPaymentErrorModal('Payment Method Required', 'Please select a payment method.');
         return;
@@ -849,8 +850,8 @@ function processWalletPayment(amount, addressId = null) {
 }
 
 // Process XtraPay payment
-function processXtrapayPayment(amount) {
-    console.log('Processing Xtrapay payment for amount:', amount);
+function processXtrapayPayment(amount, addressId) {
+    console.log('Processing Xtrapay payment for amount:', amount, 'address:', addressId);
     
     // Show loading
     const payButton = document.querySelector('button[onclick="processPayment()"]');
@@ -865,7 +866,8 @@ function processXtrapayPayment(amount) {
             'X-CSRF-TOKEN': '{{ csrf_token() }}'
         },
         body: JSON.stringify({
-            amount: amount
+            amount: amount,
+            address_id: addressId
         })
     })
     .then(response => {
