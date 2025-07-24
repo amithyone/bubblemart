@@ -67,38 +67,40 @@ class TelegramNotification extends Notification
      */
     public function toTelegram($notifiable)
     {
-        $botToken = config('services.telegram.bot_token');
+        // Use settings from database instead of config
+        $botToken = \App\Models\Setting::getTelegramBotToken();
+        $chatId = \App\Models\Setting::getTelegramChatId();
         
-        if (!$botToken) {
-            Log::error('Telegram bot token not configured');
+        if (!$botToken || !$chatId) {
+            Log::error('Telegram bot token or chat ID not configured in settings');
             return;
         }
 
-        $chatIds = $this->getChatIds();
+        // Check if Telegram is enabled
+        if (!\App\Models\Setting::isTelegramEnabled()) {
+            Log::info('Telegram notifications are disabled');
+            return;
+        }
 
-        foreach ($chatIds as $chatId) {
-            if (empty($chatId)) continue;
+        try {
+            $response = Http::post("https://api.telegram.org/bot{$botToken}/sendMessage", [
+                'chat_id' => $chatId,
+                'text' => $this->message,
+                'parse_mode' => 'HTML',
+            ]);
 
-            try {
-                $response = Http::post("https://api.telegram.org/bot{$botToken}/sendMessage", [
-                    'chat_id' => $chatId,
-                    'text' => $this->message,
-                    'parse_mode' => 'HTML',
-                ]);
-
-                if ($response->successful()) {
-                    Log::info("Telegram notification sent successfully to chat ID: {$chatId}");
-                } else {
-                    Log::error("Telegram notification failed for chat ID: {$chatId}", [
-                        'response' => $response->json(),
-                        'status' => $response->status()
-                    ]);
-                }
-            } catch (\Exception $e) {
-                Log::error("Telegram notification exception for chat ID: {$chatId}", [
-                    'error' => $e->getMessage()
+            if ($response->successful()) {
+                Log::info("Telegram notification sent successfully to chat ID: {$chatId}");
+            } else {
+                Log::error("Telegram notification failed for chat ID: {$chatId}", [
+                    'response' => $response->json(),
+                    'status' => $response->status()
                 ]);
             }
+        } catch (\Exception $e) {
+            Log::error("Telegram notification exception for chat ID: {$chatId}", [
+                'error' => $e->getMessage()
+            ]);
         }
     }
 
@@ -107,39 +109,8 @@ class TelegramNotification extends Notification
      */
     protected function getChatIds()
     {
-        if ($this->chatId) {
-            return [$this->chatId];
-        }
-
-        if ($this->sendToAll) {
-            return $this->getAllChatIds();
-        }
-
-        // Default to primary chat ID
-        return [config('services.telegram.chat_id')];
-    }
-
-    /**
-     * Get all configured chat IDs.
-     */
-    protected function getAllChatIds()
-    {
-        $chatIds = [];
-        
-        // Primary chat ID
-        $primaryChatId = config('services.telegram.chat_id');
-        if ($primaryChatId) {
-            $chatIds[] = $primaryChatId;
-        }
-
-        // Additional chat IDs (up to 5)
-        for ($i = 2; $i <= 5; $i++) {
-            $chatId = config("services.telegram.chat_id_{$i}");
-            if ($chatId) {
-                $chatIds[] = $chatId;
-            }
-        }
-
-        return $chatIds;
+        // Always use the chat ID from settings
+        $chatId = \App\Models\Setting::getTelegramChatId();
+        return $chatId ? [$chatId] : [];
     }
 } 
