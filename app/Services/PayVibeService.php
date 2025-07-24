@@ -239,22 +239,88 @@ class PayVibeService
         try {
             Log::info('PayVibeService: Processing webhook', $payload);
             
-            if (!isset($payload['reference']) || !isset($payload['status'])) {
+            // PayVibe webhook payload structure
+            if (!isset($payload['reference']) || !isset($payload['transaction_amount'])) {
                 return [
                     'error' => true,
-                    'message' => 'Invalid webhook payload'
+                    'message' => 'Invalid webhook payload - missing required fields'
                 ];
             }
             
             $reference = $payload['reference'];
-            $status = $payload['status'];
-            $amount = $payload['amount'] ?? 0;
+            $transactionAmount = $payload['transaction_amount'];
+            $netAmount = $payload['net_amount'] ?? $transactionAmount;
+            $creditedAt = $payload['credited_at'] ?? now();
+            
+            // Since this is a webhook notification, the payment was successful
+            $status = 'completed';
+            
+            // Find the pending transaction to get the base amount
+            $transaction = \App\Models\WalletTransaction::where('type', 'credit')
+                ->where('status', 'pending')
+                ->whereJsonContains('metadata->reference', $reference)
+                ->first();
+            
+            if ($transaction) {
+                // Use the base amount from the transaction (what user originally requested)
+                $baseAmount = $transaction->amount;
+                Log::info('PayVibeService: Found transaction, using base amount', [
+                    'reference' => $reference,
+                    'base_amount' => $baseAmount,
+                    'net_amount' => $netAmount,
+                    'transaction_amount' => $transactionAmount,
+                    'transaction_id' => $transaction->id
+                ]);
+            } else {
+                // Transaction not found - could be already processed or doesn't exist
+                Log::warning('PayVibeService: Transaction not found, checking if already processed', [
+                    'reference' => $reference,
+                    'net_amount' => $netAmount,
+                    'transaction_amount' => $transactionAmount
+                ]);
+                
+                // Check if transaction was already processed
+                $completedTransaction = \App\Models\WalletTransaction::where('type', 'credit')
+                    ->where('status', 'completed')
+                    ->whereJsonContains('metadata->reference', $reference)
+                    ->first();
+                
+                if ($completedTransaction) {
+                    Log::info('PayVibeService: Transaction already processed', [
+                        'reference' => $reference,
+                        'transaction_id' => $completedTransaction->id,
+                        'processed_at' => $completedTransaction->processed_at
+                    ]);
+                    
+                    return [
+                        'reference' => $reference,
+                        'status' => 'already_processed',
+                        'amount' => $completedTransaction->amount,
+                        'message' => 'Transaction already processed'
+                    ];
+                }
+                
+                // If not found and not completed, this might be a duplicate webhook or invalid reference
+                Log::error('PayVibeService: Transaction not found and not completed', [
+                    'reference' => $reference,
+                    'net_amount' => $netAmount,
+                    'transaction_amount' => $transactionAmount
+                ]);
+                
+                return [
+                    'error' => true,
+                    'message' => 'Transaction not found',
+                    'reference' => $reference
+                ];
+            }
             
             return [
                 'reference' => $reference,
                 'status' => $status,
-                'amount' => $amount,
-                'paid_at' => $payload['paid_at'] ?? now(),
+                'amount' => $baseAmount, // Use base amount for wallet crediting
+                'transaction_amount' => $transactionAmount,
+                'net_amount' => $netAmount,
+                'paid_at' => $creditedAt,
                 'message' => $this->getStatusMessage($status)
             ];
         } catch (\Exception $e) {
