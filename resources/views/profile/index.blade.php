@@ -605,6 +605,8 @@ document.addEventListener('DOMContentLoaded', function() {
             <form id="addressForm" action="{{ route('profile.addresses.store') }}" method="POST">
                 @csrf
                 <input type="hidden" id="address_id" name="address_id">
+                <!-- Method override field for editing -->
+                <input type="hidden" id="method_override" name="_method" value="">
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-12 mb-3">
@@ -702,10 +704,12 @@ document.addEventListener('DOMContentLoaded', function() {
 <script>
 // Address management functions
 function editAddress(addressId) {
+    console.log('Editing address:', addressId);
     // Fetch address data and populate modal
     fetch(`/profile/addresses/${addressId}/edit`)
         .then(response => response.json())
         .then(data => {
+            console.log('Address data:', data);
             document.getElementById('address_id').value = data.id;
             document.getElementById('label').value = data.label || '';
             document.getElementById('name').value = data.name;
@@ -724,15 +728,10 @@ function editAddress(addressId) {
             form.action = `/profile/addresses/${addressId}`;
             form.method = 'POST'; // Keep as POST but add method override
             
-            // Add method override for PUT
-            let methodField = form.querySelector('input[name="_method"]');
-            if (!methodField) {
-                methodField = document.createElement('input');
-                methodField.type = 'hidden';
-                methodField.name = '_method';
-                form.appendChild(methodField);
-            }
-            methodField.value = 'PUT';
+            // Set method override for PUT
+            document.getElementById('method_override').value = 'PUT';
+            console.log('Form action:', form.action);
+            console.log('Method override:', document.getElementById('method_override').value);
             
             const modal = new bootstrap.Modal(document.getElementById('addAddressModal'));
             modal.show();
@@ -784,11 +783,9 @@ document.getElementById('addAddressModal').addEventListener('hidden.bs.modal', f
     form.action = '{{ route("profile.addresses.store") }}';
     form.method = 'POST';
     
-    // Remove method override if it exists
-    const methodField = form.querySelector('input[name="_method"]');
-    if (methodField) {
-        methodField.remove();
-    }
+    // Clear method override
+    document.getElementById('method_override').value = '';
+    console.log('Form reset - action:', form.action, 'method override:', document.getElementById('method_override').value);
 });
 
 // Light theme styling for modals
