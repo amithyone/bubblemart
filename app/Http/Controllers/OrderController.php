@@ -83,13 +83,15 @@ class OrderController extends Controller
             'user_authenticated' => Auth::check()
         ]);
 
-        // Ensure user can only view their own orders
-        if ($order->user_id !== $currentUser->id) {
+        // Ensure user can only view their own orders (with type conversion)
+        if ((int)$order->user_id !== (int)$currentUser->id) {
             \Log::warning('Order access denied', [
                 'order_id' => $order->id,
                 'order_user_id' => $order->user_id,
                 'current_user_id' => $currentUser->id,
-                'order_number' => $order->order_number
+                'order_number' => $order->order_number,
+                'user_id_type' => gettype($currentUser->id),
+                'order_user_id_type' => gettype($order->user_id)
             ]);
             abort(403, 'You are not authorized to view this order.');
         }
