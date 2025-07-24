@@ -34,6 +34,7 @@ class WristwatchVariationSeeder extends Seeder
         $store = Store::firstOrCreate(
             ['name' => 'Luxury Timepieces'],
             [
+                'slug' => 'luxury-timepieces',
                 'description' => 'Premium wristwatches and accessories',
                 'is_active' => true,
                 'sort_order' => 1,
@@ -41,31 +42,37 @@ class WristwatchVariationSeeder extends Seeder
         );
 
         // Create the wristwatch product
-        $wristwatch = Product::create([
-            'name' => 'Premium Classic Wristwatch',
-            'slug' => 'premium-classic-wristwatch',
-            'description' => 'A timeless classic wristwatch featuring premium materials and precise movement. Perfect for both casual and formal occasions. Features include water resistance, scratch-resistant crystal, and a comfortable leather strap.',
-            'price' => 89.99, // Base price in USD
-            'sale_price' => null,
-            'category_id' => $wristwatchCategory->id,
-            'store_id' => $store->id,
-            'is_active' => true,
-            'is_featured' => true,
-            'allow_customization' => true,
-            'stock' => 50,
-            'sku' => 'WC-001',
-            'image' => null, // Will be set by variations
-            'gallery' => [],
-        ]);
+        $wristwatch = Product::firstOrCreate(
+            ['slug' => 'premium-classic-wristwatch'],
+            [
+                'name' => 'Premium Classic Wristwatch',
+                'description' => 'A timeless classic wristwatch featuring premium materials and precise movement. Perfect for both casual and formal occasions. Features include water resistance, scratch-resistant crystal, and a comfortable leather strap.',
+                'price' => 89.99, // Base price in USD
+                'sale_price' => null,
+                'category_id' => $wristwatchCategory->id,
+                'store_id' => $store->id,
+                'is_active' => true,
+                'is_featured' => true,
+                'allow_customization' => true,
+                'stock' => 50,
+                'sku' => 'WC-001',
+                'image' => null, // Will be set by variations
+                'gallery' => [],
+            ]
+        );
 
         // Create the Color variation
-        $colorVariation = ProductVariation::create([
-            'product_id' => $wristwatch->id,
-            'name' => 'Color',
-            'type' => 'radio',
-            'is_required' => true,
-            'sort_order' => 1,
-        ]);
+        $colorVariation = ProductVariation::firstOrCreate(
+            [
+                'product_id' => $wristwatch->id,
+                'name' => 'Color'
+            ],
+            [
+                'type' => 'radio',
+                'is_required' => true,
+                'sort_order' => 1,
+            ]
+        );
 
         // Create color options with different prices and images
         $colorOptions = [
@@ -96,27 +103,35 @@ class WristwatchVariationSeeder extends Seeder
         ];
 
         foreach ($colorOptions as $option) {
-            VariationOption::create([
-                'product_variation_id' => $colorVariation->id,
-                'value' => $option['value'],
-                'label' => $option['label'],
-                'price_adjustment' => $option['price_adjustment'],
-                'stock' => $option['stock'],
-                'sku' => $option['sku'],
-                'image' => $option['image'],
-                'is_active' => true,
-                'sort_order' => 1,
-            ]);
+            VariationOption::firstOrCreate(
+                [
+                    'product_variation_id' => $colorVariation->id,
+                    'value' => $option['value']
+                ],
+                [
+                    'label' => $option['label'],
+                    'price_adjustment' => $option['price_adjustment'],
+                    'stock' => $option['stock'],
+                    'sku' => $option['sku'],
+                    'image' => $option['image'],
+                    'is_active' => true,
+                    'sort_order' => 1,
+                ]
+            );
         }
 
         // Create a Size variation (optional)
-        $sizeVariation = ProductVariation::create([
-            'product_id' => $wristwatch->id,
-            'name' => 'Size',
-            'type' => 'select',
-            'is_required' => false,
-            'sort_order' => 2,
-        ]);
+        $sizeVariation = ProductVariation::firstOrCreate(
+            [
+                'product_id' => $wristwatch->id,
+                'name' => 'Size'
+            ],
+            [
+                'type' => 'select',
+                'is_required' => false,
+                'sort_order' => 2,
+            ]
+        );
 
         // Create size options
         $sizeOptions = [
@@ -147,24 +162,23 @@ class WristwatchVariationSeeder extends Seeder
         ];
 
         foreach ($sizeOptions as $option) {
-            VariationOption::create([
-                'product_variation_id' => $sizeVariation->id,
-                'value' => $option['value'],
-                'label' => $option['label'],
-                'price_adjustment' => $option['price_adjustment'],
-                'stock' => $option['stock'],
-                'sku' => $option['sku'],
-                'image' => $option['image'],
-                'is_active' => true,
-                'sort_order' => 1,
-            ]);
+            VariationOption::firstOrCreate(
+                [
+                    'product_variation_id' => $sizeVariation->id,
+                    'value' => $option['value']
+                ],
+                [
+                    'label' => $option['label'],
+                    'price_adjustment' => $option['price_adjustment'],
+                    'stock' => $option['stock'],
+                    'sku' => $option['sku'],
+                    'image' => $option['image'],
+                    'is_active' => true,
+                    'sort_order' => 1,
+                ]
+            );
         }
 
-        $this->command->info('✅ Wristwatch product with variations created successfully!');
-        $this->command->info('📦 Product: Premium Classic Wristwatch');
-        $this->command->info('🎨 Colors: Black (₦0), Silver (+₦15), Gold (+₦25)');
-        $this->command->info('📏 Sizes: 38mm (-₦5), 42mm (₦0), 45mm (+₦8)');
-        $this->command->info('🏪 Store: Luxury Timepieces');
-        $this->command->info('📂 Category: Wristwatches');
+        // Seeder completed successfully
     }
 } 
