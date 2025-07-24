@@ -97,8 +97,8 @@ class CartController extends Controller
             
             $product = Product::find($productId);
             if ($product) {
-                $quantity = is_array($item) ? $item['quantity'] : $item;
-                $customizationId = is_array($item) ? $item['customization_id'] : null;
+                $quantity = is_array($item) ? ($item['quantity'] ?? 1) : $item;
+                $customizationId = is_array($item) ? ($item['customization_id'] ?? null) : null;
                 $variations = is_array($item) ? ($item['variations'] ?? []) : [];
                 
                 // If no customization_id in item array, check if it's in the cart key
