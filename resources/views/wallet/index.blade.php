@@ -500,7 +500,7 @@
 
 /* Fix status badge text colors for light theme */
 [data-theme="light"] .badge.bg-success {
-    color: #ffffff !important;
+    color: #000000 !important;
 }
 
 [data-theme="light"] .badge.bg-warning {
@@ -508,7 +508,7 @@
 }
 
 [data-theme="light"] .badge.bg-danger {
-    color: #ffffff !important;
+    color: #000000 !important;
 }
 
 [data-theme="light"] .badge.bg-secondary {
@@ -961,9 +961,9 @@ document.addEventListener('DOMContentLoaded', function() {
         badges.forEach(badge => {
             if (isLightTheme) {
                 if (badge.classList.contains('bg-danger')) {
-                    badge.style.color = '#ffffff';
+                    badge.style.color = '#000000';
                 } else if (badge.classList.contains('bg-success')) {
-                    badge.style.color = '#ffffff';
+                    badge.style.color = '#000000';
                 } else if (badge.classList.contains('bg-warning')) {
                     badge.style.color = '#000000';
                 } else if (badge.classList.contains('bg-secondary')) {
