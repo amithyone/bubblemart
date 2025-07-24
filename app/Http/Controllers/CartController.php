@@ -746,11 +746,33 @@ class CartController extends Controller
                 $receiverPhone = $order->receiver_phone ?: $shippingAddress->phone ?: 'Phone not provided';
                 $receiverNote = $order->receiver_note;
                 
+                // Initialize detailed address fields
+                $receiverHouseNumber = null;
+                $receiverStreet = null;
+                $receiverCity = null;
+                $receiverState = null;
+                $receiverZip = null;
+                $receiverCountry = null;
+                $receiverGender = null;
+                $senderName = null;
+                $deliveryMethod = 'home_delivery';
+                
                 if ($customization) {
                     // Use customization receiver info if available
                     $receiverName = $customization->receiver_name ?: $receiverName;
                     $receiverPhone = $customization->receiver_phone ?: $receiverPhone;
                     $receiverNote = $customization->receiver_note;
+                    $receiverGender = $customization->receiver_gender;
+                    $senderName = $customization->sender_name;
+                    $deliveryMethod = $customization->delivery_method ?: 'home_delivery';
+                    
+                    // Get detailed address from customization
+                    $receiverHouseNumber = $customization->receiver_house_number;
+                    $receiverStreet = $customization->receiver_street;
+                    $receiverCity = $customization->receiver_city;
+                    $receiverState = $customization->receiver_state;
+                    $receiverZip = $customization->receiver_zip;
+                    $receiverCountry = $customization->receiver_country ?? 'Nigeria'; // Default to Nigeria
                     
                     // Build address from customization fields if available
                     $addressParts = [];
@@ -765,6 +787,14 @@ class CartController extends Controller
                     } elseif ($customization->receiver_address) {
                         $receiverAddress = $customization->receiver_address;
                     }
+                } else {
+                    // Use shipping address details if no customization
+                    $receiverHouseNumber = $shippingAddress->address_line_2; // Use address_line_2 as house number
+                    $receiverStreet = $shippingAddress->address_line_1;
+                    $receiverCity = $shippingAddress->city;
+                    $receiverState = $shippingAddress->state;
+                    $receiverZip = $shippingAddress->postal_code;
+                    $receiverCountry = $shippingAddress->country ?: 'Nigeria';
                 }
 
                 // Ensure we have valid values for required fields
@@ -776,6 +806,12 @@ class CartController extends Controller
                     'receiver_name' => $receiverName,
                     'receiver_address' => $receiverAddress,
                     'receiver_phone' => $receiverPhone,
+                    'receiver_house_number' => $receiverHouseNumber,
+                    'receiver_street' => $receiverStreet,
+                    'receiver_city' => $receiverCity,
+                    'receiver_state' => $receiverState,
+                    'receiver_zip' => $receiverZip,
+                    'receiver_country' => $receiverCountry,
                     'product_id' => $product->id
                 ]);
 
@@ -790,6 +826,15 @@ class CartController extends Controller
                     'receiver_address' => $receiverAddress,
                     'receiver_phone' => $receiverPhone,
                     'receiver_note' => $receiverNote,
+                    'receiver_house_number' => $receiverHouseNumber,
+                    'receiver_street' => $receiverStreet,
+                    'receiver_city' => $receiverCity,
+                    'receiver_state' => $receiverState,
+                    'receiver_zip' => $receiverZip,
+                    'receiver_country' => $receiverCountry,
+                    'receiver_gender' => $receiverGender,
+                    'sender_name' => $senderName,
+                    'delivery_method' => $deliveryMethod,
                 ]);
 
                 // Save product variations to order item

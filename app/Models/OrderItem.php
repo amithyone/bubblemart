@@ -20,6 +20,15 @@ class OrderItem extends Model
         'receiver_phone',
         'receiver_note',
         'customization_details',
+        'receiver_house_number',
+        'receiver_street',
+        'receiver_city',
+        'receiver_state',
+        'receiver_zip',
+        'receiver_country',
+        'receiver_gender',
+        'sender_name',
+        'delivery_method',
     ];
 
     protected $casts = [
