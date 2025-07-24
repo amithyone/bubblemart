@@ -55,6 +55,7 @@ class CategoryController extends Controller
             'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
+            'is_customizable' => 'boolean',
             'variation_types' => 'nullable|array',
             'variation_types.*' => 'string|in:size,color,material,style,fit,pattern',
             'gender' => 'nullable|in:male,female,unisex,all',
@@ -75,6 +76,7 @@ class CategoryController extends Controller
         $data['slug'] = Str::slug($request->name);
         $data['is_active'] = $request->has('is_active');
         $data['is_featured'] = $request->has('is_featured');
+        $data['is_customizable'] = $request->has('is_customizable');
         
         // Handle variation types
         $data['variation_types'] = $request->input('variation_types', []);
@@ -172,6 +174,7 @@ class CategoryController extends Controller
             'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
+            'is_customizable' => 'boolean',
             'variation_types' => 'nullable|array',
             'variation_types.*' => 'string|in:size,color,material,style,fit,pattern',
         ]);
@@ -188,6 +191,7 @@ class CategoryController extends Controller
         $data['slug'] = Str::slug($request->name);
         $data['is_active'] = $request->has('is_active');
         $data['is_featured'] = $request->has('is_featured');
+        $data['is_customizable'] = $request->has('is_customizable');
         
         // Handle variation types
         $data['variation_types'] = $request->input('variation_types', []);

@@ -16,6 +16,7 @@ class Category extends Model
         'image_path',
         'is_active',
         'is_featured',
+        'is_customizable',
         'sort_order',
         'parent_id',
         'variation_types',
@@ -25,6 +26,7 @@ class Category extends Model
     protected $casts = [
         'is_active' => 'boolean',
         'is_featured' => 'boolean',
+        'is_customizable' => 'boolean',
         'variation_types' => 'array',
     ];
 

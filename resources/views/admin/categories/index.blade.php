@@ -77,6 +77,14 @@
         
         <div class="mobile-stat-card">
             <div class="mobile-stat-icon">
+                <i class="fas fa-magic"></i>
+            </div>
+            <div class="mobile-stat-number">{{ $categories->where('is_customizable', true)->count() }}</div>
+            <div class="mobile-stat-label">Customizable</div>
+        </div>
+        
+        <div class="mobile-stat-card">
+            <div class="mobile-stat-icon">
                 <i class="fas fa-box"></i>
             </div>
             <div class="mobile-stat-number">{{ $totalProducts }}</div>
@@ -125,6 +133,11 @@
                                 @if($category->is_featured)
                                     <span class="badge bg-warning ms-1">
                                         <i class="fas fa-star me-1"></i>Featured
+                                    </span>
+                                @endif
+                                @if($category->is_customizable)
+                                    <span class="badge bg-primary ms-1">
+                                        <i class="fas fa-magic me-1"></i>Customizable
                                     </span>
                                 @endif
                             </div>

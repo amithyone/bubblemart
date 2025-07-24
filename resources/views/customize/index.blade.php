@@ -226,6 +226,99 @@ p, h6, span, div {
 strong, b {
     font-weight: 600 !important;
 }
+
+/* Form styling */
+.form-control {
+    background: rgba(255,255,255,0.1) !important;
+    border: 1px solid rgba(255,255,255,0.2) !important;
+    color: #ffffff !important;
+}
+
+.form-control:focus {
+    background: rgba(255,255,255,0.15) !important;
+    border-color: #ff9800 !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 0 0.2rem rgba(255,152,0,0.25) !important;
+}
+
+.form-control::placeholder {
+    color: #b0b0b0 !important;
+}
+
+.input-group-text {
+    background: rgba(255,255,255,0.1) !important;
+    border: 1px solid rgba(255,255,255,0.2) !important;
+    color: #b0b0b0 !important;
+}
+
+/* Select styling */
+.form-select {
+    background: rgba(255,255,255,0.1) !important;
+    border: 1px solid rgba(255,255,255,0.2) !important;
+    color: #ffffff !important;
+}
+
+.form-select:focus {
+    background: rgba(255,255,255,0.15) !important;
+    border-color: #ff9800 !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 0 0.2rem rgba(255,152,0,0.25) !important;
+}
+
+/* Filter card styling */
+.filter-card {
+    background: linear-gradient(135deg,rgba(16,16,19,0.22) 0%,rgb(0,0,0) 100%) !important;
+    border: none !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Badge styling for active filters */
+.badge {
+    font-weight: 500;
+    padding: 0.5em 0.75em;
+}
+
+.bg-primary {
+    background: rgba(0,123,255,0.8) !important;
+    color: #ffffff !important;
+}
+
+.bg-info {
+    background: rgba(23,162,184,0.8) !important;
+    color: #ffffff !important;
+}
+
+.bg-secondary {
+    background: rgba(108,117,125,0.8) !important;
+    color: #ffffff !important;
+}
+
+/* Button styling */
+.btn-theme {
+    background: #004953 !important;
+    border: none !important;
+    color: #ffffff !important;
+    transition: all 0.3s ease;
+}
+
+.btn-theme:hover {
+    background: #005a66 !important;
+    color: #ffffff !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,73,83,0.3) !important;
+}
+
+.btn-outline-secondary {
+    border: 1px solid #6c757d !important;
+    color: #6c757d !important;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-secondary:hover {
+    background: #6c757d !important;
+    border-color: #6c757d !important;
+    color: #ffffff !important;
+}
 </style>
 <div class="row justify-content-center mb-3">
     <div class="col-12 col-md-10">
@@ -277,6 +370,77 @@ strong, b {
                     <h6 class="progress-step-title mb-1">Customize</h6>
                     <p class="progress-step-label mb-0">Final</p>
                 </div>
+            </div>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="card adminuiux-card mb-3">
+            <div class="card-body">
+                <form method="GET" action="{{ route('customize.index') }}" id="filterForm">
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-text bg-none border-0">
+                                    <i class="bi bi-search text-secondary"></i>
+                                </span>
+                                <input type="text" 
+                                       class="form-control border-0 bg-none" 
+                                       name="search" 
+                                       placeholder="Search categories..." 
+                                       value="{{ request('search') }}"
+                                       style="font-size: 0.9rem;">
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <select class="form-select border-0 bg-none" name="type" style="font-size: 0.9rem;">
+                                <option value="all" {{ request('type') === 'all' || !request('type') ? 'selected' : '' }}>
+                                    All Types
+                                </option>
+                                @foreach($categoryTypes as $type)
+                                    <option value="{{ $type }}" {{ request('type') === $type ? 'selected' : '' }}>
+                                        {{ ucfirst($type) }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-2">
+                            <button type="submit" class="btn btn-theme w-100" style="font-size: 0.9rem;">
+                                <i class="bi bi-funnel me-1"></i>Filter
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                
+                <!-- Active Filters Display -->
+                @if(request('search') || (request('type') && request('type') !== 'all'))
+                    <div class="mt-3 pt-3 border-top">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <small class="text-secondary">
+                                <i class="bi bi-funnel me-1"></i>
+                                Active filters:
+                            </small>
+                            <a href="{{ route('customize.index') }}" class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-x-circle me-1"></i>Clear All
+                            </a>
+                        </div>
+                        <div class="mt-2">
+                            @if(request('search'))
+                                <span class="badge bg-primary me-1">
+                                    Search: "{{ request('search') }}"
+                                    <a href="{{ route('customize.index', array_merge(request()->except('search'), ['type' => request('type')])) }}" 
+                                       class="text-white text-decoration-none ms-1">×</a>
+                                </span>
+                            @endif
+                            @if(request('type') && request('type') !== 'all')
+                                <span class="badge bg-info me-1">
+                                    Type: {{ ucfirst(request('type')) }}
+                                    <a href="{{ route('customize.index', array_merge(request()->except('type'), ['search' => request('search')])) }}" 
+                                       class="text-white text-decoration-none ms-1">×</a>
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
 

@@ -254,7 +254,7 @@
                             <div class="card adminuiux-card border-0" style="border-radius: 15px;">
                                 <div class="card-body">
                                     <div class="row">
-                                        <div class="col-md-6 mb-3">
+                                        <div class="col-md-4 mb-3">
                                             <div class="form-check">
                                                 <input class="form-check-input" type="checkbox" name="is_active" id="is_active" value="1" {{ old('is_active', $category->is_active) ? 'checked' : '' }}>
                                                 <label class="form-check-label text-dark" for="is_active">
@@ -264,7 +264,7 @@
                                             </div>
                                         </div>
                                         
-                                        <div class="col-md-6 mb-3">
+                                        <div class="col-md-4 mb-3">
                                             <div class="form-check">
                                                 <input class="form-check-input" type="checkbox" name="is_featured" id="is_featured" value="1" {{ old('is_featured', $category->is_featured) ? 'checked' : '' }}>
                                                 <label class="form-check-label text-dark" for="is_featured">
@@ -276,6 +276,22 @@
                                                 </small>
                                             </div>
                                             @error('is_featured')
+                                                <div class="text-danger small mt-1">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        
+                                        <div class="col-md-4 mb-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="is_customizable" id="is_customizable" value="1" {{ old('is_customizable', $category->is_customizable) ? 'checked' : '' }}>
+                                                <label class="form-check-label text-dark" for="is_customizable">
+                                                    <i class="fas fa-magic me-2 text-primary"></i>Customizable
+                                                </label>
+                                                <small class="text-muted d-block">Allow customers to customize products in this category</small>
+                                                <small class="text-info d-block">
+                                                    <i class="fas fa-info-circle me-1"></i>Shows on customize page
+                                                </small>
+                                            </div>
+                                            @error('is_customizable')
                                                 <div class="text-danger small mt-1">{{ $message }}</div>
                                             @enderror
                                         </div>

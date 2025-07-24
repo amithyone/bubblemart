@@ -11,14 +11,38 @@ class CustomizationController extends Controller
     /**
      * Show the customization page with category selection.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $categories = Category::where('is_active', true)
-            ->orderBy('is_featured', 'desc') // Featured categories first
+        $query = Category::where('is_active', true)
+            ->where('is_customizable', true); // Only show customizable categories
+        
+        // Handle search/filter
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+        
+        // Handle category type filter
+        if ($request->filled('type') && $request->type !== 'all') {
+            $query->where('type', $request->type);
+        }
+        
+        $categories = $query->orderBy('is_featured', 'desc') // Featured categories first
             ->orderBy('sort_order')
             ->get();
+            
+        // Get all category types for filter dropdown (only from customizable categories)
+        $categoryTypes = Category::where('is_active', true)
+            ->where('is_customizable', true)
+            ->distinct()
+            ->pluck('type')
+            ->filter()
+            ->values();
 
-        return view('customize.index', compact('categories'));
+        return view('customize.index', compact('categories', 'categoryTypes'));
     }
 
     /**
