@@ -482,7 +482,7 @@ class CartController extends Controller
             );
 
             // Create order
-            $order = $this->createOrderFromCart($user, $amount, 'wallet');
+            $order = $this->createOrderFromCart($user, $amount, 'wallet', null, $address);
 
             // Clear cart
             Session::forget('cart');
