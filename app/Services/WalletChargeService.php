@@ -2,6 +2,9 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
+
 class WalletChargeService
 {
     /**
@@ -115,7 +118,7 @@ class WalletChargeService
     }
 
     /**
-     * Get minimum and maximum amounts
+     * Get amount limits for wallet funding
      * 
      * @return array
      */
@@ -124,10 +127,126 @@ class WalletChargeService
         return [
             'min' => 1000,
             'max' => 1000000,
-            'formatted' => [
-                'min' => '₦1,000',
-                'max' => '₦1,000,000'
-            ]
+            'currency' => 'NGN'
         ];
+    }
+
+    /**
+     * Process payment for wallet funding
+     * 
+     * @param string $reference Payment reference
+     * @param float $amount Payment amount
+     * @param string $gateway Payment gateway (xtrapay, payvibe, etc.)
+     * @return array
+     */
+    public function processPayment(string $reference, float $amount, string $gateway = 'xtrapay'): array
+    {
+        try {
+            // Find the pending transaction with this reference
+            $transaction = \App\Models\WalletTransaction::where('reference', $reference)
+                ->where('type', 'credit')
+                ->where('status', 'pending')
+                ->first();
+
+            if (!$transaction) {
+                Log::warning('WalletChargeService: Transaction not found', [
+                    'reference' => $reference,
+                    'gateway' => $gateway
+                ]);
+
+                return [
+                    'success' => false,
+                    'message' => 'Transaction not found'
+                ];
+            }
+
+            // Check if transaction is already processed
+            if ($transaction->status === 'completed') {
+                Log::info('WalletChargeService: Transaction already processed', [
+                    'reference' => $reference,
+                    'transaction_id' => $transaction->id
+                ]);
+
+                return [
+                    'success' => true,
+                    'message' => 'Transaction already processed',
+                    'user_id' => $transaction->wallet->user_id
+                ];
+            }
+
+            // Verify amount matches
+            if ($transaction->amount != $amount) {
+                Log::warning('WalletChargeService: Amount mismatch', [
+                    'reference' => $reference,
+                    'expected_amount' => $transaction->amount,
+                    'received_amount' => $amount
+                ]);
+
+                return [
+                    'success' => false,
+                    'message' => 'Amount mismatch'
+                ];
+            }
+
+            // Process the transaction
+            DB::beginTransaction();
+
+            try {
+                // Update transaction status
+                $transaction->update([
+                    'status' => 'completed',
+                    'processed_at' => now(),
+                    'gateway' => $gateway
+                ]);
+
+                // Credit the wallet
+                $wallet = $transaction->wallet;
+                $wallet->increment('balance', $amount);
+
+                DB::commit();
+
+                Log::info('WalletChargeService: Payment processed successfully', [
+                    'reference' => $reference,
+                    'amount' => $amount,
+                    'gateway' => $gateway,
+                    'user_id' => $wallet->user_id,
+                    'new_balance' => $wallet->fresh()->balance
+                ]);
+
+                return [
+                    'success' => true,
+                    'message' => 'Payment processed successfully',
+                    'user_id' => $wallet->user_id,
+                    'amount' => $amount,
+                    'new_balance' => $wallet->fresh()->balance
+                ];
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+                
+                Log::error('WalletChargeService: Database transaction failed', [
+                    'reference' => $reference,
+                    'error' => $e->getMessage()
+                ]);
+
+                return [
+                    'success' => false,
+                    'message' => 'Database transaction failed'
+                ];
+            }
+
+        } catch (\Exception $e) {
+            Log::error('WalletChargeService: Payment processing error', [
+                'reference' => $reference,
+                'amount' => $amount,
+                'gateway' => $gateway,
+                'error' => $e->getMessage()
+            ]);
+
+            return [
+                'success' => false,
+                'message' => 'Payment processing failed'
+            ];
+        }
     }
 } 

@@ -133,6 +133,77 @@ class WalletController extends Controller
     }
 
     /**
+     * Generate PayVibe virtual account for funding.
+     */
+    public function generatePayVibe(Request $request)
+    {
+        $request->validate([
+            'amount' => 'required|numeric|min:1000|max:1000000'
+        ]);
+
+        $amount = $request->amount;
+        
+        // Calculate charges
+        $chargeInfo = WalletChargeService::getChargeInfo($amount);
+        $totalAmount = $chargeInfo['total'];
+
+        try {
+            $payVibeService = new \App\Services\PayVibeService();
+            $result = $payVibeService->initiateFunding($totalAmount);
+            
+            if (isset($result['error'])) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $result['message'] ?? 'Failed to generate virtual account'
+                ], 400);
+            }
+
+            // Store the reference for later verification
+            $user = auth()->user();
+            $wallet = $user->wallet;
+            
+            $transaction = $wallet->transactions()->create([
+                'type' => 'credit',
+                'amount' => $amount, // Store the base amount (without charges)
+                'balance_before' => $wallet->balance,
+                'balance_after' => $wallet->balance, // No change yet
+                'description' => 'Pending PayVibe funding',
+                'reference_type' => 'wallet_funding',
+                'status' => 'pending',
+                'metadata' => [
+                    'payment_method' => 'payvibe',
+                    'reference' => $result['reference'],
+                    'account_number' => $result['accountNumber'],
+                    'bank' => $result['bank'],
+                    'account_name' => $result['accountName'],
+                    'payvibe_amount' => $result['amount'],
+                    'base_amount' => $amount,
+                    'charge' => $chargeInfo['charge'],
+                    'total_amount' => $totalAmount,
+                    'charge_breakdown' => $chargeInfo['breakdown']
+                ]
+            ]);
+            
+            return response()->json([
+                'success' => true,
+                'reference' => $result['reference'],
+                'accountNumber' => $result['accountNumber'],
+                'bank' => $result['bank'],
+                'accountName' => $result['accountName'],
+                'amount' => $result['amount'],
+                'expiry' => $result['expiry'],
+                'charge_info' => $chargeInfo
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to generate virtual account. Please try again.'
+            ], 500);
+        }
+    }
+
+    /**
      * Process add funds request.
      */
     public function storeFunds(Request $request)

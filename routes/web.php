@@ -65,6 +65,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/wallet/add-funds', [WalletController::class, 'addFunds'])->name('wallet.add-funds');
     Route::post('/wallet/add-funds', [WalletController::class, 'storeFunds'])->name('wallet.store-funds');
     Route::post('/wallet/generate-xtrapay', [WalletController::class, 'generateXtrapay'])->name('wallet.generate-xtrapay');
+    Route::post('/wallet/generate-payvibe', [WalletController::class, 'generatePayVibe'])->name('wallet.generate-payvibe');
     Route::get('/wallet/transactions', [WalletController::class, 'transactions'])->name('wallet.transactions');
     Route::get('/wallet/transactions/{id}', [WalletController::class, 'showTransaction'])->name('wallet.transaction-details');
     Route::post('/wallet/process-payment', [WalletController::class, 'processPayment'])->name('wallet.process-payment');
