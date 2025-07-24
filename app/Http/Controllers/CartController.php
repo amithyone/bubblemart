@@ -162,14 +162,6 @@ class CartController extends Controller
         \Log::info('Cart add method called', [
             'product_id' => $productId,
             'user_id' => auth()->id(),
-            'save_address' => $request->boolean('save_address'),
-            'save_address_raw' => $request->input('save_address'),
-            'receiver_name' => $request->receiver_name,
-            'receiver_phone' => $request->receiver_phone,
-            'receiver_address' => $request->receiver_address,
-            'receiver_city' => $request->receiver_city,
-            'receiver_state' => $request->receiver_state,
-            'receiver_zip' => $request->receiver_zip,
             'all_request_data' => $request->all(),
             'method' => $request->method(),
             'content_type' => $request->header('Content-Type')
@@ -181,18 +173,6 @@ class CartController extends Controller
         $variations = $request->input('variations', []);
         $quantity = $request->input('quantity', 1);
         
-        // Validate receiver information
-        $request->validate([
-            'receiver_name' => 'required|string|max:255',
-            'receiver_phone' => 'required|string|max:20',
-            'receiver_address' => 'required|string',
-            'receiver_city' => 'required|string|max:255',
-            'receiver_state' => 'required|string|max:2',
-            'receiver_zip' => 'required|string|max:10',
-            'receiver_note' => 'nullable|string',
-            'save_address' => 'nullable|boolean'
-        ]);
-        
         // If customization is provided, validate it belongs to the user
         if ($customizationId) {
             $customization = Customization::where('id', $customizationId)
@@ -201,149 +181,34 @@ class CartController extends Controller
                 ->firstOrFail();
         }
         
-        // Save address if requested
-        $addressId = null;
-        \Log::info('Address saving check', [
-            'save_address_boolean' => $request->boolean('save_address'),
-            'save_address_raw' => $request->input('save_address'),
-            'user_authenticated' => auth()->check(),
-            'user_id' => auth()->id()
-        ]);
-        
-        if ($request->boolean('save_address') && auth()->check()) {
-            try {
-                // Check if address already exists to avoid duplicates
-                $existingAddress = Address::where('user_id', auth()->id())
-                    ->where('name', $request->receiver_name)
-                    ->where('phone', $request->receiver_phone)
-                    ->where('address_line_1', $request->receiver_address)
-                    ->where('city', $request->receiver_city)
-                    ->where('state', $request->receiver_state)
-                    ->where('postal_code', $request->receiver_zip)
-                    ->first();
-                
-                \Log::info('Address duplicate check', [
-                    'existing_address' => $existingAddress ? $existingAddress->id : null,
-                    'search_criteria' => [
-                        'user_id' => auth()->id(),
-                        'name' => $request->receiver_name,
-                        'phone' => $request->receiver_phone,
-                        'address_line_1' => $request->receiver_address,
-                        'city' => $request->receiver_city,
-                        'state' => $request->receiver_state,
-                        'postal_code' => $request->receiver_zip
-                    ]
-                ]);
-                
-                if ($existingAddress) {
-                    $addressId = $existingAddress->id;
-                    \Log::info('Using existing address', [
-                        'address_id' => $addressId,
-                        'receiver_name' => $request->receiver_name
-                    ]);
-                } else {
-                    $address = Address::create([
-                        'user_id' => auth()->id(),
-                        'name' => $request->receiver_name,
-                        'phone' => $request->receiver_phone,
-                        'address_line_1' => $request->receiver_address,
-                        'city' => $request->receiver_city,
-                        'state' => $request->receiver_state,
-                        'postal_code' => $request->receiver_zip,
-                        'country' => 'USA',
-                        'is_default' => false,
-                        'label' => 'Saved Address'
-                    ]);
-                    $addressId = $address->id;
-                    
-                    \Log::info('Address saved successfully', [
-                        'user_id' => auth()->id(),
-                        'address_id' => $addressId,
-                        'receiver_name' => $request->receiver_name
-                    ]);
-                    
-                    // Add success message to session
-                    session()->flash('success', 'Address saved successfully for future orders!');
-                }
-            } catch (\Exception $e) {
-                \Log::error('Failed to save address', [
-                    'user_id' => auth()->id(),
-                    'error' => $e->getMessage(),
-                    'data' => $request->only(['receiver_name', 'receiver_phone', 'receiver_address'])
-                ]);
-                
-                // Continue without saving address, but log the error
-                $addressId = null;
-            }
-        }
-        
-        // Create a unique cart key that includes variations
+        // Generate cart key
         $cartKey = $productId;
-        $variationKey = '';
-        
-        if (!empty($variations)) {
-            // Sort variations to ensure consistent keys
-            ksort($variations);
-            $variationKey = '_v_' . md5(serialize($variations));
-        }
-        
         if ($customizationId) {
-            $cartKey = $productId . '_c_' . $customizationId . $variationKey;
-        } else {
-            $cartKey = $productId . $variationKey;
+            $cartKey .= '_c_' . $customizationId;
+        }
+        if (!empty($variations)) {
+            $variationHash = md5(json_encode($variations));
+            $cartKey .= '_v_' . $variationHash;
         }
         
-        // Check if this exact combination already exists in cart
-        if (isset($cart[$cartKey])) {
-            if (is_array($cart[$cartKey])) {
-                $cart[$cartKey]['quantity'] += $quantity;
-            } else {
-                $cart[$cartKey] = [
-                    'quantity' => $cart[$cartKey] + $quantity,
-                    'variations' => $variations
-                ];
-            }
-        } else {
-            $cart[$cartKey] = [
-                'quantity' => $quantity,
-                'customization_id' => $customizationId,
-                'variations' => $variations,
-                'receiver_name' => $request->receiver_name,
-                'receiver_phone' => $request->receiver_phone,
-                'receiver_address' => $request->receiver_address,
-                'receiver_city' => $request->receiver_city,
-                'receiver_state' => $request->receiver_state,
-                'receiver_zip' => $request->receiver_zip,
-                'receiver_note' => $request->receiver_note,
-                'address_id' => $addressId
-            ];
-        }
+        // Add to cart with minimal information
+        $cart[$cartKey] = [
+            'quantity' => $quantity,
+            'customization_id' => $customizationId,
+            'variations' => $variations,
+            // Remove receiver information - will be handled during checkout
+        ];
         
         Session::put('cart', $cart);
         
-        // Debug logging after adding to cart
-        \Log::info('Product added to cart', [
-            'user_id' => auth()->id(),
+        \Log::info('Product added to cart successfully', [
             'product_id' => $productId,
             'cart_key' => $cartKey,
-            'cart_data' => $cart,
             'cart_count' => count($cart),
-            'session_id' => session()->getId()
+            'user_id' => auth()->id()
         ]);
         
-        $successMessage = 'Product added to cart successfully!';
-        if ($request->boolean('save_address') && auth()->check() && $addressId) {
-            $successMessage .= ' Address saved for future orders.';
-        }
-        
-        \Log::info('Redirecting to cart', [
-            'user_id' => auth()->id(),
-            'success_message' => $successMessage,
-            'cart_count' => count($cart),
-            'session_id' => session()->getId()
-        ]);
-        
-        return redirect()->route('cart.index')->with('success', $successMessage);
+        return redirect()->route('cart.index')->with('success', 'Product added to cart successfully!');
     }
 
     /**
