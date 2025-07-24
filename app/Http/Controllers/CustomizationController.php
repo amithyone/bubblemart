@@ -13,19 +13,9 @@ class CustomizationController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Category::where('is_active', true)
-            ->where('is_customizable', true); // Only show customizable categories
-        
-        // Handle search/filter
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
-            });
-        }
-        
-        $categories = $query->orderBy('is_featured', 'desc') // Featured categories first
+        $categories = Category::where('is_active', true)
+            ->where('is_customizable', true) // Only show customizable categories
+            ->orderBy('is_featured', 'desc') // Featured categories first
             ->orderBy('sort_order')
             ->get();
 

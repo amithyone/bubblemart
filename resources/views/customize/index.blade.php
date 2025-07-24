@@ -373,58 +373,6 @@ strong, b {
             </div>
         </div>
 
-        <!-- Filter Section -->
-        <div class="card adminuiux-card mb-3">
-            <div class="card-body">
-                <form method="GET" action="{{ route('customize.index') }}" id="filterForm">
-                    <div class="row g-3">
-                        <div class="col-12 col-md-10">
-                            <div class="input-group">
-                                <span class="input-group-text bg-none border-0">
-                                    <i class="bi bi-search text-secondary"></i>
-                                </span>
-                                <input type="text" 
-                                       class="form-control border-0 bg-none" 
-                                       name="search" 
-                                       placeholder="Search categories..." 
-                                       value="{{ request('search') }}"
-                                       style="font-size: 0.9rem;">
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-2">
-                            <button type="submit" class="btn btn-theme w-100" style="font-size: 0.9rem;">
-                                <i class="bi bi-funnel me-1"></i>Filter
-                            </button>
-                        </div>
-                    </div>
-                </form>
-                
-                <!-- Active Filters Display -->
-                @if(request('search'))
-                    <div class="mt-3 pt-3 border-top">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <small class="text-secondary">
-                                <i class="bi bi-funnel me-1"></i>
-                                Active filters:
-                            </small>
-                            <a href="{{ route('customize.index') }}" class="btn btn-sm btn-outline-secondary">
-                                <i class="bi bi-x-circle me-1"></i>Clear All
-                            </a>
-                        </div>
-                        <div class="mt-2">
-                            @if(request('search'))
-                                <span class="badge bg-primary me-1">
-                                    Search: "{{ request('search') }}"
-                                    <a href="{{ route('customize.index') }}" 
-                                       class="text-white text-decoration-none ms-1">×</a>
-                                </span>
-                            @endif
-                        </div>
-                    </div>
-                @endif
-            </div>
-        </div>
-
         <!-- Categories Grid -->
         <div class="row gx-2 gy-3">
             @forelse($categories as $category)
