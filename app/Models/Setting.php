@@ -140,7 +140,7 @@ class Setting extends Model
      */
     public static function getEnabledCountries(): array
     {
-        return static::getValue('enabled_countries', [
+        $defaultCountries = [
             'US' => 'United States',
             'CA' => 'Canada',
             'GB' => 'United Kingdom',
@@ -191,7 +191,23 @@ class Setting extends Model
             'MY' => 'Malaysia',
             'ID' => 'Indonesia',
             'PH' => 'Philippines'
-        ]);
+        ];
+
+        $value = static::getValue('enabled_countries', $defaultCountries);
+        
+        // If the value is a string (JSON), decode it
+        if (is_string($value)) {
+            $decoded = json_decode($value, true);
+            return is_array($decoded) ? $decoded : $defaultCountries;
+        }
+        
+        // If it's already an array, return it
+        if (is_array($value)) {
+            return $value;
+        }
+        
+        // Fallback to default
+        return $defaultCountries;
     }
 
     /**
