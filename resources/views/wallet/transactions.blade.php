@@ -235,6 +235,42 @@
     color: #ffffff !important;
 }
 
+/* Strongest possible overrides for all badge types */
+[data-theme="light"] .badge.bg-danger,
+[data-theme="light"] span.badge.bg-danger,
+[data-theme="light"] .badge.bg-danger *,
+[data-theme="light"] span.badge.bg-danger * {
+    color: #ffffff !important;
+}
+
+[data-theme="light"] .badge.bg-success,
+[data-theme="light"] span.badge.bg-success,
+[data-theme="light"] .badge.bg-success *,
+[data-theme="light"] span.badge.bg-success * {
+    color: #ffffff !important;
+}
+
+[data-theme="light"] .badge.bg-warning,
+[data-theme="light"] span.badge.bg-warning,
+[data-theme="light"] .badge.bg-warning *,
+[data-theme="light"] span.badge.bg-warning * {
+    color: #000000 !important;
+}
+
+[data-theme="light"] .badge.bg-secondary,
+[data-theme="light"] span.badge.bg-secondary,
+[data-theme="light"] .badge.bg-secondary *,
+[data-theme="light"] span.badge.bg-secondary * {
+    color: #ffffff !important;
+}
+
+[data-theme="light"] .badge.bg-info,
+[data-theme="light"] span.badge.bg-info,
+[data-theme="light"] .badge.bg-info *,
+[data-theme="light"] span.badge.bg-info * {
+    color: #ffffff !important;
+}
+
 /* Amount colors */
 .text-success { color: #28a745 !important; }
 .text-danger { color: #dc3545 !important; }

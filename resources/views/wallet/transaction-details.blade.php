@@ -300,6 +300,72 @@ strong, b {
     color: #ffffff !important;
 }
 
+/* More specific overrides to ensure they work */
+[data-theme="light"] span.badge.bg-success {
+    color: #ffffff !important;
+}
+
+[data-theme="light"] span.badge.bg-warning {
+    color: #000000 !important;
+}
+
+[data-theme="light"] span.badge.bg-danger {
+    color: #ffffff !important;
+}
+
+[data-theme="light"] span.badge.bg-secondary {
+    color: #ffffff !important;
+}
+
+[data-theme="light"] span.badge.bg-info {
+    color: #ffffff !important;
+}
+
+/* Override any Bootstrap text color classes */
+[data-theme="light"] .badge.text-white {
+    color: #ffffff !important;
+}
+
+[data-theme="light"] .badge.text-dark {
+    color: #000000 !important;
+}
+
+/* Strongest possible overrides for all badge types */
+[data-theme="light"] .badge.bg-danger,
+[data-theme="light"] span.badge.bg-danger,
+[data-theme="light"] .badge.bg-danger *,
+[data-theme="light"] span.badge.bg-danger * {
+    color: #ffffff !important;
+}
+
+[data-theme="light"] .badge.bg-success,
+[data-theme="light"] span.badge.bg-success,
+[data-theme="light"] .badge.bg-success *,
+[data-theme="light"] span.badge.bg-success * {
+    color: #ffffff !important;
+}
+
+[data-theme="light"] .badge.bg-warning,
+[data-theme="light"] span.badge.bg-warning,
+[data-theme="light"] .badge.bg-warning *,
+[data-theme="light"] span.badge.bg-warning * {
+    color: #000000 !important;
+}
+
+[data-theme="light"] .badge.bg-secondary,
+[data-theme="light"] span.badge.bg-secondary,
+[data-theme="light"] .badge.bg-secondary *,
+[data-theme="light"] span.badge.bg-secondary * {
+    color: #ffffff !important;
+}
+
+[data-theme="light"] .badge.bg-info,
+[data-theme="light"] span.badge.bg-info,
+[data-theme="light"] .badge.bg-info *,
+[data-theme="light"] span.badge.bg-info * {
+    color: #ffffff !important;
+}
+
 /* Mobile padding */
 @media (max-width: 768px) {
     .container { padding: 0 15px; }
