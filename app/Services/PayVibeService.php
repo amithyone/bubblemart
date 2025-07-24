@@ -28,7 +28,7 @@ class PayVibeService
             $payload = [
                 'reference' => $reference,
                 'product_identifier' => $this->productIdentifier,
-                'amount' => round($amount * 100) // Convert to kobo (smallest currency unit)
+                'amount' => $amount // Send amount in Naira, not kobo
             ];
             
             Log::info('PayVibeService: Making API request', [
