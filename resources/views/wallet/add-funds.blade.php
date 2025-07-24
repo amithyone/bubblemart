@@ -668,6 +668,13 @@
             </label>
         </div>
         
+        <div class="payment-method">
+            <input type="radio" class="btn-check" name="payment_method" id="payvibe_mobile" value="payvibe" autocomplete="off">
+            <label class="btn btn-outline-primary w-100 py-2" for="payvibe_mobile">
+                <i class="bi bi-credit-card me-2"></i>PayVibe Virtual Account
+            </label>
+        </div>
+        
         <!-- Virtual Account Details -->
         <div id="xtrapay-details-mobile" class="virtual-account-card">
             <div class="text-center mb-3">
@@ -681,6 +688,23 @@
                         <span class="visually-hidden">Loading...</span>
                     </div>
                     <p class="mt-2 text-light small">Generating account...</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- PayVibe Virtual Account Details -->
+        <div id="payvibe-details-mobile" class="virtual-account-card" style="display: none;">
+            <div class="text-center mb-3">
+                <i class="bi bi-credit-card text-primary"></i>
+                <div class="account-label">Transfer to PayVibe Virtual Account</div>
+            </div>
+            
+            <div id="payvibe-account-info-mobile">
+                <div class="text-center">
+                    <div class="spinner-border spinner-border-sm text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2 text-light small">Generating PayVibe account...</p>
                 </div>
             </div>
         </div>
@@ -810,10 +834,16 @@
                         <div class="mb-4">
                                 <label class="form-label fw-bold mb-3">Payment Method:</label>
                             <div class="row gx-2">
-                                    <div class="col-12">
+                                    <div class="col-12 mb-2">
                                     <input type="radio" class="btn-check" name="payment_method" id="xtrapay" value="xtrapay" autocomplete="off" checked>
                                     <label class="btn btn-outline-success w-100" for="xtrapay">
                                             <i class="bi bi-bank me-2"></i>XtraPay Virtual Account
+                                    </label>
+                                </div>
+                                <div class="col-12">
+                                    <input type="radio" class="btn-check" name="payment_method" id="payvibe" value="payvibe" autocomplete="off">
+                                    <label class="btn btn-outline-primary w-100" for="payvibe">
+                                            <i class="bi bi-credit-card me-2"></i>PayVibe Virtual Account
                                     </label>
                                 </div>
                             </div>
@@ -835,6 +865,25 @@
                                             <p class="mt-2 text-secondary">Generating virtual account...</p>
                             </div>
                         </div>
+                            </div>
+                        </div>
+
+                        <!-- PayVibe Virtual Account Details -->
+                        <div id="payvibe-details" class="mb-4" style="display: none;">
+                            <div class="alert alert-primary">
+                                <h6 class="mb-1"><i class="bi bi-credit-card me-2"></i>PayVibe Virtual Account Details</h6>
+                                <p class="mb-0">Transfer the amount to the PayVibe account details below. Your wallet will be credited automatically once payment is confirmed.</p>
+                            </div>
+                            
+                            <div id="payvibe-account-info" class="card">
+                                <div class="card-body">
+                                    <div class="text-center">
+                                        <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="mt-2 text-secondary">Generating PayVibe account...</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -1031,7 +1080,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Generate virtual account if amount is selected
             if (this.checked && parseInt(this.value) >= 1000) {
-                generateVirtualAccount('mobile');
+                const selectedMethod = document.querySelector('input[name="payment_method"]:checked').value;
+                generateVirtualAccount('mobile', selectedMethod);
             }
         });
     });
@@ -1049,7 +1099,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Generate virtual account if amount is valid
             if (selectedAmount >= 1000) {
-                generateVirtualAccount('mobile');
+                const selectedMethod = document.querySelector('input[name="payment_method"]:checked').value;
+                generateVirtualAccount('mobile', selectedMethod);
             }
         });
     }
@@ -1072,7 +1123,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Generate virtual account if amount is selected
             if (this.checked && parseInt(this.value) >= 1000) {
-                generateVirtualAccount('desktop');
+                const selectedMethod = document.querySelector('input[name="payment_method"]:checked').value;
+                generateVirtualAccount('desktop', selectedMethod);
             }
         });
     });
@@ -1090,26 +1142,70 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Generate virtual account if amount is valid
             if (selectedAmount >= 1000) {
-                generateVirtualAccount('desktop');
+                const selectedMethod = document.querySelector('input[name="payment_method"]:checked').value;
+                generateVirtualAccount('desktop', selectedMethod);
             }
         });
     }
     
+    // Payment method change handlers
+    const paymentMethodInputs = document.querySelectorAll('input[name="payment_method"]');
+    paymentMethodInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            const selectedMethod = this.value;
+            const isMobile = this.id.includes('mobile');
+            
+            // Hide all virtual account details
+            if (isMobile) {
+                document.getElementById('xtrapay-details-mobile').style.display = 'none';
+                document.getElementById('payvibe-details-mobile').style.display = 'none';
+            } else {
+                document.getElementById('xtrapay-details').style.display = 'none';
+                document.getElementById('payvibe-details').style.display = 'none';
+            }
+            
+            // Show selected method details and generate account
+            if (selectedMethod === 'xtrapay') {
+                if (isMobile) {
+                    document.getElementById('xtrapay-details-mobile').style.display = 'block';
+                } else {
+                    document.getElementById('xtrapay-details').style.display = 'block';
+                }
+            } else if (selectedMethod === 'payvibe') {
+                if (isMobile) {
+                    document.getElementById('payvibe-details-mobile').style.display = 'block';
+                } else {
+                    document.getElementById('payvibe-details').style.display = 'block';
+                }
+            }
+            
+            // Generate virtual account for selected method
+            const selectedAmount = isMobile ? 
+                handleAmountSelection(mobileAmountInputs, mobileCustomAmountInput, mobileSubmitBtn, true) :
+                handleAmountSelection(desktopAmountInputs, desktopCustomAmountInput, desktopSubmitBtn);
+            
+            if (selectedAmount >= 1000) {
+                generateVirtualAccount(isMobile ? 'mobile' : 'desktop', selectedMethod);
+            }
+        });
+    });
+    
     // Function to generate virtual account
-    function generateVirtualAccount(layout) {
+    function generateVirtualAccount(layout, method = 'xtrapay') {
+        const isPayVibe = method === 'payvibe';
         const accountInfoElement = layout === 'mobile' ? 
-            document.getElementById('virtual-account-info-mobile') : 
-            document.getElementById('virtual-account-info');
+            (isPayVibe ? document.getElementById('payvibe-account-info-mobile') : document.getElementById('virtual-account-info-mobile')) : 
+            (isPayVibe ? document.getElementById('payvibe-account-info') : document.getElementById('virtual-account-info'));
         
         if (!accountInfoElement) return;
         
         // Show loading state
         accountInfoElement.innerHTML = `
             <div class="text-center">
-                <div class="spinner-border spinner-border-sm text-main" role="status">
+                <div class="spinner-border spinner-border-sm ${isPayVibe ? 'text-primary' : 'text-main'}" role="status">
                     <span class="visually-hidden">Loading...</span>
                 </div>
-                <p class="mt-2 text-light small">Generating account...</p>
+                <p class="mt-2 text-light small">Generating ${isPayVibe ? 'PayVibe' : 'virtual'} account...</p>
             </div>
         `;
         
@@ -1138,7 +1234,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 const totalAmount = chargeData.charge_info.total;
                 
                 // Make actual API call to generate virtual account with total amount
-                return fetch('{{ route("wallet.generate-xtrapay") }}', {
+                const endpoint = isPayVibe ? '{{ route("wallet.generate-payvibe") }}' : '{{ route("wallet.generate-xtrapay") }}';
+                return fetch(endpoint, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

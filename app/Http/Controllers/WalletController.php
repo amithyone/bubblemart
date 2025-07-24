@@ -210,7 +210,7 @@ class WalletController extends Controller
     {
         $request->validate([
             'amount' => 'required|numeric|min:1000|max:1000000',
-            'payment_method' => 'required|in:xtrapay,credit_card,debit_card'
+            'payment_method' => 'required|in:xtrapay,payvibe,credit_card,debit_card'
         ]);
 
         $user = auth()->user();
@@ -224,8 +224,8 @@ class WalletController extends Controller
         try {
             DB::beginTransaction();
 
-            if ($request->payment_method === 'xtrapay') {
-                // For XtraPay, we don't immediately credit the wallet
+            if ($request->payment_method === 'xtrapay' || $request->payment_method === 'payvibe') {
+                // For XtraPay and PayVibe, we don't immediately credit the wallet
                 // The wallet will be credited when the IPN callback is received
                 // For now, we'll create a pending transaction
                 $transaction = $wallet->transactions()->create([
@@ -233,11 +233,11 @@ class WalletController extends Controller
                     'amount' => $amount, // Store the base amount (without charges)
                     'balance_before' => $wallet->balance,
                     'balance_after' => $wallet->balance, // No change yet
-                    'description' => 'Pending XtraPay funding',
+                    'description' => 'Pending ' . ucfirst($request->payment_method) . ' funding',
                     'reference_type' => 'wallet_funding',
                     'status' => 'pending',
                     'metadata' => [
-                        'payment_method' => 'xtrapay',
+                        'payment_method' => $request->payment_method,
                         'base_amount' => $amount,
                         'charge' => $chargeInfo['charge'],
                         'total_amount' => $totalAmount,
