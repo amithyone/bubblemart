@@ -409,31 +409,58 @@ div.card.adminuiux-card.home-product-card {
 <div class="row gx-2 mb-3">
     <div class="col-7">
         <div class="card adminuiux-card h-100 p-0 overflow-hidden position-relative">
-            <img src="{{ asset('storage/' . $categoriesWithImages[0]->image_path) }}" class="w-100 h-100 object-fit-cover" style="min-height: 160px; max-height: 200px;" alt="{{ $categoriesWithImages[0]->name }}">
+            <img src="{{ asset('storage/' . $categoriesWithImages->get(0)->image_path) }}" class="w-100 h-100 object-fit-cover" style="min-height: 160px; max-height: 200px;" alt="{{ $categoriesWithImages->get(0)->name }}">
             <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-3" style="background:rgba(0,0,0,0.4);">
-                <h5 class="banner-title mb-1">{{ $categoriesWithImages[0]->name }}</h5>
-                <p class="banner-subtitle mb-2">{{ $categoriesWithImages[0]->description ?: 'Best gifts and collections' }}</p>
-                <a href="{{ route('categories.show', $categoriesWithImages[0]) }}" class="btn btn-sm btn-theme">Shop Now</a>
+                <h5 class="banner-title mb-1">{{ $categoriesWithImages->get(0)->name }}</h5>
+                <p class="banner-subtitle mb-2">{{ $categoriesWithImages->get(0)->description ?: 'Best gifts and collections' }}</p>
+                <a href="{{ route('categories.show', $categoriesWithImages->get(0)) }}" class="btn btn-sm btn-theme">Shop Now</a>
             </div>
         </div>
     </div>
     <div class="col-5 d-flex flex-column gap-2">
-        <a href="{{ route('categories.show', $categoriesWithImages[1]) }}" class="text-decoration-none">
+        @if($categoriesWithImages->get(1))
+        <a href="{{ route('categories.show', $categoriesWithImages->get(1)) }}" class="text-decoration-none">
             <div class="card adminuiux-card p-0 overflow-hidden position-relative flex-fill">
-                <img src="{{ asset('storage/' . $categoriesWithImages[1]->image_path) }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $categoriesWithImages[1]->name }}">
+                <img src="{{ asset('storage/' . $categoriesWithImages->get(1)->image_path) }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $categoriesWithImages->get(1)->name }}">
                 <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-2" style="background:rgba(0,0,0,0.3);">
-                    <h6 class="banner-title mb-1">{{ $categoriesWithImages[1]->name }}</h6>
+                    <h6 class="banner-title mb-1">{{ $categoriesWithImages->get(1)->name }}</h6>
                 </div>
             </div>
         </a>
-        <a href="{{ route('categories.show', $categoriesWithImages[2]) }}" class="text-decoration-none">
+        @endif
+        @if($categoriesWithImages->get(2))
+        <a href="{{ route('categories.show', $categoriesWithImages->get(2)) }}" class="text-decoration-none">
             <div class="card adminuiux-card p-0 overflow-hidden position-relative flex-fill">
-                <img src="{{ asset('storage/' . $categoriesWithImages[2]->image_path) }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $categoriesWithImages[2]->name }}">
+                <img src="{{ asset('storage/' . $categoriesWithImages->get(2)->image_path) }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="{{ $categoriesWithImages->get(2)->name }}">
                 <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-2" style="background:rgba(0,0,0,0.3);">
-                    <h6 class="banner-title mb-1">{{ $categoriesWithImages[2]->name }}</h6>
+                    <h6 class="banner-title mb-1">{{ $categoriesWithImages->get(2)->name }}</h6>
                 </div>
             </div>
         </a>
+        @endif
+        @if(!$categoriesWithImages->get(1) || !$categoriesWithImages->get(2))
+        <!-- Fill empty space if missing categories -->
+        @if(!$categoriesWithImages->get(1))
+        <a href="{{ route('categories.index') }}" class="text-decoration-none">
+            <div class="card adminuiux-card p-0 overflow-hidden position-relative flex-fill">
+                <img src="{{ asset('template-assets/img/ecommerce/image-4.jpg') }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="All Categories">
+                <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-2" style="background:rgba(0,0,0,0.3);">
+                    <h6 class="banner-title mb-1">All Categories</h6>
+                </div>
+            </div>
+        </a>
+        @endif
+        @if(!$categoriesWithImages->get(2))
+        <a href="{{ route('products.index') }}" class="text-decoration-none">
+            <div class="card adminuiux-card p-0 overflow-hidden position-relative flex-fill">
+                <img src="{{ asset('template-assets/img/ecommerce/image-5.jpg') }}" class="w-100 h-100 object-fit-cover" style="min-height: 75px; max-height: 90px;" alt="All Products">
+                <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-2" style="background:rgba(0,0,0,0.3);">
+                    <h6 class="banner-title mb-1">All Products</h6>
+                </div>
+            </div>
+        </a>
+        @endif
+        @endif
     </div>
 </div>
 @else
