@@ -295,26 +295,51 @@ class CartController extends Controller
         $amount = $request->amount;
         $addressId = $request->address_id;
         
-        // Debug logging
+        // Enhanced debug logging
         \Log::info('Wallet payment address validation', [
             'user_id' => $user->id,
             'address_id' => $addressId,
             'address_id_type' => gettype($addressId),
-            'request_data' => $request->all()
+            'address_id_raw' => $addressId,
+            'request_data' => $request->all(),
+            'request_headers' => $request->headers->all()
         ]);
         
-        $address = Address::findOrFail($addressId);
+        // Try to find the address with more detailed logging
+        try {
+            $address = Address::findOrFail($addressId);
+            \Log::info('Address found successfully', [
+                'address_id' => $address->id,
+                'address_user_id' => $address->user_id,
+                'current_user_id' => $user->id,
+                'address_owner' => $address->user_id,
+                'address_name' => $address->name,
+                'address_country' => $address->country
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Address not found', [
+                'address_id' => $addressId,
+                'error' => $e->getMessage(),
+                'user_id' => $user->id
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Shipping address not found. Please select a valid address.'
+            ]);
+        }
 
         // Validate that the user owns this address
         if ($address->user_id !== $user->id) {
             \Log::warning('Address ownership validation failed', [
                 'user_id' => $user->id,
                 'address_user_id' => $address->user_id,
-                'address_id' => $addressId
+                'address_id' => $addressId,
+                'address_owner' => $address->user_id,
+                'current_user' => $user->id
             ]);
             return response()->json([
                 'success' => false,
-                'message' => 'Invalid shipping address selected.'
+                'message' => 'Invalid shipping address selected. This address does not belong to your account.'
             ]);
         }
 
@@ -322,9 +347,20 @@ class CartController extends Controller
         $cart = Session::get('cart', []);
         $cartItems = $this->getCartItems($cart);
         
+        \Log::info('Cart items for scope validation', [
+            'cart_count' => count($cart),
+            'cart_items' => $cartItems,
+            'address_country' => $address->country,
+            'address_is_us' => $address->isUsAddress()
+        ]);
+        
         // Validate product scope compatibility
         $scopeErrors = $this->validateCartScopeCompatibility($cartItems, $address);
         if (!empty($scopeErrors)) {
+            \Log::warning('Scope validation failed', [
+                'scope_errors' => $scopeErrors,
+                'address_country' => $address->country
+            ]);
             return response()->json([
                 'success' => false,
                 'message' => 'Shipping restriction: ' . implode(', ', $scopeErrors)
@@ -346,7 +382,10 @@ class CartController extends Controller
                 'amount' => $amount,
                 'wallet_balance' => $wallet ? $wallet->balance : 'no_wallet'
             ]);
-            return redirect()->route('cart.index')->with('error', 'Insufficient wallet balance. Please add funds to your wallet.');
+            return response()->json([
+                'success' => false,
+                'message' => 'Insufficient wallet balance. Please add funds to your wallet.'
+            ]);
         }
 
         try {
@@ -410,26 +449,53 @@ class CartController extends Controller
         ]);
 
         $user = auth()->user();
-        $address = Address::findOrFail($request->address_id);
+        $addressId = $request->address_id;
 
-        // Debug logging
+        // Enhanced debug logging
         \Log::info('Xtrapay payment address validation', [
             'user_id' => $user->id,
-            'address_id' => $request->address_id,
-            'address_id_type' => gettype($request->address_id),
-            'request_data' => $request->all()
+            'address_id' => $addressId,
+            'address_id_type' => gettype($addressId),
+            'address_id_raw' => $addressId,
+            'request_data' => $request->all(),
+            'request_headers' => $request->headers->all()
         ]);
+
+        // Try to find the address with more detailed logging
+        try {
+            $address = Address::findOrFail($addressId);
+            \Log::info('Address found successfully for Xtrapay', [
+                'address_id' => $address->id,
+                'address_user_id' => $address->user_id,
+                'current_user_id' => $user->id,
+                'address_owner' => $address->user_id,
+                'address_name' => $address->name,
+                'address_country' => $address->country
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Address not found for Xtrapay', [
+                'address_id' => $addressId,
+                'error' => $e->getMessage(),
+                'user_id' => $user->id
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Shipping address not found. Please select a valid address.'
+            ]);
+        }
 
         // Validate that the user owns this address
         if ($address->user_id !== $user->id) {
             \Log::warning('Xtrapay address ownership validation failed', [
                 'user_id' => $user->id,
                 'address_user_id' => $address->user_id,
-                'address_id' => $request->address_id
+                'address_id' => $addressId,
+                'address_owner' => $address->user_id,
+                'current_user' => $user->id
             ]);
             return response()->json([
                 'success' => false,
-                'message' => 'Invalid shipping address selected.'
+                'message' => 'Invalid shipping address selected. This address does not belong to your account.'
             ]);
         }
 
@@ -437,9 +503,20 @@ class CartController extends Controller
         $cart = Session::get('cart', []);
         $cartItems = $this->getCartItems($cart);
         
+        \Log::info('Cart items for Xtrapay scope validation', [
+            'cart_count' => count($cart),
+            'cart_items' => $cartItems,
+            'address_country' => $address->country,
+            'address_is_us' => $address->isUsAddress()
+        ]);
+        
         // Validate product scope compatibility
         $scopeErrors = $this->validateCartScopeCompatibility($cartItems, $address);
         if (!empty($scopeErrors)) {
+            \Log::warning('Xtrapay scope validation failed', [
+                'scope_errors' => $scopeErrors,
+                'address_country' => $address->country
+            ]);
             return response()->json([
                 'success' => false,
                 'message' => 'Shipping restriction: ' . implode(', ', $scopeErrors)
@@ -588,6 +665,17 @@ class CartController extends Controller
             throw new \Exception('Shipping address is required to create order');
         }
 
+        // Debug logging for order creation
+        \Log::info('Creating order from cart', [
+            'user_id' => $user->id,
+            'user_email' => $user->email,
+            'total_amount' => $totalAmount,
+            'payment_method' => $paymentMethod,
+            'shipping_address_id' => $shippingAddress->id,
+            'shipping_address_user_id' => $shippingAddress->user_id,
+            'cart_count' => count($cart)
+        ]);
+
         $order = Order::create([
             'user_id' => $user->id,
             'order_number' => 'ORD-' . strtoupper(uniqid()),
@@ -608,6 +696,13 @@ class CartController extends Controller
             'receiver_zip' => $shippingAddress->postal_code,
             'receiver_note' => null,
             'address_id' => $shippingAddress->id
+        ]);
+
+        \Log::info('Order created successfully', [
+            'order_id' => $order->id,
+            'order_number' => $order->order_number,
+            'order_user_id' => $order->user_id,
+            'created_user_id' => $user->id
         ]);
 
         foreach ($cart as $cartKey => $item) {
@@ -697,6 +792,11 @@ class CartController extends Controller
                 $product->decrement('stock', $quantity);
             }
         }
+
+        \Log::info('Order items created successfully', [
+            'order_id' => $order->id,
+            'order_items_count' => $order->orderItems->count()
+        ]);
 
         return $order;
     }

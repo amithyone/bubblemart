@@ -71,12 +71,36 @@ class OrderController extends Controller
             return redirect()->route('login')->with('error', 'Please log in to view your orders.');
         }
 
+        $currentUser = Auth::user();
+        
+        // Debug logging
+        \Log::info('Order access attempt', [
+            'order_id' => $order->id,
+            'order_user_id' => $order->user_id,
+            'current_user_id' => $currentUser->id,
+            'order_number' => $order->order_number,
+            'order_created_at' => $order->created_at,
+            'user_authenticated' => Auth::check()
+        ]);
+
         // Ensure user can only view their own orders
-        if ($order->user_id !== Auth::id()) {
+        if ($order->user_id !== $currentUser->id) {
+            \Log::warning('Order access denied', [
+                'order_id' => $order->id,
+                'order_user_id' => $order->user_id,
+                'current_user_id' => $currentUser->id,
+                'order_number' => $order->order_number
+            ]);
             abort(403, 'You are not authorized to view this order.');
         }
 
         $order->load(['orderItems.product', 'orderItems.customization', 'orderItems.variationOptions']);
+
+        \Log::info('Order access granted', [
+            'order_id' => $order->id,
+            'user_id' => $currentUser->id,
+            'order_items_count' => $order->orderItems->count()
+        ]);
 
         return view('orders.show', compact('order'));
     }

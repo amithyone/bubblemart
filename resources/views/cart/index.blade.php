@@ -871,6 +871,8 @@ document.addEventListener('DOMContentLoaded', function() {
 // Process wallet payment
 function processWalletPayment(amount, addressId = null) {
     console.log('Processing wallet payment for amount:', amount, 'address:', addressId);
+    console.log('Address ID type:', typeof addressId);
+    console.log('Address ID value:', addressId);
     
     // Show loading
     const payButton = document.querySelector('button[onclick="processPayment()"]');
@@ -878,16 +880,20 @@ function processWalletPayment(amount, addressId = null) {
     payButton.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Processing...';
     payButton.disabled = true;
     
+    const requestBody = {
+        amount: amount,
+        address_id: addressId
+    };
+    
+    console.log('Request body:', requestBody);
+    
     fetch('{{ route("cart.pay-with-wallet") }}', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': '{{ csrf_token() }}'
         },
-        body: JSON.stringify({
-            amount: amount,
-            address_id: addressId
-        })
+        body: JSON.stringify(requestBody)
     })
     .then(response => {
         console.log('Response status:', response.status);
