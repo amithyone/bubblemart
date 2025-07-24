@@ -428,10 +428,25 @@ class CartController extends Controller
         $user = auth()->user();
         $wallet = $user->wallet;
         $amount = $request->amount;
-        $address = Address::findOrFail($request->address_id);
+        $addressId = $request->address_id;
+        
+        // Debug logging
+        \Log::info('Wallet payment address validation', [
+            'user_id' => $user->id,
+            'address_id' => $addressId,
+            'address_id_type' => gettype($addressId),
+            'request_data' => $request->all()
+        ]);
+        
+        $address = Address::findOrFail($addressId);
 
         // Validate that the user owns this address
         if ($address->user_id !== $user->id) {
+            \Log::warning('Address ownership validation failed', [
+                'user_id' => $user->id,
+                'address_user_id' => $address->user_id,
+                'address_id' => $addressId
+            ]);
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid shipping address selected.'
@@ -532,8 +547,21 @@ class CartController extends Controller
         $user = auth()->user();
         $address = Address::findOrFail($request->address_id);
 
+        // Debug logging
+        \Log::info('Xtrapay payment address validation', [
+            'user_id' => $user->id,
+            'address_id' => $request->address_id,
+            'address_id_type' => gettype($request->address_id),
+            'request_data' => $request->all()
+        ]);
+
         // Validate that the user owns this address
         if ($address->user_id !== $user->id) {
+            \Log::warning('Xtrapay address ownership validation failed', [
+                'user_id' => $user->id,
+                'address_user_id' => $address->user_id,
+                'address_id' => $request->address_id
+            ]);
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid shipping address selected.'
