@@ -131,6 +131,9 @@
                     <button type="submit" class="mobile-btn mobile-btn-primary flex-fill">
                         <i class="fas fa-save me-2"></i>Update Product
                     </button>
+                    <a href="{{ route('admin.products.variations.index', $product) }}" class="mobile-btn mobile-btn-info flex-fill">
+                        <i class="fas fa-gear me-2"></i>Manage Variations
+                    </a>
                     <a href="{{ route('admin.products.index') }}" class="mobile-btn mobile-btn-secondary flex-fill">
                         <i class="fas fa-times me-2"></i>Cancel
                     </a>

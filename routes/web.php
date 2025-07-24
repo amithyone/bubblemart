@@ -184,6 +184,15 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     Route::post('products/bulk-action', [AdminProductController::class, 'bulkAction'])->name('products.bulk-action');
     Route::delete('products/{product}/gallery', [AdminProductController::class, 'removeGalleryImage'])->name('products.remove-gallery-image');
     
+    // Product variations management
+    Route::get('products/{product}/variations', [App\Http\Controllers\Admin\ProductVariationController::class, 'index'])->name('products.variations.index');
+    Route::post('products/{product}/variations', [App\Http\Controllers\Admin\ProductVariationController::class, 'store'])->name('products.variations.store');
+    Route::post('variations/{variation}/options', [App\Http\Controllers\Admin\ProductVariationController::class, 'storeOption'])->name('variations.options.store');
+    Route::put('variations/options/{option}', [App\Http\Controllers\Admin\ProductVariationController::class, 'updateOption'])->name('variations.options.update');
+    Route::delete('variations/options/{option}', [App\Http\Controllers\Admin\ProductVariationController::class, 'destroyOption'])->name('variations.options.destroy');
+    Route::patch('variations/options/{option}/toggle-status', [App\Http\Controllers\Admin\ProductVariationController::class, 'toggleOptionStatus'])->name('variations.options.toggle-status');
+    Route::post('variations/{variation}/sort-order', [App\Http\Controllers\Admin\ProductVariationController::class, 'updateSortOrder'])->name('variations.sort-order');
+    
     // Orders management
     Route::resource('orders', AdminOrderController::class)->except(['create', 'store', 'destroy']);
     Route::patch('orders/{order}/update-status', [AdminOrderController::class, 'updateStatus'])->name('orders.update-status');

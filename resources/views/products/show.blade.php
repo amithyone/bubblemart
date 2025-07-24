@@ -318,35 +318,55 @@
                         </h6>
                         
                         @foreach($product->activeVariations as $variation)
-                            <div class="mb-3">
+                            <div class="mb-4">
                                 <label class="form-label fw-medium">{{ $variation->name }}</label>
                                 <div class="card adminuiux-card border-0" style="border-radius: 15px;">
                                     <div class="card-body">
                                         @if($variation->type === 'select')
-                                            <select class="form-select" name="variations[{{ $variation->name }}]" required style="border-radius: 10px;">
+                                            <select class="form-select variation-select" name="variations[{{ $variation->name }}]" required style="border-radius: 10px;">
                                                 <option value="">Select {{ $variation->name }}</option>
                                                 @foreach($variation->activeOptions as $option)
-                                                    <option value="{{ $option->id }}" data-price-adjustment="{{ $option->price_adjustment }}">
+                                                    <option value="{{ $option->id }}" data-price-adjustment="{{ $option->price_adjustment }}" data-image="{{ $option->image }}">
                                                         {{ $option->display_label }}
-                                                        @if($option->price_adjustment > 0)
-                                                            (+₦{{ number_format($option->price_adjustment) }})
+                                                        @if($option->price_adjustment != 0)
+                                                            ({{ $option->price_adjustment > 0 ? '+' : '' }}₦{{ number_format($option->price_adjustment) }})
                                                         @endif
                                                     </option>
                                                 @endforeach
                                             </select>
                                         @elseif($variation->type === 'radio')
-                                            @foreach($variation->activeOptions as $option)
-                                                <div class="form-check mb-2">
-                                                    <input class="form-check-input" type="radio" name="variations[{{ $variation->name }}]" 
-                                                           id="{{ $variation->name }}_{{ $option->id }}" value="{{ $option->id }}" 
-                                                           data-price-adjustment="{{ $option->price_adjustment }}" required>
-                                                    <label class="form-check-label" for="{{ $variation->name }}_{{ $option->id }}">
-                                                        {{ $option->display_label }}
-                                                        @if($option->price_adjustment > 0)
-                                                            <span class="text-theme-1">(+₦{{ number_format($option->price_adjustment) }})</span>
-                                                        @endif
-                                                    </label>
-                                                </div>
+                                            <div class="row g-2">
+                                                @foreach($variation->activeOptions as $option)
+                                                    <div class="col-auto">
+                                                        <div class="variation-option-card" data-option-id="{{ $option->id }}" data-price-adjustment="{{ $option->price_adjustment }}" data-image="{{ $option->image }}">
+                                                            <input class="form-check-input" type="radio" name="variations[{{ $variation->name }}]" 
+                                                                   id="{{ $variation->name }}_{{ $option->id }}" value="{{ $option->id }}" 
+                                                                   data-price-adjustment="{{ $option->price_adjustment }}" data-image="{{ $option->image }}" required>
+                                                            <label class="form-check-label d-flex flex-column align-items-center" for="{{ $variation->name }}_{{ $option->id }}">
+                                                                @if($option->image)
+                                                                    <div class="variation-image mb-2">
+                                                                        <img src="{{ asset('storage/' . $option->image) }}" 
+                                                                             alt="{{ $option->display_label }}" 
+                                                                             class="img-fluid rounded" 
+                                                                             style="width: 60px; height: 60px; object-fit: cover; border: 2px solid transparent;">
+                                                                    </div>
+                                                                @else
+                                                                    <div class="variation-color-swatch mb-2" 
+                                                                         style="width: 60px; height: 60px; background-color: {{ strtolower($option->value) }}; border: 2px solid transparent; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                                                        <span class="text-white fw-bold">{{ substr($option->value, 0, 1) }}</span>
+                                                                    </div>
+                                                                @endif
+                                                                <span class="text-center small">{{ $option->display_label }}</span>
+                                                                @if($option->price_adjustment != 0)
+                                                                    <span class="text-center small {{ $option->price_adjustment > 0 ? 'text-danger' : 'text-success' }}">
+                                                                        {{ $option->price_adjustment > 0 ? '+' : '' }}₦{{ number_format($option->price_adjustment) }}
+                                                                    </span>
+                                                                @endif
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            </div>
                                             @endforeach
                                         @endif
                                     </div>
@@ -865,6 +885,73 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
+    // Product variation functionality
+    function updateProductForVariation(optionId, priceAdjustment, imageUrl) {
+        // Update price
+        const basePrice = {{ $product->price_naira }};
+        const newPrice = basePrice + parseFloat(priceAdjustment || 0);
+        const priceElement = document.querySelector('.h3.fw-bold.text-theme-1');
+        if (priceElement) {
+            priceElement.textContent = '₦' + newPrice.toLocaleString();
+        }
+        
+        // Update final price for form
+        const finalPriceInput = document.getElementById('final_price');
+        if (finalPriceInput) {
+            finalPriceInput.value = newPrice;
+        }
+        
+        // Update product image if variation has an image
+        if (imageUrl) {
+            const carousel = document.getElementById('productImageCarousel');
+            if (carousel) {
+                // Create a new carousel item with the variation image
+                const carouselInner = carousel.querySelector('.carousel-inner');
+                const newItem = document.createElement('div');
+                newItem.className = 'carousel-item active';
+                newItem.innerHTML = `<img src="${imageUrl}" alt="Selected variation" class="w-100 rounded" style="border-radius: 15px; max-height: 400px; object-fit: cover;">`;
+                
+                // Replace the first item
+                const firstItem = carouselInner.querySelector('.carousel-item');
+                if (firstItem) {
+                    firstItem.replaceWith(newItem);
+                }
+            }
+        }
+    }
+    
+    // Handle variation selection
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle radio button variations
+        document.querySelectorAll('input[type="radio"][name^="variations"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.checked) {
+                    const priceAdjustment = this.dataset.priceAdjustment;
+                    const imageUrl = this.dataset.image ? '/storage/' + this.dataset.image : null;
+                    updateProductForVariation(this.value, priceAdjustment, imageUrl);
+                    
+                    // Update visual selection
+                    document.querySelectorAll('.variation-option-card').forEach(card => {
+                        card.style.border = '2px solid transparent';
+                    });
+                    this.closest('.variation-option-card').style.border = '2px solid #036674';
+                }
+            });
+        });
+        
+        // Handle select variations
+        document.querySelectorAll('.variation-select').forEach(select => {
+            select.addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                if (selectedOption.value) {
+                    const priceAdjustment = selectedOption.dataset.priceAdjustment;
+                    const imageUrl = selectedOption.dataset.image ? '/storage/' + selectedOption.dataset.image : null;
+                    updateProductForVariation(selectedOption.value, priceAdjustment, imageUrl);
+                }
+            });
+        });
+    });
+    
     // Update thumbnail borders when carousel slides
     const carousel = document.getElementById('productImageCarousel');
     if (carousel) {
@@ -939,6 +1026,48 @@ document.addEventListener('DOMContentLoaded', function() {
 
 [data-theme="light"] .carousel-indicators button.active {
     background-color: #036674;
+}
+
+/* Product variation styling */
+.variation-option-card {
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.variation-option-card:hover {
+    background-color: rgba(3, 102, 116, 0.1);
+    transform: translateY(-2px);
+}
+
+.variation-option-card input[type="radio"] {
+    display: none;
+}
+
+.variation-option-card input[type="radio"]:checked + label {
+    color: #036674;
+    font-weight: 600;
+}
+
+.variation-option-card input[type="radio"]:checked + label .variation-image img,
+.variation-option-card input[type="radio"]:checked + label .variation-color-swatch {
+    border-color: #036674 !important;
+    box-shadow: 0 0 0 2px rgba(3, 102, 116, 0.3);
+}
+
+.variation-color-swatch {
+    transition: all 0.3s ease;
+}
+
+/* Light theme variation styling */
+[data-theme="light"] .variation-option-card:hover {
+    background-color: rgba(3, 102, 116, 0.05);
+}
+
+[data-theme="light"] .variation-option-card input[type="radio"]:checked + label {
+    color: #036674;
 }
 </style>
 @endpush 
