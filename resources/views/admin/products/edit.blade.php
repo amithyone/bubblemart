@@ -215,7 +215,8 @@ document.addEventListener('DOMContentLoaded', function() {
 // Function to remove gallery images
 function removeGalleryImage(index) {
     if (confirm('Are you sure you want to remove this image?')) {
-        fetch(`{{ route('admin.products.remove-gallery-image', ['product' => $product, 'index' => ':index']) }}`.replace(':index', index), {
+        const url = '{{ route("admin.products.remove-gallery-image", ["product" => $product, "index" => "INDEX_PLACEHOLDER"]) }}'.replace('INDEX_PLACEHOLDER', index);
+        fetch(url, {
             method: 'DELETE',
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
