@@ -728,10 +728,16 @@ function editAddress(addressId) {
             form.action = `/profile/addresses/${addressId}`;
             form.method = 'POST'; // Keep as POST but add method override
             
-            // Set method override for PUT
-            document.getElementById('method_override').value = 'PUT';
+            // Set method override for PATCH
+            document.getElementById('method_override').value = 'PATCH';
             console.log('Form action:', form.action);
             console.log('Method override:', document.getElementById('method_override').value);
+            
+            // Also try setting the method field directly
+            const methodField = form.querySelector('input[name="_method"]');
+            if (methodField) {
+                methodField.value = 'PATCH';
+            }
             
             const modal = new bootstrap.Modal(document.getElementById('addAddressModal'));
             modal.show();
