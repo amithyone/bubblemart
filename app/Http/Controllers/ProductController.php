@@ -70,8 +70,11 @@ class ProductController extends Controller
             ->get();
             
         $stores = Store::where('is_active', true)->get();
+        
+        // Get search term for display
+        $search = $request->get('search');
 
-        return view('products.index', compact('products', 'categories', 'stores'));
+        return view('products.index', compact('products', 'categories', 'stores', 'search'));
     }
 
     /**
