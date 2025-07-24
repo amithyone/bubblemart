@@ -65,7 +65,12 @@ class ProductController extends Controller
      */
     public function create()
     {
-        $categories = Category::all();
+        $categories = Category::whereNull('parent_id')
+            ->with(['children' => function($query) {
+                $query->where('is_active', true);
+            }])
+            ->where('is_active', true)
+            ->get();
         $stores = Store::all();
 
         return view('admin.products.create', compact('categories', 'stores'));
@@ -84,19 +89,34 @@ class ProductController extends Controller
             'category_id' => 'required|exists:categories,id',
             'store_id' => 'required|exists:stores,id',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+            'gallery.*' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
             'is_active' => 'boolean',
-            'stock_quantity' => 'nullable|integer|min:0',
+            'is_featured' => 'boolean',
+            'allow_customization' => 'boolean',
+            'stock' => 'nullable|integer|min:0',
         ]);
 
-        $data = $request->except('image');
+        $data = $request->except(['image', 'gallery']);
         $data['slug'] = Str::slug($request->name);
         $data['is_active'] = $request->boolean('is_active');
+        $data['is_featured'] = $request->boolean('is_featured');
+        $data['allow_customization'] = $request->boolean('allow_customization');
 
-        // Handle image upload
+        // Handle main image upload
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('products', 'public');
             $data['image'] = $imagePath;
         }
+
+        // Handle gallery images upload
+        $galleryImages = [];
+        if ($request->hasFile('gallery')) {
+            foreach ($request->file('gallery') as $image) {
+                $imagePath = $image->store('products/gallery', 'public');
+                $galleryImages[] = $imagePath;
+            }
+        }
+        $data['gallery'] = $galleryImages;
 
         Product::create($data);
 
@@ -125,7 +145,12 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        $categories = Category::all();
+        $categories = Category::whereNull('parent_id')
+            ->with(['children' => function($query) {
+                $query->where('is_active', true);
+            }])
+            ->where('is_active', true)
+            ->get();
         $stores = Store::all();
 
         return view('admin.products.edit', compact('product', 'categories', 'stores'));
@@ -144,15 +169,20 @@ class ProductController extends Controller
             'category_id' => 'required|exists:categories,id',
             'store_id' => 'required|exists:stores,id',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+            'gallery.*' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
             'is_active' => 'boolean',
-            'stock_quantity' => 'nullable|integer|min:0',
+            'is_featured' => 'boolean',
+            'allow_customization' => 'boolean',
+            'stock' => 'nullable|integer|min:0',
         ]);
 
-        $data = $request->except('image');
+        $data = $request->except(['image', 'gallery']);
         $data['slug'] = Str::slug($request->name);
         $data['is_active'] = $request->boolean('is_active');
+        $data['is_featured'] = $request->boolean('is_featured');
+        $data['allow_customization'] = $request->boolean('allow_customization');
 
-        // Handle image upload
+        // Handle main image upload
         if ($request->hasFile('image')) {
             // Delete old image
             if ($product->image) {
@@ -162,6 +192,16 @@ class ProductController extends Controller
             $imagePath = $request->file('image')->store('products', 'public');
             $data['image'] = $imagePath;
         }
+
+        // Handle gallery images upload
+        $galleryImages = $product->gallery ?? [];
+        if ($request->hasFile('gallery')) {
+            foreach ($request->file('gallery') as $image) {
+                $imagePath = $image->store('products/gallery', 'public');
+                $galleryImages[] = $imagePath;
+            }
+        }
+        $data['gallery'] = $galleryImages;
 
         $product->update($data);
 
@@ -174,9 +214,16 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        // Delete image if exists
+        // Delete main image if exists
         if ($product->image) {
             Storage::disk('public')->delete($product->image);
+        }
+
+        // Delete gallery images if exist
+        if ($product->gallery) {
+            foreach ($product->gallery as $galleryImage) {
+                Storage::disk('public')->delete($galleryImage);
+            }
         }
 
         $product->delete();
@@ -239,5 +286,29 @@ class ProductController extends Controller
         }
 
         return back()->with('success', $message);
+    }
+
+    /**
+     * Remove a specific gallery image from a product.
+     */
+    public function removeGalleryImage(Product $product, $index)
+    {
+        $gallery = $product->gallery ?? [];
+        
+        if (isset($gallery[$index])) {
+            // Delete the image file
+            Storage::disk('public')->delete($gallery[$index]);
+            
+            // Remove from gallery array
+            unset($gallery[$index]);
+            $gallery = array_values($gallery); // Re-index array
+            
+            // Update product
+            $product->update(['gallery' => $gallery]);
+            
+            return response()->json(['success' => true, 'message' => 'Gallery image removed successfully']);
+        }
+        
+        return response()->json(['success' => false, 'message' => 'Image not found'], 404);
     }
 }

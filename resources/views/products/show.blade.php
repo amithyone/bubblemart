@@ -171,15 +171,78 @@
 
 <!-- Product Details -->
 <div class="row gx-3 mb-3">
-    <!-- Product Image -->
+    <!-- Product Image Slider -->
     <div class="col-md-6 mb-3">
         <div class="card adminuiux-card" style="border-radius: 20px;">
-            <div class="card-body p-4 text-center">
-                @if($product->image)
-                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="w-100 rounded" style="border-radius: 15px; max-height: 400px; object-fit: cover;">
+            <div class="card-body p-4">
+                @if($product->image || ($product->gallery && count($product->gallery) > 0))
+                    <div id="productImageCarousel" class="carousel slide" data-bs-ride="carousel">
+                        <!-- Indicators -->
+                        @if(($product->gallery && count($product->gallery) > 0) || $product->image)
+                            <div class="carousel-indicators">
+                                @if($product->image)
+                                    <button type="button" data-bs-target="#productImageCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Main Image"></button>
+                                @endif
+                                @if($product->gallery)
+                                    @foreach($product->gallery as $index => $galleryImage)
+                                        <button type="button" data-bs-target="#productImageCarousel" data-bs-slide-to="{{ $product->image ? $index + 1 : $index }}" aria-label="Gallery Image {{ $index + 1 }}"></button>
+                                    @endforeach
+                                @endif
+                            </div>
+                        @endif
+                        
+                        <!-- Slides -->
+                        <div class="carousel-inner">
+                            @if($product->image)
+                                <div class="carousel-item active">
+                                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="w-100 rounded" style="border-radius: 15px; max-height: 400px; object-fit: cover;">
+                                </div>
+                            @endif
+                            
+                            @if($product->gallery)
+                                @foreach($product->gallery as $index => $galleryImage)
+                                    <div class="carousel-item {{ !$product->image && $index === 0 ? 'active' : '' }}">
+                                        <img src="{{ asset('storage/' . $galleryImage) }}" alt="{{ $product->name }} - Image {{ $index + 1 }}" class="w-100 rounded" style="border-radius: 15px; max-height: 400px; object-fit: cover;">
+                                    </div>
+                                @endforeach
+                            @endif
+                        </div>
+                        
+                        <!-- Controls -->
+                        @if(($product->gallery && count($product->gallery) > 0) || ($product->image && $product->gallery && count($product->gallery) > 0))
+                            <button class="carousel-control-prev" type="button" data-bs-target="#productImageCarousel" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#productImageCarousel" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                        @endif
+                    </div>
+                    
+                    <!-- Thumbnail Navigation -->
+                    @if($product->gallery && count($product->gallery) > 0)
+                        <div class="mt-3">
+                            <div class="d-flex gap-2 overflow-auto">
+                                @if($product->image)
+                                    <div class="thumbnail-item" onclick="goToSlide(0)" style="cursor: pointer; min-width: 60px; height: 60px; border: 2px solid #036674; border-radius: 8px; overflow: hidden;">
+                                        <img src="{{ asset('storage/' . $product->image) }}" alt="Main" class="w-100 h-100" style="object-fit: cover;">
+                                    </div>
+                                @endif
+                                @foreach($product->gallery as $index => $galleryImage)
+                                    <div class="thumbnail-item" onclick="goToSlide({{ $product->image ? $index + 1 : $index }})" style="cursor: pointer; min-width: 60px; height: 60px; border: 2px solid transparent; border-radius: 8px; overflow: hidden;">
+                                        <img src="{{ asset('storage/' . $galleryImage) }}" alt="Gallery {{ $index + 1 }}" class="w-100 h-100" style="object-fit: cover;">
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
                 @else
-                    <div class="avatar avatar-200 rounded bg-theme-1 mx-auto d-flex align-items-center justify-content-center">
-                        <i class="bi bi-gift h1 text-white"></i>
+                    <div class="text-center">
+                        <div class="avatar avatar-200 rounded bg-theme-1 mx-auto d-flex align-items-center justify-content-center">
+                            <i class="bi bi-gift h1 text-white"></i>
+                        </div>
                     </div>
                 @endif
             </div>
@@ -782,6 +845,100 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Submitting form...');
         form.submit();
     };
+    
+    // Product image carousel functionality
+    function goToSlide(slideIndex) {
+        const carousel = document.getElementById('productImageCarousel');
+        if (carousel) {
+            const bsCarousel = new bootstrap.Carousel(carousel);
+            bsCarousel.to(slideIndex);
+            
+            // Update thumbnail borders
+            const thumbnails = document.querySelectorAll('.thumbnail-item');
+            thumbnails.forEach((thumb, index) => {
+                if (index === slideIndex) {
+                    thumb.style.border = '2px solid #036674';
+                } else {
+                    thumb.style.border = '2px solid transparent';
+                }
+            });
+        }
+    }
+    
+    // Update thumbnail borders when carousel slides
+    const carousel = document.getElementById('productImageCarousel');
+    if (carousel) {
+        carousel.addEventListener('slid.bs.carousel', function (event) {
+            const thumbnails = document.querySelectorAll('.thumbnail-item');
+            thumbnails.forEach((thumb, index) => {
+                if (index === event.to) {
+                    thumb.style.border = '2px solid #036674';
+                } else {
+                    thumb.style.border = '2px solid transparent';
+                }
+            });
+        });
+    }
 });
 </script>
+
+<style>
+/* Product image carousel styling */
+.carousel-indicators {
+    bottom: 10px;
+}
+
+.carousel-indicators button {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.5);
+    border: none;
+    margin: 0 3px;
+}
+
+.carousel-indicators button.active {
+    background-color: #036674;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+    width: 40px;
+    height: 40px;
+    background-color: rgba(3, 102, 116, 0.8);
+    border-radius: 50%;
+    top: 50%;
+    transform: translateY(-50%);
+    margin: 0 10px;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    width: 20px;
+    height: 20px;
+}
+
+.thumbnail-item {
+    transition: all 0.3s ease;
+}
+
+.thumbnail-item:hover {
+    transform: scale(1.05);
+    border-color: #036674 !important;
+}
+
+/* Light theme carousel controls */
+[data-theme="light"] .carousel-control-prev,
+[data-theme="light"] .carousel-control-next {
+    background-color: rgba(3, 102, 116, 0.9);
+}
+
+[data-theme="light"] .carousel-indicators button {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="light"] .carousel-indicators button.active {
+    background-color: #036674;
+}
+</style>
 @endpush 

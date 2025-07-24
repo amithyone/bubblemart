@@ -182,6 +182,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     Route::patch('products/{product}/toggle-status', [AdminProductController::class, 'toggleStatus'])->name('products.toggle-status');
     Route::patch('products/{product}/update-stock', [AdminProductController::class, 'updateStock'])->name('products.update-stock');
     Route::post('products/bulk-action', [AdminProductController::class, 'bulkAction'])->name('products.bulk-action');
+    Route::delete('products/{product}/gallery/{index}', [AdminProductController::class, 'removeGalleryImage'])->name('products.remove-gallery-image');
     
     // Orders management
     Route::resource('orders', AdminOrderController::class)->except(['create', 'store', 'destroy']);
