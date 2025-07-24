@@ -718,8 +718,21 @@ function editAddress(addressId) {
             document.getElementById('country').value = data.country;
             document.getElementById('is_default').checked = data.is_default;
             
+            // Update modal for editing
             document.getElementById('addAddressModalLabel').textContent = 'Edit Address';
-            document.getElementById('addressForm').action = `/profile/addresses/${addressId}`;
+            const form = document.getElementById('addressForm');
+            form.action = `/profile/addresses/${addressId}`;
+            form.method = 'POST'; // Keep as POST but add method override
+            
+            // Add method override for PUT
+            let methodField = form.querySelector('input[name="_method"]');
+            if (!methodField) {
+                methodField = document.createElement('input');
+                methodField.type = 'hidden';
+                methodField.name = '_method';
+                form.appendChild(methodField);
+            }
+            methodField.value = 'PUT';
             
             const modal = new bootstrap.Modal(document.getElementById('addAddressModal'));
             modal.show();
