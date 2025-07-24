@@ -761,6 +761,18 @@
                                     <span class="text-secondary">Items:</span>
                                     <span class="fw-medium text-theme-1">{{ $order->orderItems->count() }} items</span>
                                 </div>
+                                @if($order->tracking_number)
+                                <div class="d-flex justify-content-between mt-2">
+                                    <span class="text-secondary">Tracking Number:</span>
+                                    <span class="fw-medium text-theme-1">{{ $order->tracking_number }}</span>
+                                </div>
+                                @endif
+                                @if($order->delivery_note)
+                                <div class="d-flex justify-content-between mt-2">
+                                    <span class="text-secondary">Delivery Note:</span>
+                                    <span class="fw-medium text-theme-1">{{ $order->delivery_note }}</span>
+                                </div>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -770,18 +782,61 @@
                             <div class="card-body">
                                 <h6 class="fw-bold mb-3 text-theme-1">
                                     <i class="bi bi-geo-alt me-2 text-theme-1"></i>
-                                    Delivery Information
+                                    Complete Delivery Information
                                 </h6>
                                 @foreach($order->orderItems as $item)
-                                <div class="mb-2">
-                                    <div class="fw-medium mb-1 text-theme-1">{{ $item->receiver_name }}</div>
-                                    <div class="small text-secondary mb-1">{{ $item->receiver_phone }}</div>
-                                    <div class="small text-secondary">{{ $item->receiver_address }}</div>
-                                    @if($item->receiver_note)
-                                    <div class="small text-secondary mt-1">
-                                        <i class="bi bi-chat-quote me-1"></i>
-                                        {{ $item->receiver_note }}
+                                <div class="mb-3">
+                                    <div class="fw-medium mb-2 text-theme-1">{{ $item->product->name }}</div>
+                                    
+                                    @if($item->customization)
+                                    <!-- Complete address from customization -->
+                                    <div class="small text-secondary mb-1">
+                                        <strong>Receiver:</strong> {{ $item->customization->receiver_name }}
                                     </div>
+                                    <div class="small text-secondary mb-1">
+                                        <strong>Phone:</strong> {{ $item->customization->receiver_phone }}
+                                    </div>
+                                    @if($item->customization->receiver_gender)
+                                    <div class="small text-secondary mb-1">
+                                        <strong>Gender:</strong> {{ ucfirst($item->customization->receiver_gender) }}
+                                    </div>
+                                    @endif
+                                    <div class="small text-secondary mb-1">
+                                        <strong>Address:</strong>
+                                    </div>
+                                    <div class="small text-secondary mb-1 ps-2">
+                                        @if($item->customization->receiver_house_number){{ $item->customization->receiver_house_number }}, @endif
+                                        @if($item->customization->receiver_street){{ $item->customization->receiver_street }}, @endif
+                                        @if($item->customization->receiver_city){{ $item->customization->receiver_city }}, @endif
+                                        @if($item->customization->receiver_state){{ $item->customization->receiver_state }} @endif
+                                        @if($item->customization->receiver_zip){{ $item->customization->receiver_zip }}@endif
+                                    </div>
+                                    @if($item->customization->receiver_note)
+                                    <div class="small text-secondary mb-1">
+                                        <strong>Note:</strong> {{ $item->customization->receiver_note }}
+                                    </div>
+                                    @endif
+                                    @if($item->customization->delivery_method)
+                                    <div class="small text-secondary mb-1">
+                                        <strong>Delivery Method:</strong> {{ ucfirst(str_replace('_', ' ', $item->customization->delivery_method)) }}
+                                    </div>
+                                    @endif
+                                    @else
+                                    <!-- Fallback to order item fields -->
+                                    <div class="small text-secondary mb-1">
+                                        <strong>Receiver:</strong> {{ $item->receiver_name }}
+                                    </div>
+                                    <div class="small text-secondary mb-1">
+                                        <strong>Phone:</strong> {{ $item->receiver_phone }}
+                                    </div>
+                                    <div class="small text-secondary mb-1">
+                                        <strong>Address:</strong> {{ $item->receiver_address }}
+                                    </div>
+                                    @if($item->receiver_note)
+                                    <div class="small text-secondary mb-1">
+                                        <strong>Note:</strong> {{ $item->receiver_note }}
+                                    </div>
+                                    @endif
                                     @endif
                                 </div>
                                 @endforeach
@@ -815,7 +870,20 @@
                                     <p class="small text-secondary mb-1">Quantity: {{ $item->quantity }}</p>
                                     @if($item->variationOptions->count() > 0)
                                         <div class="small text-secondary">
-                                            <strong>Options:</strong> {{ $item->variation_summary }}
+                                            <strong>Product Variations:</strong>
+                                        </div>
+                                        <div class="small text-secondary ps-2">
+                                            @foreach($item->variationOptions as $variation)
+                                                <div class="mb-1">
+                                                    <span class="text-theme-1">{{ ucfirst($variation->variation_name) }}:</span>
+                                                    <span class="text-secondary">{{ $variation->option_label }}</span>
+                                                    @if($variation->price_adjustment > 0)
+                                                        <span class="text-success">(+₦{{ number_format($variation->price_adjustment) }})</span>
+                                                    @elseif($variation->price_adjustment < 0)
+                                                        <span class="text-danger">(₦{{ number_format(abs($variation->price_adjustment)) }})</span>
+                                                    @endif
+                                                </div>
+                                            @endforeach
                                         </div>
                                     @endif
                                 </div>
@@ -846,8 +914,33 @@
                                             <div class="card-body">
                                                 <h6 class="fw-bold mb-3 text-theme-1">
                                                     <i class="bi bi-chat-quote me-2"></i>
-                                                    Message & Details
+                                                    Customization Summary
                                                 </h6>
+                                                
+                                                <!-- Customization Type and Status -->
+                                                @if($item->customization)
+                                                @if($item->customization->type)
+                                                <div class="mb-2">
+                                                    <span class="text-secondary small">Type:</span>
+                                                    <span class="badge bg-info">{{ ucfirst($item->customization->type) }}</span>
+                                                </div>
+                                                @endif
+                                                @if($item->customization->status)
+                                                <div class="mb-2">
+                                                    <span class="text-secondary small">Status:</span>
+                                                    <span class="badge bg-{{ $item->customization->status === 'completed' ? 'success' : ($item->customization->status === 'pending' ? 'warning' : 'info') }}">
+                                                        {{ ucfirst($item->customization->status) }}
+                                                    </span>
+                                                </div>
+                                                @endif
+                                                @if($item->customization->additional_cost > 0)
+                                                <div class="mb-2">
+                                                    <span class="text-secondary small">Additional Cost:</span>
+                                                    <span class="text-success fw-bold">₦{{ number_format($item->customization->additional_cost) }}</span>
+                                                </div>
+                                                @endif
+                                                @endif
+                                                
                                                 @if($item->customization->message)
                                                 <div class="mb-2">
                                                     <span class="text-secondary small">Message:</span>
@@ -858,18 +951,6 @@
                                                 <div class="mb-2">
                                                     <span class="text-secondary small">Special Request:</span>
                                                     <p class="mb-0 text-theme-1">{{ $item->customization->special_request }}</p>
-                                                </div>
-                                                @endif
-                                                @if($item->customization->type)
-                                                <div class="mb-2">
-                                                    <span class="text-secondary small">Type:</span>
-                                                    <span class="badge bg-info">{{ ucfirst($item->customization->type) }}</span>
-                                                </div>
-                                                @endif
-                                                @if($item->customization->additional_cost > 0)
-                                                <div class="mb-2">
-                                                    <span class="text-secondary small">Additional Cost:</span>
-                                                    <span class="text-success fw-bold">₦{{ number_format($item->customization->additional_cost) }}</span>
                                                 </div>
                                                 @endif
                                                 @if($item->customization_details)
@@ -888,7 +969,7 @@
                                             <div class="card-body">
                                                 <h6 class="fw-bold mb-3 text-theme-1">
                                                     <i class="bi bi-gear me-2"></i>
-                                                    Specifications
+                                                    Specifications & Details
                                                 </h6>
                                                 
                                                 <!-- Product Variations -->
@@ -901,6 +982,8 @@
                                                         <span class="text-theme-1 fw-medium">{{ $variation->option_label }}</span>
                                                         @if($variation->price_adjustment > 0)
                                                             <span class="text-success small">(+₦{{ number_format($variation->price_adjustment) }})</span>
+                                                        @elseif($variation->price_adjustment < 0)
+                                                            <span class="text-danger small">(₦{{ number_format(abs($variation->price_adjustment)) }})</span>
                                                         @endif
                                                     </div>
                                                     @endforeach

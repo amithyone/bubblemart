@@ -202,7 +202,7 @@
     @if($order->items->whereNotNull('receiver_name')->count() > 0)
     <div class="row mb-3">
         <div class="col-12">
-            <h6 class="mb-2"><i class="fas fa-truck me-2"></i>Delivery Information</h6>
+            <h6 class="mb-2"><i class="fas fa-truck me-2"></i>Complete Delivery Information</h6>
             @foreach($order->items as $item)
                 @if($item->receiver_name || $item->customization)
                     <div class="card mb-2">
@@ -211,30 +211,38 @@
                         </div>
                         <div class="card-body p-3">
                             @if($item->customization)
-                                <!-- Delivery info from customization object -->
+                                <!-- Complete delivery info from customization object -->
                                 <div class="row mb-2">
-                                                                            @if($item->customization->receiver_name)
-                                            <div class="col-6">
-                                                <small class="text-muted">Receiver</small>
-                                                <p class="mb-1"><strong>{{ $item->customization->receiver_name }}</strong></p>
-                                            </div>
-                                        @endif
-                                        @if($item->customization->receiver_phone)
-                                            <div class="col-6">
-                                                <small class="text-muted">Phone</small>
-                                                <p class="mb-1"><strong>{{ $item->customization->receiver_phone }}</strong></p>
-                                            </div>
-                                        @endif
-                                        @if($item->customization->receiver_gender)
-                                            <div class="col-6">
-                                                <small class="text-muted">Gender</small>
-                                                <p class="mb-1"><strong>{{ ucfirst($item->customization->receiver_gender) }}</strong></p>
-                                            </div>
-                                        @endif
+                                    @if($item->customization->receiver_name)
+                                        <div class="col-6">
+                                            <small class="text-muted">Receiver</small>
+                                            <p class="mb-1"><strong>{{ $item->customization->receiver_name }}</strong></p>
+                                        </div>
+                                    @endif
+                                    @if($item->customization->receiver_phone)
+                                        <div class="col-6">
+                                            <small class="text-muted">Phone</small>
+                                            <p class="mb-1"><strong>{{ $item->customization->receiver_phone }}</strong></p>
+                                        </div>
+                                    @endif
+                                    @if($item->customization->receiver_gender)
+                                        <div class="col-6">
+                                            <small class="text-muted">Gender</small>
+                                            <p class="mb-1"><strong>{{ ucfirst($item->customization->receiver_gender) }}</strong></p>
+                                        </div>
+                                    @endif
+                                    @if($item->customization->sender_name)
+                                        <div class="col-6">
+                                            <small class="text-muted">Sender</small>
+                                            <p class="mb-1"><strong>{{ $item->customization->sender_name }}</strong></p>
+                                        </div>
+                                    @endif
                                 </div>
+                                
+                                <!-- Complete Address Information -->
                                 @if($item->customization->receiver_address || $item->customization->receiver_street || $item->customization->receiver_city || $item->customization->receiver_house_number)
                                     <div class="mb-2">
-                                        <small class="text-muted">Delivery Address</small>
+                                        <small class="text-muted">Complete Delivery Address</small>
                                         <div class="bg-light p-2 rounded">
                                             @if($item->customization->receiver_house_number){{ $item->customization->receiver_house_number }}, @endif
                                             @if($item->customization->receiver_street){{ $item->customization->receiver_street }}, @endif
@@ -251,6 +259,7 @@
                                         </div>
                                     </div>
                                 @endif
+                                
                                 @if($item->customization->receiver_note)
                                     <div class="mb-2">
                                         <small class="text-muted">Delivery Note</small>
@@ -259,24 +268,54 @@
                                         </div>
                                     </div>
                                 @endif
-                                                                        @if($item->customization->delivery_method)
-                                            <div class="mb-2">
-                                                <small class="text-muted">Delivery Method</small>
-                                                <p class="mb-1"><strong>{{ ucwords(str_replace('_', ' ', $item->customization->delivery_method)) }}</strong></p>
-                                            </div>
-                                        @endif
-                                        
-                                        @if($item->customization->media_path)
-                                            <div class="mb-3">
-                                                <h6 class="text-primary mb-2"><i class="fas fa-image me-2"></i>Custom Image</h6>
-                                                <div class="text-center">
-                                                    <img src="{{ asset('storage/' . $item->customization->media_path) }}" 
-                                                         alt="Custom Design" 
-                                                         class="img-fluid rounded" 
-                                                         style="max-width: 200px; max-height: 200px; object-fit: cover;">
+                                
+                                @if($item->customization->delivery_method)
+                                    <div class="mb-2">
+                                        <small class="text-muted">Delivery Method</small>
+                                        <p class="mb-1"><strong>{{ ucwords(str_replace('_', ' ', $item->customization->delivery_method)) }}</strong></p>
+                                    </div>
+                                @endif
+                                
+                                <!-- Customization Details -->
+                                @if($item->customization->type || $item->customization->message || $item->customization->special_request)
+                                    <div class="mb-2">
+                                        <small class="text-muted">Customization Details</small>
+                                        <div class="bg-light p-2 rounded">
+                                            @if($item->customization->type)
+                                                <div class="mb-1">
+                                                    <strong>Type:</strong> {{ ucfirst($item->customization->type) }}
                                                 </div>
-                                            </div>
-                                        @endif
+                                            @endif
+                                            @if($item->customization->message)
+                                                <div class="mb-1">
+                                                    <strong>Message:</strong> {{ $item->customization->message }}
+                                                </div>
+                                            @endif
+                                            @if($item->customization->special_request)
+                                                <div class="mb-1">
+                                                    <strong>Special Request:</strong> {{ $item->customization->special_request }}
+                                                </div>
+                                            @endif
+                                            @if($item->customization->additional_cost > 0)
+                                                <div class="mb-1">
+                                                    <strong>Additional Cost:</strong> ₦{{ number_format($item->customization->additional_cost, 2) }}
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @endif
+                                
+                                @if($item->customization->media_path)
+                                    <div class="mb-3">
+                                        <h6 class="text-primary mb-2"><i class="fas fa-image me-2"></i>Custom Image</h6>
+                                        <div class="text-center">
+                                            <img src="{{ asset('storage/' . $item->customization->media_path) }}" 
+                                                 alt="Custom Design" 
+                                                 class="img-fluid rounded" 
+                                                 style="max-width: 200px; max-height: 200px; object-fit: cover;">
+                                        </div>
+                                    </div>
+                                @endif
                             @else
                                 <!-- Delivery info from order item fields -->
                                 <div class="row mb-2">
@@ -350,9 +389,17 @@
                                 
                                 @if($item->variationOptions && $item->variationOptions->count() > 0)
                                     <br><small class="text-info">
+                                        <strong>Product Variations:</strong><br>
                                         @foreach($item->variationOptions as $variation)
-                                            {{ $variation->variation_name }}: {{ $variation->option_label }}
-                                            @if(!$loop->last), @endif
+                                            <span class="me-2">
+                                                {{ ucfirst($variation->variation_name) }}: {{ $variation->option_label }}
+                                                @if($variation->price_adjustment > 0)
+                                                    <span class="text-success">(+₦{{ number_format($variation->price_adjustment, 2) }})</span>
+                                                @elseif($variation->price_adjustment < 0)
+                                                    <span class="text-danger">(₦{{ number_format(abs($variation->price_adjustment), 2) }})</span>
+                                                @endif
+                                            </span>
+                                            @if(!$loop->last)<br>@endif
                                         @endforeach
                                     </small>
                                 @elseif($item->variation_summary && $item->variation_summary !== 'No variations')
