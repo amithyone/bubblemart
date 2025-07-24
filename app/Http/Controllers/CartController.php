@@ -525,8 +525,33 @@ class CartController extends Controller
     public function generateXtrapay(Request $request)
     {
         $request->validate([
-            'amount' => 'required|numeric|min:100|max:1000000'
+            'amount' => 'required|numeric|min:100|max:1000000',
+            'address_id' => 'required|exists:addresses,id'
         ]);
+
+        $user = auth()->user();
+        $address = Address::findOrFail($request->address_id);
+
+        // Validate that the user owns this address
+        if ($address->user_id !== $user->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid shipping address selected.'
+            ]);
+        }
+
+        // Get cart items for scope validation
+        $cart = Session::get('cart', []);
+        $cartItems = $this->getCartItems($cart);
+        
+        // Validate product scope compatibility
+        $scopeErrors = $this->validateCartScopeCompatibility($cartItems, $address);
+        if (!empty($scopeErrors)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Shipping restriction: ' . implode(', ', $scopeErrors)
+            ]);
+        }
 
         try {
             $result = $this->xtrapayService->initiateFunding($request->amount);
@@ -542,8 +567,8 @@ class CartController extends Controller
             // Store the reference for later verification
             $user = auth()->user();
             
-            // Create a pending order
-            $order = $this->createOrderFromCart($user, $request->amount, 'xtrapay', $result['reference']);
+            // Create a pending order with shipping address
+            $order = $this->createOrderFromCart($user, $request->amount, 'xtrapay', $result['reference'], $address);
 
             $response = [
                 'success' => true,
@@ -660,7 +685,7 @@ class CartController extends Controller
     /**
      * Create order from cart items.
      */
-    private function createOrderFromCart($user, $totalAmount, $paymentMethod, $paymentReference = null)
+    private function createOrderFromCart($user, $totalAmount, $paymentMethod, $paymentReference = null, $shippingAddress = null)
     {
         $cart = Session::get('cart', []);
         $deliveryFee = 500; // Fixed delivery fee
@@ -677,6 +702,14 @@ class CartController extends Controller
             'status' => $paymentMethod === 'wallet' ? 'processing' : 'pending',
             'payment_status' => $paymentMethod === 'wallet' ? 'paid' : 'pending',
             'paid_at' => $paymentMethod === 'wallet' ? now() : null,
+            'receiver_name' => $shippingAddress->name,
+            'receiver_phone' => $shippingAddress->phone,
+            'receiver_address' => $shippingAddress->address_line_1,
+            'receiver_city' => $shippingAddress->city,
+            'receiver_state' => $shippingAddress->state,
+            'receiver_zip' => $shippingAddress->postal_code,
+            'receiver_note' => null, // Assuming no specific note for wallet payment
+            'address_id' => $shippingAddress->id
         ]);
 
         foreach ($cart as $cartKey => $item) {
@@ -711,10 +744,10 @@ class CartController extends Controller
                 $unitPrice = $product->final_price_naira + $variationAdjustment + ($customization ? $customization->additional_cost : 0);
                 
                 // Determine receiver information
-                $receiverName = 'Customer';
-                $receiverAddress = 'Address not provided';
-                $receiverPhone = 'Phone not provided';
-                $receiverNote = null;
+                $receiverName = $order->receiver_name;
+                $receiverAddress = $order->receiver_address;
+                $receiverPhone = $order->receiver_phone;
+                $receiverNote = $order->receiver_note;
                 
                 if ($customization) {
                     // Use customization receiver info

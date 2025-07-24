@@ -3,6 +3,40 @@
 @section('content')
 
 <style>
+/* Modal button fixes for light theme */
+[data-theme="light"] .modal .btn-primary {
+    color: #ffffff !important;
+    background: linear-gradient(135deg, #036674 0%, #005a66 100%) !important;
+    border: none !important;
+}
+
+[data-theme="light"] .modal .btn-success {
+    color: #ffffff !important;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+    border: none !important;
+}
+
+[data-theme="light"] .modal .btn-secondary {
+    color: #ffffff !important;
+    background: #6c757d !important;
+    border: none !important;
+}
+
+/* Ensure modal text is readable in light theme */
+[data-theme="light"] .modal-content {
+    background: #ffffff !important;
+    color: #333333 !important;
+}
+
+[data-theme="light"] .modal-header {
+    background: linear-gradient(135deg, #036674 0%, #005a66 100%) !important;
+    color: #ffffff !important;
+}
+
+[data-theme="light"] .modal-title {
+    color: #ffffff !important;
+}
+
 /* Remove card borders and add shadows - same as home page */
 .adminuiux-card {
     border: none !important;
@@ -1190,7 +1224,7 @@ function showWalletConfirmationModal(amount, addressId = null) {
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="background: #6c757d; border: none; border-radius: 8px;">
                             <i class="bi bi-x me-2"></i>Cancel
                         </button>
-                        <button type="button" class="btn btn-primary" onclick="confirmWalletPayment(${amount})" style="background: linear-gradient(135deg, #036674 0%, #005a66 100%); border: none; border-radius: 8px; color: white;">
+                        <button type="button" class="btn btn-primary" onclick="confirmWalletPayment(${amount})" style="background: linear-gradient(135deg, #036674 0%, #005a66 100%); border: none; border-radius: 8px; color: #ffffff !important; font-weight: 600;">
                             <i class="bi bi-check-circle me-2"></i>Confirm Payment
                         </button>
                     </div>
