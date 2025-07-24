@@ -1085,7 +1085,7 @@
                 @auth
                     <!-- Profile Section -->
                     <div class="mx-3 mb-3">
-                        <a href="{{ route('profile') }}" class="style-none">
+                        <a href="{{ route('profile.index') }}" class="style-none">
                             <div class="d-flex align-items-center">
                                 <div class="me-3">
                                     <img src="{{ \App\Helpers\StorageHelper::getAvatarUrl(Auth::user()) }}" alt="Profile" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;" onerror="handleImageError(this);">

@@ -73,9 +73,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/wallet/check-payment-status', [WalletController::class, 'checkPaymentStatus'])->name('wallet.check-payment-status');
 
     // Profile route (protected)
-    Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
-    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
 
     // Cart routes
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
