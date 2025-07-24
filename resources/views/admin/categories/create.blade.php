@@ -60,6 +60,30 @@
                             @enderror
                         </div>
 
+                        <div class="mb-3">
+                            <label for="icon" class="form-label text-dark">
+                                <i class="fas fa-icons me-2"></i>Category Icon
+                            </label>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control" id="icon" name="icon" value="{{ old('icon', '🎁') }}" placeholder="🎁 or emoji">
+                                    <small class="text-muted">Enter an emoji or icon (e.g., 🎁, 🏠, 🎨, 📱)</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center">
+                                        <span class="display-4 me-3" id="icon-preview">{{ old('icon', '🎁') }}</span>
+                                        <div>
+                                            <small class="text-muted d-block">Preview</small>
+                                            <small class="text-muted">This icon will be displayed on category cards</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @error('icon')
+                                <div class="text-danger small">{{ $message }}</div>
+                            @enderror
+                        </div>
+
                         <!-- Gender Variation Section -->
                         <div class="mb-4">
                             <label class="form-label text-dark">
@@ -429,6 +453,16 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (!genderCheckbox.checked) {
         unisexContainer.style.display = 'none';
+    }
+    
+    // Icon preview functionality
+    const iconInput = document.getElementById('icon');
+    const iconPreview = document.getElementById('icon-preview');
+    
+    if (iconInput && iconPreview) {
+        iconInput.addEventListener('input', function() {
+            iconPreview.textContent = this.value || '🎁';
+        });
     }
 });
 </script>
