@@ -718,7 +718,7 @@ function editAddress(addressId) {
             document.getElementById('country').value = data.country;
             document.getElementById('is_default').checked = data.is_default;
             
-            // Update modal for editing
+            // Update modal title and form for editing
             document.getElementById('addAddressModalLabel').textContent = 'Edit Address';
             const form = document.getElementById('addressForm');
             form.action = `/profile/addresses/${addressId}`;
@@ -778,7 +778,17 @@ document.getElementById('addAddressModal').addEventListener('hidden.bs.modal', f
     document.getElementById('addressForm').reset();
     document.getElementById('address_id').value = '';
     document.getElementById('addAddressModalLabel').textContent = 'Add New Address';
-    document.getElementById('addressForm').action = '{{ route("profile.addresses.store") }}';
+    
+    // Reset form for adding new address
+    const form = document.getElementById('addressForm');
+    form.action = '{{ route("profile.addresses.store") }}';
+    form.method = 'POST';
+    
+    // Remove method override if it exists
+    const methodField = form.querySelector('input[name="_method"]');
+    if (methodField) {
+        methodField.remove();
+    }
 });
 
 // Light theme styling for modals
