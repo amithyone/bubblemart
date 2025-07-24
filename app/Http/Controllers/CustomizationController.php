@@ -25,24 +25,11 @@ class CustomizationController extends Controller
             });
         }
         
-        // Handle category type filter
-        if ($request->filled('type') && $request->type !== 'all') {
-            $query->where('type', $request->type);
-        }
-        
         $categories = $query->orderBy('is_featured', 'desc') // Featured categories first
             ->orderBy('sort_order')
             ->get();
-            
-        // Get all category types for filter dropdown (only from customizable categories)
-        $categoryTypes = Category::where('is_active', true)
-            ->where('is_customizable', true)
-            ->distinct()
-            ->pluck('type')
-            ->filter()
-            ->values();
 
-        return view('customize.index', compact('categories', 'categoryTypes'));
+        return view('customize.index', compact('categories'));
     }
 
     /**

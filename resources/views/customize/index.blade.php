@@ -378,7 +378,7 @@ strong, b {
             <div class="card-body">
                 <form method="GET" action="{{ route('customize.index') }}" id="filterForm">
                     <div class="row g-3">
-                        <div class="col-12 col-md-6">
+                        <div class="col-12 col-md-10">
                             <div class="input-group">
                                 <span class="input-group-text bg-none border-0">
                                     <i class="bi bi-search text-secondary"></i>
@@ -391,18 +391,6 @@ strong, b {
                                        style="font-size: 0.9rem;">
                             </div>
                         </div>
-                        <div class="col-12 col-md-4">
-                            <select class="form-select border-0 bg-none" name="type" style="font-size: 0.9rem;">
-                                <option value="all" {{ request('type') === 'all' || !request('type') ? 'selected' : '' }}>
-                                    All Types
-                                </option>
-                                @foreach($categoryTypes as $type)
-                                    <option value="{{ $type }}" {{ request('type') === $type ? 'selected' : '' }}>
-                                        {{ ucfirst($type) }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
                         <div class="col-12 col-md-2">
                             <button type="submit" class="btn btn-theme w-100" style="font-size: 0.9rem;">
                                 <i class="bi bi-funnel me-1"></i>Filter
@@ -412,7 +400,7 @@ strong, b {
                 </form>
                 
                 <!-- Active Filters Display -->
-                @if(request('search') || (request('type') && request('type') !== 'all'))
+                @if(request('search'))
                     <div class="mt-3 pt-3 border-top">
                         <div class="d-flex align-items-center justify-content-between">
                             <small class="text-secondary">
@@ -427,14 +415,7 @@ strong, b {
                             @if(request('search'))
                                 <span class="badge bg-primary me-1">
                                     Search: "{{ request('search') }}"
-                                    <a href="{{ route('customize.index', array_merge(request()->except('search'), ['type' => request('type')])) }}" 
-                                       class="text-white text-decoration-none ms-1">×</a>
-                                </span>
-                            @endif
-                            @if(request('type') && request('type') !== 'all')
-                                <span class="badge bg-info me-1">
-                                    Type: {{ ucfirst(request('type')) }}
-                                    <a href="{{ route('customize.index', array_merge(request()->except('type'), ['search' => request('search')])) }}" 
+                                    <a href="{{ route('customize.index') }}" 
                                        class="text-white text-decoration-none ms-1">×</a>
                                 </span>
                             @endif
