@@ -259,7 +259,18 @@
                             </label>
                             <div class="row">
                                 @php
-                                    $enabledCountries = json_decode($settings->where('key', 'enabled_countries')->first()->value ?? '[]', true) ?: [];
+                                    $enabledCountriesSetting = $settings->where('key', 'enabled_countries')->first();
+                                    $enabledCountries = [];
+                                    if ($enabledCountriesSetting && $enabledCountriesSetting->value) {
+                                        $decoded = json_decode($enabledCountriesSetting->value, true);
+                                        if (is_array($decoded)) {
+                                            // If it's stored as key-value pairs, extract just the keys
+                                            $enabledCountries = array_keys($decoded);
+                                        } else {
+                                            // If it's stored as a simple array
+                                            $enabledCountries = $decoded ?: [];
+                                        }
+                                    }
                                     $allCountries = \App\Models\Setting::getEnabledCountries();
                                 @endphp
                                 @foreach($allCountries as $code => $name)

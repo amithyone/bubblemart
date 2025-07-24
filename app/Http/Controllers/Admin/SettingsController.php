@@ -32,7 +32,19 @@ class SettingsController extends Controller
             
             // Handle array values (like enabled_countries)
             if (is_array($value)) {
-                $value = json_encode($value);
+                if ($key === 'enabled_countries') {
+                    // For enabled_countries, store as key-value pairs with full country names
+                    $allCountries = Setting::getEnabledCountries();
+                    $enabledCountriesWithNames = [];
+                    foreach ($value as $countryCode) {
+                        if (isset($allCountries[$countryCode])) {
+                            $enabledCountriesWithNames[$countryCode] = $allCountries[$countryCode];
+                        }
+                    }
+                    $value = json_encode($enabledCountriesWithNames);
+                } else {
+                    $value = json_encode($value);
+                }
             }
             
             // Convert empty strings to appropriate defaults
