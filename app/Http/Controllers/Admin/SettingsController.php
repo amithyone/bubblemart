@@ -34,7 +34,7 @@ class SettingsController extends Controller
             if (is_array($value)) {
                 if ($key === 'enabled_countries') {
                     // For enabled_countries, store as key-value pairs with full country names
-                    $allCountries = Setting::getEnabledCountries();
+                    $allCountries = Setting::getAllCountries();
                     $enabledCountriesWithNames = [];
                     foreach ($value as $countryCode) {
                         if (isset($allCountries[$countryCode])) {
