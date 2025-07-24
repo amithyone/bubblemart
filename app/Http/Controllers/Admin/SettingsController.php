@@ -165,15 +165,18 @@ class SettingsController extends Controller
 
     public function testTelegram(Request $request)
     {
-        $request->validate([
-            'bot_token' => 'required|string',
-            'chat_id' => 'required|string'
-        ]);
+        // Get bot token and chat ID from database settings
+        $botToken = Setting::getTelegramBotToken();
+        $chatId = Setting::getTelegramChatId();
 
-        $result = TelegramNotificationService::testConnection(
-            $request->bot_token,
-            $request->chat_id
-        );
+        if (empty($botToken) || empty($chatId)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Telegram bot token or chat ID not configured. Please save your Telegram settings first.'
+            ]);
+        }
+
+        $result = TelegramNotificationService::testConnection($botToken, $chatId);
 
         return response()->json($result);
     }

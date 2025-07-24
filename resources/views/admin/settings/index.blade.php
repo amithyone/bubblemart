@@ -337,25 +337,13 @@ function testCalculation() {
 }
 
 function testTelegramNotification() {
-    const botToken = document.getElementById('telegram_bot_token').value;
-    const chatId = document.getElementById('telegram_chat_id').value;
-    
-    if (!botToken || !chatId) {
-        alert('Please enter both Bot Token and Chat ID before testing.');
-        return;
-    }
-    
     if (confirm('Send a test Telegram notification?')) {
         fetch('{{ route("admin.settings.test-telegram") }}', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            },
-            body: JSON.stringify({
-                bot_token: botToken,
-                chat_id: chatId
-            })
+            }
         })
         .then(response => response.json())
         .then(data => {
