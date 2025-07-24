@@ -802,6 +802,72 @@ function processPayment() {
     }
 }
 
+// Filter addresses based on product scope
+function filterAddressesByProductScope() {
+    @php
+        $hasUsOnlyProducts = false;
+        $hasInternationalProducts = false;
+        foreach($cartItems as $item) {
+            if ($item['product']->isUsOnly()) {
+                $hasUsOnlyProducts = true;
+            }
+            if ($item['product']->isInternational()) {
+                $hasInternationalProducts = true;
+            }
+        }
+    @endphp
+    
+    @if($hasUsOnlyProducts)
+        // Hide non-US addresses for US-only products
+        const addressRadios = document.querySelectorAll('input[name="shipping_address"]');
+        let visibleAddresses = 0;
+        
+        addressRadios.forEach(radio => {
+            const addressCard = radio.closest('.form-check');
+            const addressInfo = addressCard.querySelector('.address-info');
+            const countryText = addressInfo.textContent.toLowerCase();
+            
+            // Check if this is a US address
+            const isUsAddress = countryText.includes('united states') || 
+                               countryText.includes('usa') || 
+                               countryText.includes('us') ||
+                               countryText.includes('united states of america');
+            
+            if (!isUsAddress) {
+                addressCard.style.display = 'none';
+                radio.disabled = true;
+                radio.checked = false;
+            } else {
+                visibleAddresses++;
+            }
+        });
+        
+        // Show warning message if we have US-only products
+        const addressSection = document.querySelector('.shipping-section');
+        let warningDiv = addressSection.querySelector('.us-only-warning');
+        
+        if (!warningDiv) {
+            warningDiv = document.createElement('div');
+            warningDiv.className = 'alert alert-warning mt-2 us-only-warning';
+            warningDiv.innerHTML = '<i class="bi bi-exclamation-triangle me-2"></i><strong>US-Only Products:</strong> Some products in your cart are US-only. Only US addresses are available for selection.';
+            addressSection.appendChild(warningDiv);
+        }
+        
+        // If no US addresses are available, show error
+        if (visibleAddresses === 0) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'alert alert-danger mt-2';
+            errorDiv.innerHTML = '<i class="bi bi-x-circle me-2"></i><strong>No US Address Available:</strong> You need to add a US address to your profile to purchase US-only products. <a href="{{ route("profile.index") }}" class="alert-link">Add US Address</a>';
+            addressSection.appendChild(errorDiv);
+        }
+    @endif
+}
+
+// Call address filtering on page load
+document.addEventListener('DOMContentLoaded', function() {
+    filterAddressesByProductScope();
+});
+
 // Process wallet payment
 function processWalletPayment(amount, addressId = null) {
     console.log('Processing wallet payment for amount:', amount, 'address:', addressId);

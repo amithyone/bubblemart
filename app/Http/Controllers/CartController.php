@@ -57,14 +57,14 @@ class CartController extends Controller
             
             // Check if US-only product is being shipped to non-US address
             if ($product->isUsOnly() && !$address->isUsAddress()) {
-                $errors[] = "Product '{$product->name}' is US-only and cannot be shipped to {$address->getCountryDisplayNameAttribute()}";
+                $errors[] = "Product '{$product->name}' is US-only and cannot be shipped to {$address->getCountryDisplayNameAttribute()}. Please add a US address to your profile.";
             }
             
             // Check if international product is being shipped to non-enabled country
             if ($product->isInternational()) {
                 $enabledCountries = \App\Models\Setting::getEnabledCountries();
                 if (!array_key_exists($address->country, $enabledCountries)) {
-                    $errors[] = "Product '{$product->name}' cannot be shipped to {$address->getCountryDisplayNameAttribute()}";
+                    $errors[] = "Product '{$product->name}' cannot be shipped to {$address->getCountryDisplayNameAttribute()}. Please check our shipping policy or add a different address.";
                 }
             }
         }
@@ -583,6 +583,11 @@ class CartController extends Controller
         $cart = Session::get('cart', []);
         $deliveryFee = 500; // Fixed delivery fee
 
+        // Validate shipping address is provided
+        if (!$shippingAddress) {
+            throw new \Exception('Shipping address is required to create order');
+        }
+
         $order = Order::create([
             'user_id' => $user->id,
             'order_number' => 'ORD-' . strtoupper(uniqid()),
@@ -601,7 +606,7 @@ class CartController extends Controller
             'receiver_city' => $shippingAddress->city,
             'receiver_state' => $shippingAddress->state,
             'receiver_zip' => $shippingAddress->postal_code,
-            'receiver_note' => null, // Assuming no specific note for wallet payment
+            'receiver_note' => null,
             'address_id' => $shippingAddress->id
         ]);
 
@@ -636,19 +641,19 @@ class CartController extends Controller
                 
                 $unitPrice = $product->final_price_naira + $variationAdjustment + ($customization ? $customization->additional_cost : 0);
                 
-                // Determine receiver information
+                // Use shipping address for receiver information
                 $receiverName = $order->receiver_name;
                 $receiverAddress = $order->receiver_address;
                 $receiverPhone = $order->receiver_phone;
                 $receiverNote = $order->receiver_note;
                 
                 if ($customization) {
-                    // Use customization receiver info
-                    $receiverName = $customization->receiver_name;
-                    $receiverPhone = $customization->receiver_phone;
+                    // Use customization receiver info if available
+                    $receiverName = $customization->receiver_name ?: $order->receiver_name;
+                    $receiverPhone = $customization->receiver_phone ?: $order->receiver_phone;
                     $receiverNote = $customization->receiver_note;
                     
-                    // Build address from customization fields
+                    // Build address from customization fields if available
                     $addressParts = [];
                     if ($customization->receiver_house_number) $addressParts[] = $customization->receiver_house_number;
                     if ($customization->receiver_street) $addressParts[] = $customization->receiver_street;
@@ -660,13 +665,9 @@ class CartController extends Controller
                         $receiverAddress = implode(', ', $addressParts);
                     } elseif ($customization->receiver_address) {
                         $receiverAddress = $customization->receiver_address;
+                    } else {
+                        $receiverAddress = $order->receiver_address;
                     }
-                } else {
-                    // Use regular product receiver info
-                    $receiverName = is_array($item) ? ($item['receiver_name'] ?? 'Customer') : 'Customer';
-                    $receiverPhone = is_array($item) ? ($item['receiver_phone'] ?? 'Phone not provided') : 'Phone not provided';
-                    $receiverAddress = is_array($item) ? ($item['receiver_address'] ?? 'Address not provided') : 'Address not provided';
-                    $receiverNote = is_array($item) ? ($item['receiver_note'] ?? null) : null;
                 }
 
                 $orderItem = OrderItem::create([
