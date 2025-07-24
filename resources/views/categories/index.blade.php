@@ -213,7 +213,7 @@ strong, b {
                         <h6 class="category-title mb-2">{{ $category->name }}</h6>
                         <p class="category-description mb-2">{{ $category->description ?? 'Browse products' }}</p>
                         <span class="badge bg-theme-1 text-white" style="border-radius: 8px; font-size: 0.75rem;">
-                            {{ round(($category->total_products_count ?? $category->products_count ?? 0) / 100) * 100 }} Products
+                            {{ $category->total_products_count ?? $category->products_count ?? 0 }} Products
                         </span>
                     </div>
                 </div>
