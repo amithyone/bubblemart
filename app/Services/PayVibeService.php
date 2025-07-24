@@ -7,8 +7,18 @@ use Illuminate\Support\Facades\Log;
 
 class PayVibeService
 {
-    private string $baseUrl = 'https://payvibeapi.six3tech.com/api';
+    private string $baseUrl;
+    private string $publicKey;
+    private string $secretKey;
     private string $productIdentifier = 'fadded_sms';
+
+    public function __construct()
+    {
+        $this->baseUrl = config('services.payvibe.base_url', 'https://payvibeapi.six3tech.com/api');
+        $this->publicKey = config('services.payvibe.public_key');
+        $this->secretKey = config('services.payvibe.secret_key');
+        $this->productIdentifier = config('services.payvibe.product_identifier', 'fadded_sms');
+    }
 
     public function initiateFunding(float $amount): array
     {
@@ -23,26 +33,91 @@ class PayVibeService
             
             Log::info('PayVibeService: Making API request', [
                 'url' => $this->baseUrl . '/v1/payments/virtual-accounts/initiate',
-                'payload' => $payload
+                'payload' => $payload,
+                'base_url' => $this->baseUrl,
+                'product_identifier' => $this->productIdentifier
             ]);
             
-            $response = Http::timeout(30)
-                ->post($this->baseUrl . '/v1/payments/virtual-accounts/initiate', $payload);
+            // Try different authentication methods
+            $authMethods = [
+                ['Authorization' => 'Bearer ' . $this->secretKey],
+                ['Authorization' => $this->secretKey],
+                ['X-API-Key' => $this->secretKey],
+                ['api-key' => $this->secretKey],
+                ['x-api-key' => $this->secretKey],
+                ['X-PayVibe-Key' => $this->secretKey],
+                ['PayVibe-Key' => $this->secretKey],
+                ['key' => $this->secretKey],
+                ['Authorization' => 'Bearer ' . $this->publicKey],
+                ['X-API-Key' => $this->publicKey],
+                ['api-key' => $this->publicKey],
+                // Try without any auth header to see the exact error
+                [],
+            ];
+            
+            $response = null;
+            $lastError = null;
+            $lastStatusCode = null;
+            
+            foreach ($authMethods as $index => $headers) {
+                $fullHeaders = array_merge($headers, [
+                    'Content-Type' => 'application/json',
+                    'Accept' => 'application/json'
+                ]);
                 
-            Log::info('PayVibeService: API response received', [
-                'status_code' => $response->status(),
-                'response_body' => $response->body()
-            ]);
+                Log::info("PayVibeService: Trying authentication method " . ($index + 1), [
+                    'method' => $index + 1,
+                    'headers' => array_keys($headers),
+                    'has_secret_key' => !empty($this->secretKey),
+                    'has_public_key' => !empty($this->publicKey)
+                ]);
                 
-            if ($response->successful()) {
+                $response = Http::timeout(30)
+                    ->withHeaders($fullHeaders)
+                    ->post($this->baseUrl . '/v1/payments/virtual-accounts/initiate', $payload);
+                    
+                $lastStatusCode = $response->status();
+                
+                Log::info("PayVibeService: Response for method " . ($index + 1), [
+                    'method' => $index + 1,
+                    'status_code' => $lastStatusCode,
+                    'response_body' => $response->body()
+                ]);
+                
+                // If successful, break
+                if ($response->successful()) {
+                    Log::info("PayVibeService: Successful authentication method found", [
+                        'method' => $index + 1,
+                        'headers_used' => array_keys($headers)
+                    ]);
+                    break;
+                }
+                
+                // If we get a specific error about wallet split, that's a configuration issue
+                if (strpos($response->body(), 'Wallet split has not been configured') !== false) {
+                    $lastError = 'Wallet split has not been configured for this payment. Please contact support.';
+                    break;
+                }
+                
+                // If we get a 401 with "API key is missing", continue trying other methods
+                if ($response->status() === 401 && strpos($response->body(), 'API key is missing') !== false) {
+                    $lastError = $response->body();
+                    continue;
+                }
+                
+                $lastError = $response->body();
+            }
+                
+            if ($response && $response->successful()) {
                 $responseData = $response->json();
                 Log::info('PayVibeService: Parsed response data', $responseData);
                 
-                if (isset($responseData['status']) && $responseData['status'] === 'success' && isset($responseData['data'])) {
+                // PayVibe returns status as boolean (true/false), not string ('success'/'error')
+                if (isset($responseData['status']) && $responseData['status'] === true && isset($responseData['data'])) {
                     $accountData = $responseData['data'];
                     return [
                         'reference' => $accountData['reference'] ?? $reference,
-                        'accountNumber' => $accountData['account_number'] ?? null,
+                        'accountNumber' => $accountData['virtual_account_number'] ?? null,
                         'bank' => $accountData['bank_name'] ?? null,
                         'accountName' => $accountData['account_name'] ?? null,
                         'amount' => $accountData['amount'] ?? $amount,
@@ -63,16 +138,17 @@ class PayVibeService
                     ];
                 }
             } else {
-                Log::error('PayVibeService: HTTP request failed', [
-                    'status_code' => $response->status(),
-                    'response_body' => $response->body()
+                Log::error('PayVibeService: All authentication methods failed', [
+                    'last_error' => $lastError,
+                    'last_status_code' => $lastStatusCode,
+                    'total_methods_tried' => count($authMethods)
                 ]);
                 
                 return [
                     'error' => true,
-                    'message' => 'Payment service temporarily unavailable. Please try again later.',
+                    'message' => $lastError ?: 'Payment service temporarily unavailable. Please try again later.',
                     'reference' => $reference,
-                    'http_error' => $response->status()
+                    'http_error' => $lastStatusCode ?? 'unknown'
                 ];
             }
         } catch (\Exception $e) {

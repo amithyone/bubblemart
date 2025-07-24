@@ -1254,6 +1254,8 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => response.json())
         .then(data => {
+            console.log('PayVibe API Response:', data); // Debug log
+            
             if (data.success) {
                 // Use real virtual account data from API
                 const virtualAccount = {
@@ -1333,55 +1335,56 @@ document.addEventListener('DOMContentLoaded', function() {
                                     </button>
                                 </div>
                             </div>
+                        </div>
+                        <div class="row gx-3">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label small text-secondary">Bank</label>
                                 <input type="text" class="form-control" value="${virtualAccount.bank_name}" readonly>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="form-label small text-secondary">Base Amount</label>
-                                <input type="text" class="form-control" value="${chargeInfo.formatted.base_amount}" readonly>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label small text-secondary">Service Charge</label>
-                                <input type="text" class="form-control text-info" value="${chargeInfo.formatted.charge}" readonly>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label small text-secondary">Total to Transfer</label>
-                                <input type="text" class="form-control text-success fw-bold" value="${chargeInfo.formatted.total_amount}" readonly>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label small text-secondary">Payment Status</label>
-                                <input type="text" class="form-control text-warning" value="Waiting for Payment" readonly>
+                                <label class="form-label small text-secondary">Amount to Transfer</label>
+                                <input type="text" class="form-control" value="${chargeInfo.formatted.total_amount}" readonly>
                             </div>
                         </div>
-                        <div class="row mt-3">
-                            <div class="col-12">
-                                <button class="btn btn-main btn-lg w-100" onclick="confirmPayment('${data.reference}', '${selectedAmount}')" id="confirm-payment-btn">
-                                    <i class="bi bi-check-circle me-2"></i>I Have Paid
-                                </button>
-                                <div class="text-center mt-2">
-                                    <small class="text-secondary">Click this button after you have made the transfer</small>
-                                </div>
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            <strong>Important:</strong> Transfer exactly ${chargeInfo.formatted.total_amount} to avoid delays in crediting your wallet.
+                        </div>
+                        <div class="text-center">
+                            <button class="btn btn-main" onclick="confirmPayment('${data.reference}', '${selectedAmount}')" id="confirm-payment-btn">
+                                <i class="bi bi-check-circle me-2"></i>I Have Paid
+                            </button>
+                            <div class="mt-2">
+                                <small class="text-secondary">Click this button after you have made the transfer</small>
                             </div>
                         </div>
                     `;
                 }
             } else {
                 // Show error message
+                console.error('PayVibe API Error:', data);
                 accountInfoElement.innerHTML = `
-                    <div class="alert alert-danger">
-                        <i class="bi bi-exclamation-triangle me-2"></i>
-                        ${data.message || 'Failed to generate virtual account. Please try again.'}
+                    <div class="text-center">
+                        <i class="bi bi-exclamation-triangle text-danger" style="font-size: 2rem;"></i>
+                        <p class="mt-2 text-danger">Failed to generate account</p>
+                        <p class="text-secondary small">${data.message || 'Please try again later'}</p>
+                        <button class="btn btn-sm btn-outline-primary mt-2" onclick="generateVirtualAccount('${layout}', '${method}')">
+                            <i class="bi bi-arrow-clockwise me-1"></i>Retry
+                        </button>
                     </div>
                 `;
             }
         })
         .catch(error => {
-            console.error('Error generating virtual account:', error);
+            console.error('PayVibe API Error:', error);
             accountInfoElement.innerHTML = `
-                <div class="alert alert-danger">
-                    <i class="bi bi-exclamation-triangle me-2"></i>
-                    Failed to generate virtual account. Please try again.
+                <div class="text-center">
+                    <i class="bi bi-exclamation-triangle text-danger" style="font-size: 2rem;"></i>
+                    <p class="mt-2 text-danger">Network Error</p>
+                    <p class="text-secondary small">Please check your connection and try again</p>
+                    <button class="btn btn-sm btn-outline-primary mt-2" onclick="generateVirtualAccount('${layout}', '${method}')">
+                        <i class="bi bi-arrow-clockwise me-1"></i>Retry
+                    </button>
                 </div>
             `;
         });

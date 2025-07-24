@@ -51,4 +51,12 @@ return [
         ],
     ],
 
+    'payvibe' => [
+        'base_url' => env('PAYVIBE_BASE_URL', 'https://payvibeapi.six3tech.com/api'),
+        'public_key' => env('PAYVIBE_PUBLIC_KEY'),
+        'secret_key' => env('PAYVIBE_SECRET_KEY'),
+        'webhook_secret' => env('PAYVIBE_WEBHOOK_SECRET'),
+        'product_identifier' => env('PAYVIBE_PRODUCT_IDENTIFIER', 'fadded_sms'),
+    ],
+
 ];
