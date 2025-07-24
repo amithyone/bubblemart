@@ -950,6 +950,23 @@
     </div>
 </div>
 
+<style>
+/* Ultra-specific overrides to override any Bootstrap styles */
+html[data-theme="light"] body .badge.bg-danger,
+html[data-theme="light"] body span.badge.bg-danger,
+html[data-theme="light"] .container .badge.bg-danger,
+html[data-theme="light"] .container span.badge.bg-danger {
+    color: #000000 !important;
+}
+
+html[data-theme="light"] body .badge.bg-success,
+html[data-theme="light"] body span.badge.bg-success,
+html[data-theme="light"] .container .badge.bg-success,
+html[data-theme="light"] .container span.badge.bg-success {
+    color: #000000 !important;
+}
+</style>
+
 @endsection
 
 <script>

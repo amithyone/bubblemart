@@ -335,14 +335,14 @@ strong, b {
 [data-theme="light"] span.badge.bg-danger,
 [data-theme="light"] .badge.bg-danger *,
 [data-theme="light"] span.badge.bg-danger * {
-    color: #ffffff !important;
+    color: #000000 !important;
 }
 
 [data-theme="light"] .badge.bg-success,
 [data-theme="light"] span.badge.bg-success,
 [data-theme="light"] .badge.bg-success *,
 [data-theme="light"] span.badge.bg-success * {
-    color: #ffffff !important;
+    color: #000000 !important;
 }
 
 [data-theme="light"] .badge.bg-warning,
@@ -364,6 +364,21 @@ strong, b {
 [data-theme="light"] .badge.bg-info *,
 [data-theme="light"] span.badge.bg-info * {
     color: #ffffff !important;
+}
+
+/* Ultra-specific overrides to override any Bootstrap styles */
+html[data-theme="light"] body .badge.bg-danger,
+html[data-theme="light"] body span.badge.bg-danger,
+html[data-theme="light"] .container .badge.bg-danger,
+html[data-theme="light"] .container span.badge.bg-danger {
+    color: #000000 !important;
+}
+
+html[data-theme="light"] body .badge.bg-success,
+html[data-theme="light"] body span.badge.bg-success,
+html[data-theme="light"] .container .badge.bg-success,
+html[data-theme="light"] .container span.badge.bg-success {
+    color: #000000 !important;
 }
 
 /* Mobile padding */
