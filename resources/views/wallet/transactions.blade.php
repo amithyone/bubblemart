@@ -214,6 +214,27 @@
     color: #000000 !important;
 }
 
+/* Fix status badge text colors for light theme */
+[data-theme="light"] .badge.bg-success {
+    color: #ffffff !important;
+}
+
+[data-theme="light"] .badge.bg-warning {
+    color: #000000 !important;
+}
+
+[data-theme="light"] .badge.bg-danger {
+    color: #ffffff !important;
+}
+
+[data-theme="light"] .badge.bg-secondary {
+    color: #ffffff !important;
+}
+
+[data-theme="light"] .badge.bg-info {
+    color: #ffffff !important;
+}
+
 /* Amount colors */
 .text-success { color: #28a745 !important; }
 .text-danger { color: #dc3545 !important; }

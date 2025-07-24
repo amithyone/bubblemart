@@ -279,6 +279,27 @@ strong, b {
     border-radius: 10px !important;
 }
 
+/* Fix status badge text colors for light theme */
+[data-theme="light"] .badge.bg-success {
+    color: #ffffff !important;
+}
+
+[data-theme="light"] .badge.bg-warning {
+    color: #000000 !important;
+}
+
+[data-theme="light"] .badge.bg-danger {
+    color: #ffffff !important;
+}
+
+[data-theme="light"] .badge.bg-secondary {
+    color: #ffffff !important;
+}
+
+[data-theme="light"] .badge.bg-info {
+    color: #ffffff !important;
+}
+
 /* Mobile padding */
 @media (max-width: 768px) {
     .container { padding: 0 15px; }
