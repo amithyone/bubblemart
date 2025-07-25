@@ -255,9 +255,9 @@ class PayVibeService
             // Since this is a webhook notification, the payment was successful
             $status = 'completed';
             
-            // Find the pending transaction to get the base amount
+            // Find the pending or failed transaction to get the base amount
             $transaction = \App\Models\WalletTransaction::where('type', 'credit')
-                ->where('status', 'pending')
+                ->whereIn('status', ['pending', 'failed'])
                 ->where('reference_id', $reference)
                 ->first();
             

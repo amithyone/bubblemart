@@ -142,10 +142,10 @@ class WalletChargeService
     public function processPayment(string $reference, float $amount, string $gateway = 'xtrapay'): array
     {
         try {
-            // Find the pending transaction with this reference
+            // Find the pending or failed transaction with this reference
             $transaction = \App\Models\WalletTransaction::where('reference_id', $reference)
                 ->where('type', 'credit')
-                ->where('status', 'pending')
+                ->whereIn('status', ['pending', 'failed'])
                 ->first();
 
             if (!$transaction) {
