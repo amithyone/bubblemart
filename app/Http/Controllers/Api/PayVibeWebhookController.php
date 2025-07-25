@@ -36,6 +36,16 @@ class PayVibeWebhookController extends Controller
             $status = $webhookData['status'];
             $amount = $webhookData['amount'];
 
+            // Handle already processed transactions
+            if ($status === 'already_processed') {
+                Log::info('PayVibeWebhook: Transaction already processed', [
+                    'reference' => $reference,
+                    'amount' => $amount
+                ]);
+
+                return response()->json(['status' => 'already_processed']);
+            }
+
             // Only process completed payments
             if ($status === 'completed' || $status === 'success') {
                 // Process the wallet charge
