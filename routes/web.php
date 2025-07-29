@@ -24,7 +24,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/search', [HomeController::class, 'search'])->name('search');
 
 // Authentication routes
-Auth::routes();
+Auth::routes(['verify' => true]);
 
 // CAPTCHA refresh route
 Route::get('/captcha/refresh', function() {
