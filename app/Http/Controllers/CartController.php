@@ -7,18 +7,21 @@ use App\Models\Product;
 use App\Models\Customization;
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Services\XtrapayService;
+// use App\Services\XtrapayService;
+use App\Services\PayVibeService;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\DB;
 use App\Models\Address; // Added this import for Address model
 
 class CartController extends Controller
 {
-    protected $xtrapayService;
+    // protected $xtrapayService;
+    protected $payvibeService;
 
     public function __construct()
     {
-        $this->xtrapayService = new XtrapayService();
+        // $this->xtrapayService = new XtrapayService();
+        $this->payvibeService = new PayVibeService();
     }
 
     /**
@@ -441,9 +444,9 @@ class CartController extends Controller
     }
 
     /**
-     * Generate XtraPay virtual account for cart payment.
+     * Generate PayVibe virtual account for cart payment.
      */
-    public function generateXtrapay(Request $request)
+    public function generatePayvibe(Request $request)
     {
         $request->validate([
             'amount' => 'required|numeric|min:100|max:1000000',
@@ -454,7 +457,7 @@ class CartController extends Controller
         $addressId = $request->address_id;
 
         // Enhanced debug logging
-        \Log::info('Xtrapay payment address validation', [
+        \Log::info('PayVibe payment address validation', [
             'user_id' => $user->id,
             'address_id' => $addressId,
             'address_id_type' => gettype($addressId),
@@ -466,7 +469,7 @@ class CartController extends Controller
         // Try to find the address with more detailed logging
         try {
             $address = Address::findOrFail($addressId);
-            \Log::info('Address found successfully for Xtrapay', [
+            \Log::info('Address found successfully for PayVibe', [
                 'address_id' => $address->id,
                 'address_user_id' => $address->user_id,
                 'current_user_id' => $user->id,
@@ -475,7 +478,7 @@ class CartController extends Controller
                 'address_country' => $address->country
             ]);
         } catch (\Exception $e) {
-            \Log::error('Address not found for Xtrapay', [
+            \Log::error('Address not found for PayVibe', [
                 'address_id' => $addressId,
                 'error' => $e->getMessage(),
                 'user_id' => $user->id
@@ -488,7 +491,7 @@ class CartController extends Controller
 
         // Validate that the user owns this address (with type conversion)
         if ((int)$address->user_id !== (int)$user->id) {
-            \Log::warning('Xtrapay address ownership validation failed', [
+            \Log::warning('PayVibe address ownership validation failed', [
                 'user_id' => $user->id,
                 'address_user_id' => $address->user_id,
                 'address_id' => $addressId,
@@ -507,7 +510,7 @@ class CartController extends Controller
         $cart = Session::get('cart', []);
         $cartItems = $this->getCartItems($cart);
         
-        \Log::info('Cart items for Xtrapay scope validation', [
+        \Log::info('Cart items for PayVibe scope validation', [
             'cart_count' => count($cart),
             'cart_items' => $cartItems,
             'address_country' => $address->country,
@@ -517,7 +520,7 @@ class CartController extends Controller
         // Validate product scope compatibility
         $scopeErrors = $this->validateCartScopeCompatibility($cartItems, $address);
         if (!empty($scopeErrors)) {
-            \Log::warning('Xtrapay scope validation failed', [
+            \Log::warning('PayVibe scope validation failed', [
                 'scope_errors' => $scopeErrors,
                 'address_country' => $address->country
             ]);
@@ -528,9 +531,9 @@ class CartController extends Controller
         }
 
         try {
-            $result = $this->xtrapayService->initiateFunding($request->amount);
+            $result = $this->payvibeService->initiateFunding($request->amount);
             
-            // Check if there's an error (should not happen now with fallback to demo mode)
+            // Check if there's an error
             if (isset($result['error'])) {
                 return response()->json([
                     'success' => false,
@@ -542,7 +545,7 @@ class CartController extends Controller
             $user = auth()->user();
             
             // Create a pending order with shipping address
-            $order = $this->createOrderFromCart($user, $request->amount, 'xtrapay', $result['reference'], $address);
+            $order = $this->createOrderFromCart($user, $request->amount, 'payvibe', $result['reference'], $address);
 
             $response = [
                 'success' => true,
@@ -554,16 +557,10 @@ class CartController extends Controller
                 'expiry' => $result['expiry']
             ];
 
-            // Add demo mode indicator if applicable
-            if (isset($result['demo_mode'])) {
-                $response['demo_mode'] = true;
-                $response['message'] = 'Demo mode: This is a test payment. In production, you would transfer to the actual bank account.';
-            }
-
             return response()->json($response);
 
         } catch (\Exception $e) {
-            \Log::error('Cart Xtrapay Error: ' . $e->getMessage());
+            \Log::error('Cart PayVibe Error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to generate virtual account. Please try again.'
@@ -572,7 +569,21 @@ class CartController extends Controller
     }
 
     /**
-     * Check payment status for XtraPay.
+     * Generate XtraPay virtual account for cart payment (COMMENTED OUT - Using PayVibe instead).
+     */
+    /*
+    public function generateXtrapay(Request $request)
+    {
+        // Xtrapay implementation commented out - using PayVibe instead
+        return response()->json([
+            'success' => false,
+            'message' => 'Xtrapay is temporarily unavailable. Please use PayVibe.'
+        ], 503);
+    }
+    */
+
+    /**
+     * Check payment status for PayVibe.
      */
     public function checkPayment(Request $request)
     {
@@ -593,8 +604,8 @@ class CartController extends Controller
                 ]);
             }
 
-            // Verify payment with XtraPay API
-            $verificationResult = $this->xtrapayService->verifyPayment($request->reference);
+            // Verify payment with PayVibe API
+            $verificationResult = $this->payvibeService->verifyPayment($request->reference);
             
             \Log::info('CartController: Payment verification result', [
                 'reference' => $request->reference,

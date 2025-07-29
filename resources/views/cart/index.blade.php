@@ -633,10 +633,10 @@
                                     </label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="payment_method" id="xtrapay_payment" value="xtrapay">
-                                    <label class="form-check-label" for="xtrapay_payment">
+                                    <input class="form-check-input" type="radio" name="payment_method" id="payvibe_payment" value="payvibe">
+                                    <label class="form-check-label" for="payvibe_payment">
                                         <i class="bi bi-bank me-2 text-primary"></i>
-                                        Xtrapay
+                                        PayVibe
                                     </label>
                                 </div>
                             </div>
@@ -792,10 +792,10 @@ function processPayment() {
         // Process wallet payment
         const addressId = shippingAddress.value;
         showWalletConfirmationModal(total, addressId);
-    } else if (paymentMethod === 'xtrapay') {
-        // Process Xtrapay payment
+    } else if (paymentMethod === 'payvibe') {
+        // Process PayVibe payment
         const addressId = shippingAddress.value;
-        processXtrapayPayment(total, addressId);
+        processPayvibePayment(total, addressId);
     } else {
         showPaymentErrorModal('Payment Method Required', 'Please select a payment method.');
         return;
@@ -921,9 +921,9 @@ function processWalletPayment(amount, addressId = null) {
     });
 }
 
-// Process XtraPay payment
-function processXtrapayPayment(amount, addressId) {
-    console.log('Processing Xtrapay payment for amount:', amount, 'address:', addressId);
+// Process PayVibe payment
+function processPayvibePayment(amount, addressId) {
+    console.log('Processing PayVibe payment for amount:', amount, 'address:', addressId);
     
     // Show loading
     const payButton = document.querySelector('button[onclick="processPayment()"]');
@@ -931,7 +931,7 @@ function processXtrapayPayment(amount, addressId) {
     payButton.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Processing...';
     payButton.disabled = true;
     
-    fetch('{{ route("cart.generate-xtrapay") }}', {
+    fetch('{{ route("cart.generate-payvibe") }}', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -953,7 +953,7 @@ function processXtrapayPayment(amount, addressId) {
         console.log('Response data:', data);
         if (data.success) {
             // Show payment details modal
-            showXtrapayModal(data);
+            showPayvibeModal(data);
         } else {
             showPaymentErrorModal('Payment Error', data.message || 'Failed to generate payment details');
         }
@@ -970,8 +970,8 @@ function processXtrapayPayment(amount, addressId) {
 
 
 
-// Show XtraPay payment modal
-function showXtrapayModal(data) {
+// Show PayVibe payment modal
+function showPayvibeModal(data) {
     const demoAlert = data.demo_mode ? `
         <div class="alert alert-warning" style="background: rgba(252, 164, 136, 0.1) !important; border: 1px solid rgba(252, 164, 136, 0.3) !important; color: var(--text-primary) !important;">
             <h6 class="text-theme-1"><i class="bi bi-exclamation-triangle me-2"></i>Demo Mode</h6>
@@ -981,7 +981,7 @@ function showXtrapayModal(data) {
     ` : '';
     
     const modal = `
-        <div class="modal fade" id="xtrapayModal" tabindex="-1">
+        <div class="modal fade" id="payvibeModal" tabindex="-1">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content" style="background: rgba(0, 0, 0, 0.9) !important; border: none; border-radius: 15px;">
                     <div class="modal-header" style="background: rgba(0, 0, 0, 0.95) !important; border-bottom: 1px solid rgba(255,255,255,0.1) !important; border-radius: 15px 15px 0 0;">
@@ -1050,7 +1050,7 @@ function showXtrapayModal(data) {
     `;
     
     // Remove existing modal if any
-    const existingModal = document.getElementById('xtrapayModal');
+    const existingModal = document.getElementById('payvibeModal');
     if (existingModal) {
         existingModal.remove();
     }
@@ -1059,7 +1059,7 @@ function showXtrapayModal(data) {
     document.body.insertAdjacentHTML('beforeend', modal);
     
     // Show modal
-    const modalElement = document.getElementById('xtrapayModal');
+    const modalElement = document.getElementById('payvibeModal');
     const bootstrapModal = new bootstrap.Modal(modalElement);
     bootstrapModal.show();
 }
@@ -1102,7 +1102,7 @@ function checkPaymentStatus(reference) {
             });
             
             // Close the payment modal if it's open
-            const paymentModal = document.getElementById('xtrapayModal');
+            const paymentModal = document.getElementById('payvibeModal');
             if (paymentModal) {
                 const bootstrapModal = bootstrap.Modal.getInstance(paymentModal);
                 if (bootstrapModal) {

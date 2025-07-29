@@ -95,7 +95,7 @@ Route::delete('/profile/addresses/{id}', [ProfileController::class, 'deleteAddre
 
     // Cart payment routes (protected)
     Route::post('/cart/pay-with-wallet', [CartController::class, 'payWithWallet'])->name('cart.pay-with-wallet');
-    Route::post('/cart/generate-xtrapay', [CartController::class, 'generateXtrapay'])->name('cart.generate-xtrapay');
+    Route::post('/cart/generate-payvibe', [CartController::class, 'generatePayvibe'])->name('cart.generate-payvibe');
     Route::post('/cart/check-payment', [CartController::class, 'checkPayment'])->name('cart.check-payment');
 
 // Debug route for cart testing
