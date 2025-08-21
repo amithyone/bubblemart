@@ -42,7 +42,6 @@ class RegisterController extends Controller
     public function __construct()
     {
         $this->middleware('guest');
-        $this->middleware('registration.rate.limit')->only('register');
     }
 
     /**
@@ -77,16 +76,15 @@ class RegisterController extends Controller
     protected function create(array $data)
     {
         return DB::transaction(function () use ($data) {
-            // Check for spam
+            // Check for obvious spam patterns (captcha handles most protection)
             $spamService = new SpamDetectionService();
             $request = request();
             
             if ($spamService->isSpamRegistration($request)) {
-                $spamService->flagIP($request->ip());
                 abort(403, 'Registration blocked due to suspicious activity.');
             }
 
-            // Create user with spam protection data
+            // Create user with basic spam protection data
             $user = User::create([
                 'name' => $data['name'],
                 'email' => $data['email'],
@@ -95,7 +93,7 @@ class RegisterController extends Controller
                 'registration_ip' => $request->ip(),
                 'user_agent' => $request->userAgent(),
                 'is_verified' => false,
-                'is_suspicious' => $spamService->getSpamScore($request) > 5,
+                'is_suspicious' => $spamService->getSpamScore($request) > 10,
             ]);
 
             // Create wallet for the user

@@ -3,13 +3,13 @@
 namespace App\Services;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class SpamDetectionService
 {
     /**
      * Check if registration request is spam
+     * Now only checks for obvious spam patterns, relies on captcha for protection
      */
     public function isSpamRegistration(Request $request): bool
     {
@@ -17,9 +17,7 @@ class SpamDetectionService
             $this->checkHoneypot($request),
             $this->checkDisposableEmail($request->input('email')),
             $this->checkSuspiciousPatterns($request),
-            $this->checkIPReputation($request->ip()),
             $this->checkUserAgent($request->userAgent()),
-            $this->checkSubmissionSpeed($request),
         ];
 
         return in_array(true, $checks);
@@ -89,22 +87,6 @@ class SpamDetectionService
     }
 
     /**
-     * Check IP reputation
-     */
-    private function checkIPReputation(string $ip): bool
-    {
-        $key = "ip_reputation_{$ip}";
-        $reputation = Cache::get($key, 0);
-
-        // If IP has been flagged multiple times
-        if ($reputation > 3) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
      * Check user agent
      */
     private function checkUserAgent(?string $userAgent): bool
@@ -130,38 +112,6 @@ class SpamDetectionService
     }
 
     /**
-     * Check submission speed (too fast = bot)
-     */
-    private function checkSubmissionSpeed(Request $request): bool
-    {
-        $key = "submission_speed_{$request->ip()}";
-        $lastSubmission = Cache::get($key);
-
-        if ($lastSubmission) {
-            $timeDiff = time() - $lastSubmission;
-            // If submission is too fast (less than 3 seconds)
-            if ($timeDiff < 3) {
-                return true;
-            }
-        }
-
-        Cache::put($key, time(), 300); // 5 minutes
-        return false;
-    }
-
-    /**
-     * Flag IP as suspicious
-     */
-    public function flagIP(string $ip): void
-    {
-        $key = "ip_reputation_{$ip}";
-        $reputation = Cache::get($key, 0);
-        Cache::put($key, $reputation + 1, 86400); // 24 hours
-
-        Log::warning("Suspicious registration attempt from IP: {$ip}");
-    }
-
-    /**
      * Get spam score for registration
      */
     public function getSpamScore(Request $request): int
@@ -176,16 +126,8 @@ class SpamDetectionService
             $score += 5;
         }
 
-        if ($this->checkIPReputation($request->ip()) > 0) {
-            $score += 3;
-        }
-
         if ($this->checkUserAgent($request->userAgent())) {
             $score += 8;
-        }
-
-        if ($this->checkSubmissionSpeed($request)) {
-            $score += 7;
         }
 
         return $score;

@@ -466,9 +466,48 @@ class CustomizationController extends Controller
             'receiver_house_number' => 'nullable|string|max:20',
         ]);
 
+        // If user is authenticated, save the receiver address to their address book
+        if (auth()->check() && $request->delivery_method === 'home_delivery') {
+            $this->saveReceiverAddress($validated);
+        }
+
         // Store in session for next step
         session(['customize.receiver_info' => $validated]);
         
         return redirect()->route('customize.form', $product->slug)->with('success', 'Sender details saved!');
+    }
+
+    /**
+     * Save receiver address to user's address book
+     */
+    private function saveReceiverAddress(array $validated)
+    {
+        $user = auth()->user();
+        
+        // Check if this address already exists for the user
+        $existingAddress = $user->addresses()->where([
+            'name' => $validated['receiver_name'] ?? 'Receiver',
+            'phone' => $validated['receiver_phone'] ?? '',
+            'address_line_1' => $validated['receiver_street'],
+            'city' => $validated['receiver_city'],
+            'state' => $validated['receiver_state'],
+            'postal_code' => $validated['receiver_zip'],
+        ])->first();
+
+        if (!$existingAddress) {
+            // Create new address
+            $user->addresses()->create([
+                'name' => $validated['receiver_name'] ?? 'Receiver',
+                'phone' => $validated['receiver_phone'] ?? '',
+                'address_line_1' => $validated['receiver_street'],
+                'address_line_2' => $validated['receiver_house_number'] ? $validated['receiver_house_number'] . ' ' . ($validated['receiver_address'] ?? '') : ($validated['receiver_address'] ?? ''),
+                'city' => $validated['receiver_city'],
+                'state' => $validated['receiver_state'],
+                'postal_code' => $validated['receiver_zip'],
+                'country' => 'USA',
+                'is_default' => $user->addresses()->count() === 0, // Make default if it's the first address
+                'label' => 'Customization Delivery',
+            ]);
+        }
     }
 }
